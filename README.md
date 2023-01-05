@@ -14,7 +14,7 @@ Make sure you have [Git](https://git-scm.com/downloads) installed, as well as so
 
 1. Open a terminal and [`cd`](https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/cd) into the directory you want to clone the repository into.
 2. Install [Git](https://git-scm.com/downloads) if you haven't already.
-3. Run the command `git clone https://github.com/Pigmice2733/frc-2022.git`.
+3. Run the command `git clone https://github.com/Pigmice2733/frc-2023.git`.
 
 And you're done! The project will have been downloaded into a new folder called `frc-2023`.
 
