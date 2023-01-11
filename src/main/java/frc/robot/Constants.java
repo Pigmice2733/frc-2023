@@ -59,6 +59,9 @@ public final class Constants {
         public static final double kZeta = 0.7;
 
         public static final double autoBalanceSpeed = 0.2;
+
+        public static final double maxTrajectoryVel = 1;
+        public static final double maxTrajectoryAcc = 0.5;
     }
     public final static class ShuffleboardConfig {
         public static final boolean drivetrainPrintsEnabled = true;
