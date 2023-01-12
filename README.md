@@ -1,7 +1,7 @@
 <div align="center">
-    <img alt="Rapid React 2023 Icon" src="https://www.firstinspires.org/sites/default/files/uploads/resource_library/frc/game-and-season-info/competition-manual/2022/rapidreact-transparent-vertical-200.png" />
-    <h3><strong>frc-2022</strong></h3>
-    <h7>Robot code for FRC 2022 Rapid React</h7>
+    <img alt="Charged Up 2023 Icon" src="https://www.firstinspires.org/sites/default/files/first-energize/charged-up-gs-update.svg" width="200px" />
+    <h3><strong>frc-2023</strong></h3>
+    <h7>Robot code for FRC 2023 Charged Up</h7>
 </div>
 <img alt="Java CI With Gradle" src="https://github.com/Pigmice2733/frc-2022/actions/workflows/gradle.yml/badge.svg" />
 <br>
