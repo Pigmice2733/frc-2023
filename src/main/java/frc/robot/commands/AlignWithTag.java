@@ -4,12 +4,13 @@
 
 package frc.robot.commands;
 
+import java.sql.DriverAction;
+
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
@@ -17,19 +18,22 @@ import frc.robot.subsystems.Vision;
 
 public class AlignWithTag extends CommandBase {
 
-  private final PIDController angularController = new PIDController(0, 0, 0);
-  private final PIDController linearController = new PIDController(0, 0, 0);
+  private final PIDController angularController;
+  private final PIDController linearController;
 
   private final Drivetrain drivetrain;
   private final Vision vision;
 
   /** Creates a new AlignWithTag. */
-  public AlignWithTag(Drivetrain drivetrain, Vision vision) {
+  public AlignWithTag(Drivetrain drivetrain, Vision vision, PIDController rotateController, PIDController linearController) {
     this.drivetrain = drivetrain;
     this.vision = vision;
 
-    angularController.setSetpoint(0);
-    linearController.setSetpoint(1);
+    this.angularController = rotateController;
+    this.linearController = linearController;
+
+    //angularController.setSetpoint(0);
+    //linearController.setSetpoint(1);
 
     addRequirements(drivetrain, vision);
   }
@@ -44,6 +48,9 @@ public class AlignWithTag extends CommandBase {
   @Override
   public void execute() {
     PhotonTrackedTarget target = vision.getTarget();
+
+    if (target == null)
+      return;
 
     double currentYaw = target.getYaw();
     double currentDistance = PhotonUtils.calculateDistanceToTargetMeters(0, 0, 0, Units.degreesToRadians(target.getPitch()));

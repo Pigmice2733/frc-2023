@@ -78,6 +78,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void periodic() {
+    System.out.println(gyro.getPitch());
     updateOdometry();
   }
 

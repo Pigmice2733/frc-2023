@@ -4,12 +4,18 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.AlignWithTag;
+import frc.robot.commands.drivetrain.ArcadeDrive;
+import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Vision;
 
 /*
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -18,12 +24,23 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+  
+  public final PIDController alignRotate = new PIDController(0, 0, 0);
+  public final PIDController alignLinear = new PIDController(0, 0, 0);
+
+  //private final Vision vision = new Vision();
+  private final Drivetrain drivetrain = new Drivetrain();
+
   private final XboxController driver = new XboxController(0);
   private final XboxController operator = new XboxController(1);
   private final Controls controls = new Controls(driver, operator);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {   
+    drivetrain.setDefaultCommand(new ArcadeDrive(drivetrain, controls::getDriveSpeed, controls::getTurnSpeed));
+    SmartDashboard.putData("Rotate Controller", alignRotate);
+    SmartDashboard.putData("Linear Controller", alignLinear);
+
     configureButtonBindings();
   }
 
@@ -34,8 +51,8 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    // JoystickButton example = new JoystickButton(driver, Button.kX.value)
-    //   .whenPressed(new InstantCommand(int x = 1));
+    // new JoystickButton(driver, Button.kA.value)
+    //   .onTrue(new InstantCommand(() -> new AlignWithTag(drivetrain, vision, alignRotate, alignLinear)));
   }
 
   /**

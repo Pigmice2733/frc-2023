@@ -16,19 +16,21 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
     public final static class DrivetrainConfig {
+        public static final double axisThreshold = 0.1;
+
         public static final int leftDrivePort = 1;
-        public static final int rightDrivePort = 3;
+        public static final int rightDrivePort = 4;
         public static final int leftFollowPort = 2;
-        public static final int rightFollowPort = 4;
+        public static final int rightFollowPort = 3;
     
-        public static final double driveSpeed = 1;
-        public static final double turnSpeed = .5;
+        public static final double driveSpeed = .2;
+        public static final double turnSpeed = .2;
     
         // Multiplied by drive speed when in slow mode
         public static final double slowMultiplier = 0.25;
     
-        public static final double gearRatio = 1 / 8.2; // Times motor has to rotate for wheel to rotate once
-        public static final double wheelDiameterMeters = Units.inchesToMeters(4);
+        public static final double gearRatio = 1 / 8.45; // Times motor has to rotate for wheel to rotate once
+        public static final double wheelDiameterMeters = Units.inchesToMeters(6);
         public static final double rotationToDistanceConversion = (Math.PI * wheelDiameterMeters) * gearRatio; // Encoder rotations to distance moved
         public static final double drivetrainWidthMeters = Units.inchesToMeters(28); // Distance between left and right wheels in meters
     
