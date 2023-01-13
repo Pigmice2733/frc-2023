@@ -17,6 +17,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -26,7 +27,9 @@ import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 
 public class Drivetrain extends SubsystemBase {
-  private final NetworkTableEntry xPosEntry, yPosEntry, headingEntry, leftOutputEntry, rightOutputEntry;
+  GenericEntry xPosEntry;
+
+  private final GenericEntry yPosEntry, headingEntry, leftOutputEntry, rightOutputEntry;
 
   private final CANSparkMax leftDrive = new CANSparkMax(DrivetrainConfig.leftDrivePort, MotorType.kBrushless);
   private final CANSparkMax rightDrive = new CANSparkMax(DrivetrainConfig.rightDrivePort, MotorType.kBrushless);
@@ -37,7 +40,7 @@ public class Drivetrain extends SubsystemBase {
   private final AHRS gyro = new AHRS();
 
   private final DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(DrivetrainConfig.drivetrainWidthMeters);
-  private final DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(new Rotation2d(), new Pose2d());
+  private final DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(new Rotation2d(), 0, 0, new Pose2d());
 
   private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(DrivetrainConfig.kS, DrivetrainConfig.kV, DrivetrainConfig.kA);
 
@@ -149,7 +152,7 @@ public class Drivetrain extends SubsystemBase {
   /** Zeros odometry, gyro, and drive encoders. Heading gets reset to 180 degrees. */
   public void resetOdometry() {
     gyro.reset();
-    odometry.resetPosition(new Pose2d(), new Rotation2d());
+    odometry.resetPosition(new Rotation2d(), 0.0, 0.0, new Pose2d());
 
     leftDrive.getEncoder().setPosition(0);
     rightDrive.getEncoder().setPosition(0);
