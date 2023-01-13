@@ -68,4 +68,8 @@ public final class Constants {
     public final static class ShuffleboardConfig {
         public static final boolean drivetrainPrintsEnabled = true;
     }
+    public final static class ClawConfig{
+        public static final int clawPort = 1;
+        public static final double speedMultipler = .5;
+    }
 }
