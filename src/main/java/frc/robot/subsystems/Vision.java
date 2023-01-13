@@ -9,14 +9,17 @@ import java.util.List;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import org.photonvision.RobotPoseEstimator;
+//import edu.wpi.first.apri;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Vision extends SubsystemBase {
 
   private final PhotonCamera camera = new PhotonCamera("photonvision");
-  private final AprilTagFieldLayout layout
-  private final RobotPoseEstimator poseEstimator = new RobotPoseEstimator();
+  //private final AprilTagFieldLayout;
+  //private final RobotPoseEstimator poseEstimator = new RobotPoseEstimator();
   
   //private final RobotPose poseEstimator;
 
