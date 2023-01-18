@@ -9,13 +9,13 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.subsystems.Claw;
+import frc.robot.subsystems.RotateingArm;
 
-public class RotateClaw extends CommandBase {
-  Claw claw;
+public class RotateArm extends CommandBase {
+  RotateingArm claw;
   DoubleSupplier speed;
 
-  public RotateClaw(Claw claw, DoubleSupplier speed) {
+  public RotateArm(RotateingArm claw, DoubleSupplier speed) {
     this.claw = claw;
     this.speed = speed;
     addRequirements(claw);

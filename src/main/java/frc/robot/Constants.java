@@ -16,15 +16,15 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
     public final static class DrivetrainConfig {
-        public static final double axisThreshold = 0.1;
+        public static final double axisThreshold = 0.25;
 
         public static final int leftDrivePort = 1;
         public static final int rightDrivePort = 4;
         public static final int leftFollowPort = 2;
         public static final int rightFollowPort = 3;
     
-        public static final double driveSpeed = .2;
-        public static final double turnSpeed = .2;
+        public static final double driveSpeed = .5;
+        public static final double turnSpeed = .5;
     
         // Multiplied by drive speed when in slow mode
         public static final double slowMultiplier = 0.25;
@@ -32,11 +32,11 @@ public final class Constants {
         public static final double gearRatio = 1 / 8.45; // Times motor has to rotate for wheel to rotate once
         public static final double wheelDiameterMeters = Units.inchesToMeters(6);
         public static final double rotationToDistanceConversion = (Math.PI * wheelDiameterMeters) * gearRatio; // Encoder rotations to distance moved
-        public static final double drivetrainWidthMeters = Units.inchesToMeters(28); // Distance between left and right wheels in meters
+        public static final double drivetrainWidthMeters = Units.inchesToMeters(24); // Distance between left and right wheels in meters
     
         // Path following PID
-        //public static final double kP = 4.3789; <- value from SysId
-        public static final double pathP = -0.0002;
+        //public static final double pathP = 0.017108; // <- value from SysId
+        public static final double pathP = 0;
         public static final double pathI = 0;
         public static final double pathD = 0;
     
@@ -52,18 +52,23 @@ public final class Constants {
         public static final double turnD = 0; // 0 D for initial test
     
         // Drivetrain characterization (Do not change, found using SysId)
-        public static final double kS = 0.17247;
-        public static final double kV = 2.8886;
-        public static final double kA = 2.1367;
+        //public static final double kS = 0.13007;
+        public static final double kS = 0.13007;
+        //public static final double kV = 0.053671;
+        public static final double kV = 1.8;
+        //public static final double kA = 0.018914;
+        public static final double kA = 0.018914;
     
         // Ramsete config (Do not change, default values from documentation)
         public static final double kB = 2.0;
         public static final double kZeta = 0.7;
 
-        public static final double autoBalanceSpeed = 0.2;
+        public static final double autoBalenceAngleThreshold = 5;
+        public static final double autoBalenceSpeed = 0.3;
+        public static final double autoBalenceProportional = 0.25;
 
-        public static final double maxTrajectoryVel = 1;
-        public static final double maxTrajectoryAcc = 0.5;
+        public static final double maxTrajectoryVel = 2;
+        public static final double maxTrajectoryAcc = 1;
     }
     public final static class ShuffleboardConfig {
         public static final boolean drivetrainPrintsEnabled = true;

@@ -7,6 +7,8 @@ package frc.robot.subsystems;
 import frc.robot.Constants.DrivetrainConfig;
 import frc.robot.Constants.ShuffleboardConfig;
 
+import javax.sound.midi.SysexMessage;
+
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -56,6 +58,8 @@ public class Drivetrain extends SubsystemBase {
     leftFollow.restoreFactoryDefaults();
     rightFollow.restoreFactoryDefaults();
 
+    enableBrakeMode();
+
     leftFollow.follow(leftDrive);
     rightFollow.follow(rightDrive);
     
@@ -78,7 +82,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void periodic() {
-    System.out.println(gyro.getPitch());
+    //System.out.println("PITCH " + gyro.getPitch());
     updateOdometry();
   }
 

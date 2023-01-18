@@ -11,13 +11,13 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Claw extends SubsystemBase {
+public class RotateingArm extends SubsystemBase {
   Double multiplier = ClawConfig.speedMultipler;
 
   private final CANSparkMax claw = new CANSparkMax(ClawConfig.clawPort, MotorType.kBrushless);
 
   /** Creates a new Claw. */
-  public Claw() {
+  public RotateingArm() {
     claw.restoreFactoryDefaults();
   }
 
