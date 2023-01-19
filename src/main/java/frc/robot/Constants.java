@@ -76,5 +76,7 @@ public final class Constants {
     public final static class ClawConfig{
         public static final int clawPort = 1;
         public static final double speedMultipler = .5;
+
+        public static final double armLength = 0.0;
     }
 }
