@@ -23,6 +23,7 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.BangBangController;
@@ -82,7 +83,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void periodic() {
-    //System.out.println("PITCH " + gyro.getPitch());
+    SmartDashboard.putNumber("Roll", gyro.getRoll());
     updateOdometry();
   }
 

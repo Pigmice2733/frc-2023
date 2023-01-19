@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.DrivetrainConfig;
 import frc.robot.commands.AlignWithTag;
 import frc.robot.commands.AutoBalance;
+import frc.robot.commands.AutoBalanceWithRoll;
 import frc.robot.commands.drivetrain.ArcadeDrive;
 import frc.robot.commands.drivetrain.DriveOntoChargeStation;
 import frc.robot.commands.drivetrain.FollowPath;
@@ -103,6 +104,8 @@ public class RobotContainer {
     //return new FollowPath(drivetrain, trajectory);
 
     //return new BangBangBalance(drivetrain);
-    return new SequentialCommandGroup(new DriveOntoChargeStation(drivetrain), new AutoBalance(drivetrain));
+    return new SequentialCommandGroup(new DriveOntoChargeStation(drivetrain), new AutoBalanceWithRoll(drivetrain));
+    //return new SequentialCommandGroup(new AutoBalanceWithRoll(drivetrain));
+
   }
 }
