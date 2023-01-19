@@ -9,8 +9,10 @@ import java.sql.DriverAction;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
@@ -24,16 +26,35 @@ public class AlignWithTag extends CommandBase {
   private final Drivetrain drivetrain;
   private final Vision vision;
 
+  private double targetYaw;
+
   /** Creates a new AlignWithTag. */
   public AlignWithTag(Drivetrain drivetrain, Vision vision, PIDController rotateController, PIDController linearController) {
+    System.out.println("Command Started");
     this.drivetrain = drivetrain;
     this.vision = vision;
 
     this.angularController = rotateController;
+    this.angularController.setTolerance(0);
+
     this.linearController = linearController;
 
-    //angularController.setSetpoint(0);
-    //linearController.setSetpoint(1);
+    drivetrain.resetOdometry();
+
+    PhotonTrackedTarget target = vision.getTarget();
+
+    if (target == null) {
+      this.cancel();
+      return;
+    }
+
+    System.out.println(target.getYaw());
+    angularController.setSetpoint(target.getYaw());
+
+    double currentDistance = PhotonUtils.calculateDistanceToTargetMeters(Units.inchesToMeters(9 + 5.0/8), Units.inchesToMeters(31.5), 33 * (Math.PI/180), 0);
+
+    System.out.println();
+    linearController.setSetpoint(1);
 
     addRequirements(drivetrain, vision);
   }
@@ -47,22 +68,25 @@ public class AlignWithTag extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    PhotonTrackedTarget target = vision.getTarget();
 
-    if (target == null)
-      return;
+    // PhotonTrackedTarget target = vision.getTarget();
 
-    double currentYaw = target.getYaw();
-    double currentDistance = PhotonUtils.calculateDistanceToTargetMeters(0, 0, 0, Units.degreesToRadians(target.getPitch()));
+    // double currentYaw = target.getYaw();
+    // double currentDistance = PhotonUtils.calculateDistanceToTargetMeters(0, 0, 0, Units.degreesToRadians(target.getPitch()));
 
-    double forward = linearController.calculate(currentDistance);
-    double rotationSpeed = angularController.calculate(currentYaw);
-    drivetrain.arcadeDrive(forward, rotationSpeed);
+    // System.out.println(currentYaw);
+
+    //double forwardSpeed = linearController.calculate(currentDistance);
+    double rotationSpeed = angularController.calculate(-drivetrain.getHeadingRadians().getDegrees());
+    SmartDashboard.putNumber("RotateSpeed", rotationSpeed);
+    drivetrain.arcadeDrive(0, rotationSpeed);
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    System.out.println("Command Ended");
+  }
 
   // Returns true when the command should end.
   @Override

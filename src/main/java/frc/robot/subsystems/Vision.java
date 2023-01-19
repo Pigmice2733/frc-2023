@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
+import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import org.photonvision.RobotPoseEstimator;
 //import edu.wpi.first.apri;
@@ -22,7 +23,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Vision extends SubsystemBase {
 
-  private final PhotonCamera camera = new PhotonCamera("photonvision");
+  private final PhotonCamera camera = new PhotonCamera("OV5647");
   //private final RobotPoseEstimator poseEstimator = new RobotPoseEstimator();
 
 
@@ -35,14 +36,17 @@ public class Vision extends SubsystemBase {
 
   @Override
   public void periodic() {
-    var target = camera.getLatestResult().getBestTarget();
-    if (target == null)
+    if (!camera.getLatestResult().hasTargets())
       return;
+
+      var target = camera.getLatestResult().getBestTarget();
 
     SmartDashboard.putNumber("Yaw", target.getYaw());
     SmartDashboard.putNumber("Pitch", target.getPitch());
     SmartDashboard.putNumber("Skew", target.getSkew());
-    SmartDashboard.putNumber("Distance", PhotonUtils.calculateDistanceToTargetMeters(0, 0, 0, Units.degreesToRadians(target.getPitch())));
+    double currentDistance = PhotonUtils.calculateDistanceToTargetMeters(Units.inchesToMeters(9 + 3.0/8.0), Units.inchesToMeters(27 + 5.0/8.0), Units.degreesToRadians(33), Units.degreesToRadians(target.getPitch()));
+    SmartDashboard.putNumber("Distance", currentDistance);
+
   }
 
   public PhotonTrackedTarget getTarget() {

@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -43,7 +44,7 @@ public class RobotContainer {
   public final PIDController alignRotate = new PIDController(0, 0, 0);
   public final PIDController alignLinear = new PIDController(0, 0, 0);
 
-  //private final Vision vision = new Vision();
+  private final Vision vision = new Vision();
   private final Drivetrain drivetrain = new Drivetrain();
 
   private final XboxController driver = new XboxController(0);
@@ -66,11 +67,11 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    // new JoystickButton(driver, Button.kA.value)
-    //   .onTrue(new InstantCommand(() -> new AlignWithTag(drivetrain, vision, alignRotate, alignLinear)));
+    new JoystickButton(driver, Button.kA.value)
+      .onTrue(new InstantCommand(() -> CommandScheduler.getInstance().schedule(new AlignWithTag(drivetrain, vision, alignRotate, alignLinear))));
 
     new JoystickButton(driver , Button.kX.value)
-    .onTrue(new InstantCommand(() -> drivetrain.resetOdometry()));
+      .onTrue(new InstantCommand(() -> drivetrain.resetOdometry()));
   }
 
   /**
