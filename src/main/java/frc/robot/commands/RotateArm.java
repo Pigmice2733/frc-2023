@@ -6,16 +6,14 @@ package frc.robot.commands;
 
 import java.util.function.DoubleSupplier;
 
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.subsystems.RotateingArm;
+import frc.robot.subsystems.RotatingArm;
 
 public class RotateArm extends CommandBase {
-  RotateingArm claw;
+  RotatingArm claw;
   DoubleSupplier speed;
 
-  public RotateArm(RotateingArm claw, DoubleSupplier speed) {
+  public RotateArm(RotatingArm claw, DoubleSupplier speed) {
     this.claw = claw;
     this.speed = speed;
     addRequirements(claw);

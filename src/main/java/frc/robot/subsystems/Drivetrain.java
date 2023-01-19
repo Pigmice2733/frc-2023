@@ -124,6 +124,14 @@ public class Drivetrain extends SubsystemBase {
     return gyro.getPitch();
   }
 
+  public double getRoll() {
+    return gyro.getRoll();
+  }
+
+  public double getYaw() {
+    return gyro.getYaw();
+  }
+
   /** Returns a DifferentialDriveWheelSpeeds object from the encoder velocities. */
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
     double left = leftDrive.getEncoder().getVelocity();
