@@ -63,9 +63,9 @@ public final class Constants {
         public static final double kB = 2.0;
         public static final double kZeta = 0.7;
 
-        public static final double autoBalenceAngleThreshold = 5;
-        public static final double autoBalenceSpeed = 0.3;
-        public static final double autoBalenceProportional = 0.25;
+        public static final double autoBalanceAngleThreshold = 5;
+        public static final double autoBalanceSpeed = 0.3;
+        public static final double autoBalanceProportional = 0.25;
 
         public static final double maxTrajectoryVel = 2;
         public static final double maxTrajectoryAcc = 1;
