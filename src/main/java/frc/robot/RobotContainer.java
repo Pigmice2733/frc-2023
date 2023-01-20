@@ -45,8 +45,8 @@ public class RobotContainer {
   public final PIDController alignRotate = new PIDController(0, 0, 0);
   public final PIDController alignLinear = new PIDController(0, 0, 0);
 
-  private final Vision vision = new Vision();
   private final Drivetrain drivetrain = new Drivetrain();
+  private final Vision vision = new Vision(drivetrain);
 
   private final XboxController driver = new XboxController(0);
   private final XboxController operator = new XboxController(1);

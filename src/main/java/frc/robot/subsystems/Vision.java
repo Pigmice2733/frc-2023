@@ -5,22 +5,27 @@
 package frc.robot.subsystems;
 
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import org.photonvision.EstimatedRobotPose;
+import org.photonvision.RobotPoseEstimator;
 import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import org.photonvision.RobotPoseEstimator;
 //import edu.wpi.first.apri;
 
+import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -31,16 +36,16 @@ import frc.robot.subsystems.Drivetrain;
 public class Vision extends SubsystemBase {
 
   private final PhotonCamera camera = new PhotonCamera("OV5647");
-  //private final RobotPoseEstimator poseEstimator = new RobotPoseEstimator();
-  AprilTagFieldLayout layout;
-  private final PhotonPoseEstimator poseEstimator = new PhotonPoseEstimator(layout, null, camera, null);
+  // //private final RobotPoseEstimator poseEstimator = new RobotPoseEstimator();
+  AprilTagFieldLayout layout = new AprilTagFieldLayout(List.of(new AprilTag(7, new Pose3d(new Translation3d(0, 0, 2), new Rotation3d(0, 0, 0)))), 5, 5);
+  private final RobotPoseEstimator poseEstimator = new RobotPoseEstimator(layout, RobotPoseEstimator.PoseStrategy.AVERAGE_BEST_TARGETS, Arrays.asList(new Pair(camera, new Transform3d(new Translation3d(0, 0, Units.inchesToMeters(9)), new Rotation3d()))));
   Drivetrain drivetrain;
 
   //private final RobotPose poseEstimator;
 
   /** Creates a new Vision. */
-  public Vision() {
-    
+  public Vision(Drivetrain drivetrain) {
+    this.drivetrain = drivetrain;
   }
 
   @Override
@@ -48,7 +53,7 @@ public class Vision extends SubsystemBase {
     if (!camera.getLatestResult().hasTargets())
       return;
 
-      var target = camera.getLatestResult().getBestTarget();
+    var target = camera.getLatestResult().getBestTarget();
 
     SmartDashboard.putNumber("Yaw", target.getYaw());
     SmartDashboard.putNumber("Pitch", target.getPitch());
@@ -70,12 +75,16 @@ public class Vision extends SubsystemBase {
   }
 
   //assumes the robot is on the ground, and not on a charging station (or otherwise in the air somehow)
-  public Pose2d getGlobalPosition(Pose2d referencePose){
+  public Pose3d getGlobalPosition(Pose2d referencePose){
 
     poseEstimator.setReferencePose(referencePose);
-    EstimatedRobotPose timedPose = poseEstimator.update().get();
+    Optional<Pair<Pose3d, Double>> optionalPose = poseEstimator.update();
 
-    return timedPose.estimatedPose.toPose2d();
+    if (optionalPose.isEmpty()) return null;
+
+    Pair<Pose3d, Double> timedPose = optionalPose.get(); 
+
+    return timedPose.getFirst();
 
   }
 }
