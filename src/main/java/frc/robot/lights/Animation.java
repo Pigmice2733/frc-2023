@@ -8,6 +8,7 @@ import frc.robot.subsystems.Lights;
 
 public class Animation {
     private List<Image> images = new ArrayList<Image>();
+    private boolean loop = false;
     private double fps = 30;
     private double lastFrameTimestamp;
     private int currentFrame = 0;
@@ -21,9 +22,22 @@ public class Animation {
         this.images = images;
     }
 
+    public Animation(List<Image> images, boolean loop) {
+        this();
+        this.images = images;
+        this.loop = loop;
+    }
+
     public Animation(List<Image> images, double fps) {
         this();
         this.images = images;
+        this.fps = fps;
+    }
+
+    public Animation(List<Image> images, boolean loop, double fps) {
+        this();
+        this.images = images;
+        this.loop = loop;
         this.fps = fps;
     }
 
@@ -59,5 +73,9 @@ public class Animation {
     public void display(Lights lights) {
         lights.displayImage(getCurrentImage());
         update();
+    }
+
+    public boolean isFinished() {
+        return !loop && currentFrame == images.size() - 1;
     }
 }

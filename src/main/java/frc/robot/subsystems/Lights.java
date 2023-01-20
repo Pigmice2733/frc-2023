@@ -5,13 +5,13 @@
 package frc.robot.subsystems;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.commands.lights.AnimateLights;
 import frc.robot.lights.Animation;
 import frc.robot.lights.Image;
 import frc.robot.lights.Text;
@@ -25,6 +25,8 @@ public class Lights extends SubsystemBase {
     private final int LED_GRID_W = 16;
     private final int LED_GRID_LEN = LED_GRID_W * LED_GRID_W;
 
+    private final Queue<Animation> animationQueue = new LinkedList<>();
+
     public Lights() {
         led = new AddressableLED(LED_PORT);
         led_buffer = new AddressableLEDBuffer(LED_GRID_LEN);
@@ -33,6 +35,13 @@ public class Lights extends SubsystemBase {
     }
 
     public void periodic() {
+        if (this.animationQueue.size() > 0) {
+            Animation currentAnimation = this.animationQueue.peek();
+            currentAnimation.display(this);
+            if (currentAnimation.isFinished()) {
+                this.endAnimation();
+            }
+        }
     }
 
     private int mapCoordinatesToIndex(int x, int y) {
@@ -74,6 +83,16 @@ public class Lights extends SubsystemBase {
         led.setData(led_buffer);
     }
 
+    public void queueAnimation(Animation animation) {
+        this.queueAnimation(animation, false);
+    }
+
+    public void queueAnimation(Animation animation, boolean interrupt) {
+        if (interrupt)
+            this.endAnimation();
+        this.animationQueue.add(animation);
+    }
+
     public void displayRainbow(int HUE_OFFSET, int HUE_STEP) {
         for (int i = 0; i < LED_GRID_LEN; i++) {
             // led_buffer.setRGB(i, 75, 48, 71);
@@ -109,16 +128,16 @@ public class Lights extends SubsystemBase {
         led.setData(led_buffer);
     }
 
-    public void scrollText(String text, TextScrollDirection direction, int y, int color) {
-        this.scrollText(text, direction, y, color, 5);
+    public void scrollText(String text, TextScrollDirection direction, int y, int color, int speed) {
+        this.scrollText(text, direction, y, color, speed, 5);
     }
 
-    public void scrollText(String text, TextScrollDirection direction, int y, int color, int fps) {
+    public void scrollText(String text, TextScrollDirection direction, int y, int color, int speed, int fps) {
         TextSequence letters = Text.buildLetters(text).setColor(color);
         List<Image> frames = new ArrayList<Image>();
         switch (direction) {
             case LEFT:
-                for (int x = LED_GRID_W; x > -letters.getLength(); x--) {
+                for (int x = LED_GRID_W; x > -letters.getLength(); x -= speed) {
                     Image frame = new Image();
                     int xOffset = 0;
                     for (int[][] image : letters.getLetters()) {
@@ -129,7 +148,7 @@ public class Lights extends SubsystemBase {
                 }
                 break;
             case RIGHT:
-                for (int x = -letters.getLength(); x > LED_GRID_W; x--) {
+                for (int x = -letters.getLength(); x < LED_GRID_W; x += speed) {
                     Image frame = new Image();
                     int xOffset = 0;
                     for (int[][] image : letters.getLetters()) {
@@ -140,8 +159,11 @@ public class Lights extends SubsystemBase {
                 }
                 break;
         }
-        Animation animation = new Animation(frames, fps);
 
-        CommandScheduler.getInstance().schedule(new AnimateLights(this, animation));
+        this.queueAnimation(new Animation(frames, fps));
+    }
+
+    public void endAnimation() {
+        this.animationQueue.poll();
     }
 }
