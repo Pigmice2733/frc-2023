@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
 
-
 public class AlignWithTag extends CommandBase {
 
   private final PIDController angularController;
@@ -29,7 +28,8 @@ public class AlignWithTag extends CommandBase {
   private double targetYaw;
 
   /** Creates a new AlignWithTag. */
-  public AlignWithTag(Drivetrain drivetrain, Vision vision, PIDController rotateController, PIDController linearController) {
+  public AlignWithTag(Drivetrain drivetrain, Vision vision, PIDController rotateController,
+      PIDController linearController) {
     System.out.println("Command Started");
     this.drivetrain = drivetrain;
     this.vision = vision;
@@ -48,12 +48,13 @@ public class AlignWithTag extends CommandBase {
       return;
     }
 
-    System.out.println(target.getYaw());
+    // System.out.println(target.getYaw());
     angularController.setSetpoint(target.getYaw());
 
-    double currentDistance = PhotonUtils.calculateDistanceToTargetMeters(Units.inchesToMeters(9 + 5.0/8), Units.inchesToMeters(31.5), 33 * (Math.PI/180), 0);
+    double currentDistance = PhotonUtils.calculateDistanceToTargetMeters(Units.inchesToMeters(9 + 5.0 / 8),
+        Units.inchesToMeters(31.5), 33 * (Math.PI / 180), 0);
 
-    System.out.println();
+    // System.out.println();
     linearController.setSetpoint(1);
 
     addRequirements(drivetrain, vision);
@@ -72,11 +73,12 @@ public class AlignWithTag extends CommandBase {
     // PhotonTrackedTarget target = vision.getTarget();
 
     // double currentYaw = target.getYaw();
-    // double currentDistance = PhotonUtils.calculateDistanceToTargetMeters(0, 0, 0, Units.degreesToRadians(target.getPitch()));
+    // double currentDistance = PhotonUtils.calculateDistanceToTargetMeters(0, 0, 0,
+    // Units.degreesToRadians(target.getPitch()));
 
     // System.out.println(currentYaw);
 
-    //double forwardSpeed = linearController.calculate(currentDistance);
+    // double forwardSpeed = linearController.calculate(currentDistance);
     double rotationSpeed = angularController.calculate(-drivetrain.getHeadingRadians().getDegrees());
     SmartDashboard.putNumber("RotateSpeed", rotationSpeed);
     drivetrain.arcadeDrive(0, rotationSpeed);
