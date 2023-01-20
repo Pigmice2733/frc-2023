@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import java.util.List;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -20,11 +18,6 @@ import frc.robot.commands.AlignWithTag;
 import frc.robot.commands.AutoBalanceWithRoll;
 import frc.robot.commands.drivetrain.ArcadeDrive;
 import frc.robot.commands.drivetrain.DriveOntoChargeStation;
-import frc.robot.commands.lights.AnimateLights;
-import frc.robot.commands.lights.CGOLLights;
-import frc.robot.commands.lights.RainbowLights;
-import frc.robot.lights.Animation;
-import frc.robot.lights.Image;
 import frc.robot.lights.Text.TextScrollDirection;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Lights;
@@ -41,9 +34,9 @@ public class RobotContainer {
   public final PIDController alignRotate = new PIDController(0, 0, 0);
   public final PIDController alignLinear = new PIDController(0, 0, 0);
 
-  private final Vision vision = new Vision();
   private final Drivetrain drivetrain = new Drivetrain();
   private final Lights lights = new Lights();
+  private final Vision vision = new Vision(drivetrain);
 
   private final XboxController driver = new XboxController(0);
   private final XboxController operator = new XboxController(1);
