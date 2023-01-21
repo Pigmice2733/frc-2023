@@ -28,7 +28,7 @@ public class AlignToDispense extends CommandBase {
 
   @Override
   public void initialize() {
-    Pose3d robotPose = vision.getGlobalPosition(drivetrain.getPose());
+    Pose2d robotPose = vision.getGlobalPosition(drivetrain.getPose());
     Pose2d tagPose = vision.getTagPosition();
 
     if (robotPose == null || tagPose == null) {
@@ -36,7 +36,7 @@ public class AlignToDispense extends CommandBase {
       return;
     }
 
-    Trajectory trajectory = RuntimeTrajectoryGenerator.generateLineupTrajectory(robotPose.toPose2d(), tagPose, RuntimeTrajectoryGenerator.TargetType.Cube);
+    Trajectory trajectory = RuntimeTrajectoryGenerator.generateLineupTrajectory(robotPose, tagPose, RuntimeTrajectoryGenerator.TargetType.Cube);
 
     CommandScheduler.getInstance().schedule(new FollowPath(drivetrain, trajectory));
   }

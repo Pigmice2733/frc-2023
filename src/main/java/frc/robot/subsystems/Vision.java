@@ -64,11 +64,10 @@ public class Vision extends SubsystemBase {
     SmartDashboard.putNumber("Skew", target.getSkew());
     double currentDistance = PhotonUtils.calculateDistanceToTargetMeters(Units.inchesToMeters(9 + 3.0/8.0), Units.inchesToMeters(27 + 5.0/8.0), Units.degreesToRadians(33), Units.degreesToRadians(target.getPitch()));
     SmartDashboard.putNumber("Distance", currentDistance);
-    if(getGlobalPosition(drivetrain.getPose()) != null){
       SmartDashboard.putNumber("X", getGlobalPosition(drivetrain.getPose()).getX());
       SmartDashboard.putNumber("Y", getGlobalPosition(drivetrain.getPose()).getY());
-    }
   }
+  
 
   public PhotonTrackedTarget getTarget() {
     
@@ -91,6 +90,7 @@ public class Vision extends SubsystemBase {
 
     drivetrain.resetOdometry(timedPose.getFirst().toPose2d());
     return drivetrain.getPose();
+  }
 
   public Pose2d getTagPosition() {
     if (!camera.getLatestResult().hasTargets())
