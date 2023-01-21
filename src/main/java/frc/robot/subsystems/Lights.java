@@ -22,10 +22,11 @@ public class Lights extends SubsystemBase {
     private AddressableLED led;
     private AddressableLEDBuffer led_buffer;
     private final int LED_PORT = 9;
-    private final int LED_GRID_W = 16;
-    private final int LED_GRID_LEN = LED_GRID_W * LED_GRID_W;
+    public final int LED_GRID_W = 16;
+    public final int LED_GRID_LEN = LED_GRID_W * LED_GRID_W;
 
     private final Queue<Animation> animationQueue = new LinkedList<>();
+    private boolean animationIsFinished = true;
 
     public Lights() {
         led = new AddressableLED(LED_PORT);
@@ -88,6 +89,7 @@ public class Lights extends SubsystemBase {
     }
 
     public void queueAnimation(Animation animation, boolean interrupt) {
+        animationIsFinished = false;
         if (interrupt)
             this.endAnimation();
         this.animationQueue.add(animation);
@@ -137,7 +139,7 @@ public class Lights extends SubsystemBase {
         List<Image> frames = new ArrayList<Image>();
         switch (direction) {
             case LEFT:
-                for (int x = LED_GRID_W; x > -letters.getLength(); x -= speed) {
+                for (int x = LED_GRID_W; x + letters.getLength() + speed * 2 >= 0; x -= speed) {
                     Image frame = new Image();
                     int xOffset = 0;
                     for (int[][] image : letters.getLetters()) {
@@ -165,5 +167,10 @@ public class Lights extends SubsystemBase {
 
     public void endAnimation() {
         this.animationQueue.poll();
+        this.animationIsFinished = true;
+    }
+
+    public boolean isAnimationFinished() {
+        return this.animationIsFinished;
     }
 }

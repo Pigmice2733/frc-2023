@@ -18,6 +18,8 @@ import frc.robot.commands.AlignWithTag;
 import frc.robot.commands.AutoBalanceWithRoll;
 import frc.robot.commands.drivetrain.ArcadeDrive;
 import frc.robot.commands.drivetrain.DriveOntoChargeStation;
+import frc.robot.commands.lights.ScrollSponsors;
+import frc.robot.lights.Images;
 import frc.robot.lights.Text.TextScrollDirection;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Lights;
@@ -53,7 +55,10 @@ public class RobotContainer {
 
     configureButtonBindings();
 
-    lights.scrollText("Pigmice", TextScrollDirection.LEFT, 0, 0xff0000);
+    lights.displayImage(Images.OWEN_PIGMICE);
+
+    // CommandScheduler.getInstance().schedule(new ScrollSponsors(lights));
+    // lights.scrollText("Pigmice", TextScrollDirection.LEFT, 0, 0xff0000, 3);
   }
 
   /**
