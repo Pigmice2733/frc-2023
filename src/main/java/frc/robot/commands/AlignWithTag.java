@@ -41,7 +41,7 @@ public class AlignWithTag extends CommandBase {
 
     drivetrain.resetOdometry();
 
-    PhotonTrackedTarget target = vision.getTarget();
+    PhotonTrackedTarget target = vision.getBestTarget();
 
     if (target == null) {
       this.cancel();

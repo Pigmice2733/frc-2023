@@ -38,38 +38,35 @@ import frc.robot.subsystems.Drivetrain;
 public class Vision extends SubsystemBase {
 
   private final PhotonCamera camera = new PhotonCamera("OV5647");
-  // //private final RobotPoseEstimator poseEstimator = new RobotPoseEstimator();
+
   AprilTagFieldLayout layout = new AprilTagFieldLayout(List.of(new AprilTag(7, new Pose3d(new Translation3d(0, 0, Units.inchesToMeters(26.2)), new Rotation3d(0, 0, Math.toRadians(180))))), 5, 5);
   private final RobotPoseEstimator poseEstimator = new RobotPoseEstimator(layout, RobotPoseEstimator.PoseStrategy.AVERAGE_BEST_TARGETS, Arrays.asList(new Pair(camera, new Transform3d(new Translation3d(0, 0, Units.inchesToMeters(9)), new Rotation3d()))));
+  
   Drivetrain drivetrain;
 
-
-
-  //private final RobotPose poseEstimator;
-
-  /** Creates a new Vision. */
   public Vision(Drivetrain drivetrain) {
     this.drivetrain = drivetrain;
   }
 
   @Override
   public void periodic() {
+    updateDrivetrainPose();
+  }
+
+  private void updateDrivetrainPose() {
     if (!camera.getLatestResult().hasTargets())
       return;
 
     var target = camera.getLatestResult().getBestTarget();
+    //double currentDistance = PhotonUtils.calculateDistanceToTargetMeters(Units.inchesToMeters(9 + 3.0/8.0), Units.inchesToMeters(27 + 5.0/8.0), Units.degreesToRadians(33), Units.degreesToRadians(target.getPitch()));
+    Pose2d currentRobotPose = getGlobalRobotPosition();
 
     SmartDashboard.putNumber("Yaw", target.getYaw());
-    SmartDashboard.putNumber("Pitch", target.getPitch());
-    SmartDashboard.putNumber("Skew", target.getSkew());
-    double currentDistance = PhotonUtils.calculateDistanceToTargetMeters(Units.inchesToMeters(9 + 3.0/8.0), Units.inchesToMeters(27 + 5.0/8.0), Units.degreesToRadians(33), Units.degreesToRadians(target.getPitch()));
-    SmartDashboard.putNumber("Distance", currentDistance);
-      SmartDashboard.putNumber("X", getGlobalPosition(drivetrain.getPose()).getX());
-      SmartDashboard.putNumber("Y", getGlobalPosition(drivetrain.getPose()).getY());
+    SmartDashboard.putNumber("X", currentRobotPose.getX());
+    SmartDashboard.putNumber("Y", currentRobotPose.getY());
   }
-  
 
-  public PhotonTrackedTarget getTarget() {
+  public PhotonTrackedTarget getBestTarget() {
     
     var result = camera.getLatestResult();
     if (result == null)
@@ -78,10 +75,10 @@ public class Vision extends SubsystemBase {
     return result.getBestTarget();
   }
 
-  //assumes the robot is on the ground, and not on a charging station (or otherwise in the air somehow)
-  public Pose2d getGlobalPosition(Pose2d referencePose){
+  /** Returns the position of the robot on the feild based on the best target. Assumes the robot is level on the ground */
+  public Pose2d getGlobalRobotPosition(){
 
-    poseEstimator.setReferencePose(referencePose);
+    poseEstimator.setReferencePose(drivetrain.getPose());
     Optional<Pair<Pose3d, Double>> optionalPose = poseEstimator.update();
 
     if (optionalPose.isEmpty()) return null;
@@ -92,6 +89,7 @@ public class Vision extends SubsystemBase {
     return drivetrain.getPose();
   }
 
+  /** Returns the position and rotation of the nearest apriltag */
   public Pose2d getTagPosition() {
     if (!camera.getLatestResult().hasTargets())
       return null;

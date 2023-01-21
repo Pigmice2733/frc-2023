@@ -21,12 +21,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.DrivetrainConfig;
 import frc.robot.commands.AlignToDispense;
-import frc.robot.commands.AlignWithTag;
 import frc.robot.commands.AutoBalance;
 import frc.robot.commands.AutoBalanceWithRoll;
 import frc.robot.commands.drivetrain.ArcadeDrive;
@@ -73,7 +71,7 @@ public class RobotContainer {
     //   .onTrue(new InstantCommand(() -> CommandScheduler.getInstance().schedule(new AlignWithTag(drivetrain, vision, alignRotate, alignLinear))));
 
     new JoystickButton(driver, Button.kA.value)
-      .onTrue(new InstantCommand(() -> CommandScheduler.getInstance().schedule(new AlignToDispense(vision, drivetrain))));
+      .onTrue(new InstantCommand(() -> CommandScheduler.getInstance().schedule(new AlignToDispense(vision, drivetrain, RuntimeTrajectoryGenerator.TargetType.Cube))));
 
     new JoystickButton(driver , Button.kX.value)
       .onTrue(new InstantCommand(() -> drivetrain.resetOdometry()));
@@ -93,22 +91,6 @@ public class RobotContainer {
     Trajectory trajectory = TrajectoryGenerator.generateTrajectory(List.of(new Pose2d(), new Pose2d(1.8, 0, new Rotation2d(0)), new Pose2d(2, 0, new Rotation2d(45)), new Pose2d(2.3, 2, new Rotation2d(90))), config);
     return new FollowPath(drivetrain, trajectory);
 
-
-    // return new RamseteCommand(
-    //   trajectory,
-    //   drivetrain::getPose,
-    //   new RamseteController(DrivetrainConfig.kB, DrivetrainConfig.kZeta),
-    //   drivetrain.getFeedForward(),
-    //   drivetrain.getKinematics(),
-    //   drivetrain::getWheelSpeeds,
-    //   new PIDController(DrivetrainConfig.pathP, DrivetrainConfig.pathI, DrivetrainConfig.pathD), // Left
-    //   new PIDController(DrivetrainConfig.pathP, DrivetrainConfig.pathI, DrivetrainConfig.pathD), // Right
-    //   drivetrain::tankDriveVolts,
-    //   drivetrain
-    //   );
-    //return new FollowPath(drivetrain, trajectory);
-
-    //return new BangBangBalance(drivetrain);
     //return new SequentialCommandGroup(new DriveOntoChargeStation(drivetrain), new AutoBalanceWithRoll(drivetrain));
     //return new SequentialCommandGroup(new AutoBalanceWithRoll(drivetrain));
 

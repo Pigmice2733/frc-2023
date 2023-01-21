@@ -4,41 +4,41 @@
 
 package frc.robot.commands;
 
-import org.photonvision.PhotonTargetSortMode;
-import org.photonvision.targeting.PhotonTrackedTarget;
-
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.RuntimeTrajectoryGenerator;
 import frc.robot.commands.drivetrain.FollowPath;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
 
 public class AlignToDispense extends CommandBase {
-  Vision vision;
-  Drivetrain drivetrain;
+  private final Vision vision;
+  private final Drivetrain drivetrain;
+  private final RuntimeTrajectoryGenerator.TargetType targetType;
 
-  public AlignToDispense(Vision vision, Drivetrain drivetrain) {
+  RamseteCommand pathCommand;
+
+  public AlignToDispense(Vision vision, Drivetrain drivetrain, RuntimeTrajectoryGenerator.TargetType targetType) {
     this.vision = vision;
     this.drivetrain = drivetrain;
+    this.targetType = targetType;
   }
 
   @Override
   public void initialize() {
-    Pose2d robotPose = vision.getGlobalPosition(drivetrain.getPose());
+    Pose2d robotPose = vision.getGlobalRobotPosition();
     Pose2d tagPose = vision.getTagPosition();
 
-    if (robotPose == null || tagPose == null) {
-      System.out.println("NO TAG FOUND");
+    if (robotPose == null || tagPose == null)
       return;
-    }
 
-    Trajectory trajectory = RuntimeTrajectoryGenerator.generateLineupTrajectory(robotPose, tagPose, RuntimeTrajectoryGenerator.TargetType.Cube);
+    Trajectory trajectory = RuntimeTrajectoryGenerator.generateLineupTrajectory(robotPose, tagPose, targetType);
 
-    CommandScheduler.getInstance().schedule(new FollowPath(drivetrain, trajectory));
+    pathCommand = new FollowPath(drivetrain, trajectory);
+    CommandScheduler.getInstance().schedule(pathCommand);
   }
 
   @Override
@@ -49,6 +49,6 @@ public class AlignToDispense extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    return true;
+    return pathCommand.isFinished();
   }
 }
