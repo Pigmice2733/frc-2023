@@ -23,8 +23,10 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -78,17 +80,17 @@ public class Vision extends SubsystemBase {
   }
 
   //assumes the robot is on the ground, and not on a charging station (or otherwise in the air somehow)
-  public Pose3d getGlobalPosition(Pose2d referencePose){
+  public Pose2d getGlobalPosition(Pose2d referencePose){
 
     poseEstimator.setReferencePose(referencePose);
     Optional<Pair<Pose3d, Double>> optionalPose = poseEstimator.update();
 
     if (optionalPose.isEmpty()) return null;
-    
-    Pair<Pose3d, Double> timedPose = optionalPose.get(); 
 
-    return timedPose.getFirst();
-  }
+    Pair<Pose3d, Double> timedPose = optionalPose.get();
+
+    drivetrain.resetOdometry(timedPose.getFirst().toPose2d());
+    return drivetrain.getPose();
 
   public Pose2d getTagPosition() {
     if (!camera.getLatestResult().hasTargets())

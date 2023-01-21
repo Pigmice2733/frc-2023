@@ -172,6 +172,16 @@ public class Drivetrain extends SubsystemBase {
     rightDrive.getEncoder().setPosition(0);
   }
 
+  //Zeros odometry but starts at a different pose2d
+  public void resetOdometry(Pose2d newPose){
+    gyro.reset();
+    gyro.setAngleAdjustment(newPose.getRotation().getDegrees());
+    odometry.resetPosition(newPose.getRotation(), 0, 0, newPose);
+
+    leftDrive.getEncoder().setPosition(0);
+    rightDrive.getEncoder().setPosition(0);
+  }
+
   /**
    * Drives the robot with given speeds for left and right wheels.
    * 
