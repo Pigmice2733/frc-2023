@@ -37,9 +37,11 @@ public class Vision extends SubsystemBase {
 
   private final PhotonCamera camera = new PhotonCamera("OV5647");
   // //private final RobotPoseEstimator poseEstimator = new RobotPoseEstimator();
-  AprilTagFieldLayout layout = new AprilTagFieldLayout(List.of(new AprilTag(7, new Pose3d(new Translation3d(0, 0, 2), new Rotation3d(0, 0, 0)))), 5, 5);
+  AprilTagFieldLayout layout = new AprilTagFieldLayout(List.of(new AprilTag(7, new Pose3d(new Translation3d(0, 0, Units.inchesToMeters(26.2)), new Rotation3d(0, 0, Math.toRadians(180))))), 5, 5);
   private final RobotPoseEstimator poseEstimator = new RobotPoseEstimator(layout, RobotPoseEstimator.PoseStrategy.AVERAGE_BEST_TARGETS, Arrays.asList(new Pair(camera, new Transform3d(new Translation3d(0, 0, Units.inchesToMeters(9)), new Rotation3d()))));
   Drivetrain drivetrain;
+
+
 
   //private final RobotPose poseEstimator;
 
@@ -60,9 +62,10 @@ public class Vision extends SubsystemBase {
     SmartDashboard.putNumber("Skew", target.getSkew());
     double currentDistance = PhotonUtils.calculateDistanceToTargetMeters(Units.inchesToMeters(9 + 3.0/8.0), Units.inchesToMeters(27 + 5.0/8.0), Units.degreesToRadians(33), Units.degreesToRadians(target.getPitch()));
     SmartDashboard.putNumber("Distance", currentDistance);
-    SmartDashboard.putNumber("X", getGlobalPosition(drivetrain.getPose()).getX());
-    SmartDashboard.putNumber("Y", getGlobalPosition(drivetrain.getPose()).getY());
-
+    if(getGlobalPosition(drivetrain.getPose()) != null){
+      SmartDashboard.putNumber("X", getGlobalPosition(drivetrain.getPose()).getX());
+      SmartDashboard.putNumber("Y", getGlobalPosition(drivetrain.getPose()).getY());
+    }
   }
 
   public PhotonTrackedTarget getTarget() {
@@ -81,10 +84,22 @@ public class Vision extends SubsystemBase {
     Optional<Pair<Pose3d, Double>> optionalPose = poseEstimator.update();
 
     if (optionalPose.isEmpty()) return null;
-
+    
     Pair<Pose3d, Double> timedPose = optionalPose.get(); 
 
     return timedPose.getFirst();
+  }
 
+  public Pose2d getTagPosition() {
+    if (!camera.getLatestResult().hasTargets())
+      return null;
+
+    var target = camera.getLatestResult().getBestTarget();
+
+    var pose = layout.getTagPose(target.getFiducialId());
+    if (pose.isEmpty())
+      return null;
+
+    return pose.get().toPose2d();
   }
 }

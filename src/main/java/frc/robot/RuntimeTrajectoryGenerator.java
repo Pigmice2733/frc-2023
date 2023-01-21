@@ -17,6 +17,8 @@ public final class RuntimeTrajectoryGenerator {
     public static double tagRotation = 0;
 
     public static Trajectory generateLineupTrajectory(Pose2d currentRobotPose, Pose2d tagPose, TargetType targetType) {
+        System.out.println("Robot Pose: " + currentRobotPose);
+        System.out.println("Tag Pose: " + tagPose);
         double xPos = tagPose.getX() + robotLength/2;
         double yPos = tagPose.getY();
 
@@ -41,7 +43,9 @@ public final class RuntimeTrajectoryGenerator {
 
         TrajectoryConfig config = new TrajectoryConfig(DrivetrainConfig.maxTrajectoryVel, DrivetrainConfig.maxTrajectoryAcc);
 
-        return TrajectoryGenerator.generateTrajectory(List.of(currentRobotPose, targetPose), config);
+        Trajectory trajectory = TrajectoryGenerator.generateTrajectory(List.of(currentRobotPose, targetPose), config);
+        System.out.println(trajectory);
+        return trajectory;
     }
 
     public enum TargetType {
