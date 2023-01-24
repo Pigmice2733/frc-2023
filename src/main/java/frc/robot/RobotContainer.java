@@ -24,12 +24,12 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.DrivetrainConfig;
-import frc.robot.commands.AlignToDispense;
-import frc.robot.commands.AutoBalance;
-import frc.robot.commands.AutoBalanceWithRoll;
 import frc.robot.commands.drivetrain.ArcadeDrive;
+import frc.robot.commands.drivetrain.AutoBalance;
+import frc.robot.commands.drivetrain.AutoBalanceWithRoll;
 import frc.robot.commands.drivetrain.DriveOntoChargeStation;
 import frc.robot.commands.drivetrain.FollowPath;
+import frc.robot.commands.vision.AlignToDispense;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
 

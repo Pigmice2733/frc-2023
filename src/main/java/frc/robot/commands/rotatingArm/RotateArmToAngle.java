@@ -1,3 +1,4 @@
+package frc.robot.commands.rotatingArm;
 // package frc.robot.commands;
 
 // import java.util.function.DoubleConsumer;
@@ -9,7 +10,7 @@
 
 // public class RotateClawTo extends ProfiledPIDCommand {
 
-//     public RotateClawTo(double targetAngle, RotatingArm claw){
+//     public RotateClawTo(double targetAngle, RotatingArm arm){
 //         super();
 //     }
     

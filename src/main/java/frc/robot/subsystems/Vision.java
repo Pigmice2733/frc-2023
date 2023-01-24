@@ -39,8 +39,8 @@ public class Vision extends SubsystemBase {
 
   private final PhotonCamera camera = new PhotonCamera("OV5647");
 
-  AprilTagFieldLayout layout = new AprilTagFieldLayout(List.of(new AprilTag(7, new Pose3d(new Translation3d(0, 0, Units.inchesToMeters(26.2)), new Rotation3d(0, 0, Math.toRadians(180))))), 5, 5);
-  private final RobotPoseEstimator poseEstimator = new RobotPoseEstimator(layout, RobotPoseEstimator.PoseStrategy.AVERAGE_BEST_TARGETS, Arrays.asList(new Pair(camera, new Transform3d(new Translation3d(0, 0, Units.inchesToMeters(9)), new Rotation3d()))));
+  AprilTagFieldLayout layout = new AprilTagFieldLayout(List.of(new AprilTag(2, new Pose3d(new Translation3d(0, 0, Units.inchesToMeters(26.2)), new Rotation3d(0, 0, Math.toRadians(180))))), 5, 5);
+  private final RobotPoseEstimator poseEstimator = new RobotPoseEstimator(layout, RobotPoseEstimator.PoseStrategy.AVERAGE_BEST_TARGETS, Arrays.asList(new Pair(camera, new Transform3d(new Translation3d(0, 0, Units.inchesToMeters(9)), new Rotation3d(0, Math.toRadians(30), 0)))));
   
   Drivetrain drivetrain;
 
@@ -58,10 +58,14 @@ public class Vision extends SubsystemBase {
       return;
 
     var target = camera.getLatestResult().getBestTarget();
-    //double currentDistance = PhotonUtils.calculateDistanceToTargetMeters(Units.inchesToMeters(9 + 3.0/8.0), Units.inchesToMeters(27 + 5.0/8.0), Units.degreesToRadians(33), Units.degreesToRadians(target.getPitch()));
+    // //double currentDistance = PhotonUtils.calculateDistanceToTargetMeters(Units.inchesToMeters(9 + 3.0/8.0), Units.inchesToMeters(27 + 5.0/8.0), Units.degreesToRadians(33), Units.degreesToRadians(target.getPitch()));
     Pose2d currentRobotPose = getGlobalRobotPosition();
 
     SmartDashboard.putNumber("Yaw", target.getYaw());
+
+    if (currentRobotPose == null) {
+      return;
+    }
     SmartDashboard.putNumber("X", currentRobotPose.getX());
     SmartDashboard.putNumber("Y", currentRobotPose.getY());
   }
@@ -78,15 +82,16 @@ public class Vision extends SubsystemBase {
   /** Returns the position of the robot on the feild based on the best target. Assumes the robot is level on the ground */
   public Pose2d getGlobalRobotPosition(){
 
-    poseEstimator.setReferencePose(drivetrain.getPose());
+    // poseEstimator.setReferencePose(drivetrain.getPose());
     Optional<Pair<Pose3d, Double>> optionalPose = poseEstimator.update();
 
     if (optionalPose.isEmpty()) return null;
 
     Pair<Pose3d, Double> timedPose = optionalPose.get();
 
-    drivetrain.resetOdometry(timedPose.getFirst().toPose2d());
-    return drivetrain.getPose();
+    //drivetrain.resetOdometry(timedPose.getFirst().toPose2d());
+    //return drivetrain.getPose();
+    return optionalPose.get().getFirst().toPose2d();
   }
 
   /** Returns the position and rotation of the nearest apriltag */
@@ -97,6 +102,7 @@ public class Vision extends SubsystemBase {
     var target = camera.getLatestResult().getBestTarget();
 
     var pose = layout.getTagPose(target.getFiducialId());
+
     if (pose.isEmpty())
       return null;
 

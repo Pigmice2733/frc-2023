@@ -1,3 +1,4 @@
+package frc.robot.commands.rotatingArm;
 // package frc.robot.commands;
 
 // import frc.robot.subsystems.RotatingArm;
