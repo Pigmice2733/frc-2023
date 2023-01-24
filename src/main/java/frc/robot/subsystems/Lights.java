@@ -22,8 +22,8 @@ public class Lights extends SubsystemBase {
     private AddressableLED led;
     private AddressableLEDBuffer led_buffer;
     private final int LED_PORT = 9;
-    public final int LED_GRID_W = 16;
-    public final int LED_GRID_LEN = LED_GRID_W * LED_GRID_W;
+    public static final int LED_GRID_W = 16;
+    public static final int LED_GRID_LEN = LED_GRID_W * LED_GRID_W;
 
     private final Queue<Animation> animationQueue = new LinkedList<>();
     private boolean animationIsFinished = true;
@@ -68,6 +68,12 @@ public class Lights extends SubsystemBase {
 
     public void displayImage(Image image) {
         this.displayGrid(image.getBuffer());
+    }
+
+    public void displayImage(Image image, int x, int y) {
+        Image newImage = new Image();
+        newImage.imposeImage(image, x, y);
+        this.displayImage(newImage);
     }
 
     public void displayGrid(int[][] image) {
@@ -120,8 +126,7 @@ public class Lights extends SubsystemBase {
                     if (image[y_2][x_2] > 0) {
                         int[] rgb = hexToRGB(color);
                         led_buffer.setRGB(coord, rgb[0], rgb[1], rgb[2]);
-                    } else
-                        led_buffer.setRGB(coord, 0, 0, 0);
+                    }
                 }
             }
             xOffset += image[0].length + 1;
@@ -135,12 +140,21 @@ public class Lights extends SubsystemBase {
     }
 
     public void scrollText(String text, TextScrollDirection direction, int y, int color, int speed, int fps) {
+        this.scrollText(text, new Image(), direction, y, color, speed, speed);
+    }
+
+    public void scrollText(String text, Image background, TextScrollDirection direction, int y, int color, int speed) {
+        this.scrollText(text, background, direction, y, color, speed, 5);
+    }
+
+    public void scrollText(String text, Image background, TextScrollDirection direction, int y, int color, int speed,
+            int fps) {
         TextSequence letters = Text.buildLetters(text).setColor(color);
         List<Image> frames = new ArrayList<Image>();
         switch (direction) {
             case LEFT:
                 for (int x = LED_GRID_W; x + letters.getLength() + speed * 2 >= 0; x -= speed) {
-                    Image frame = new Image();
+                    Image frame = Image.from(background);
                     int xOffset = 0;
                     for (int[][] image : letters.getLetters()) {
                         frame.imposeGrid(image, x + xOffset, y);
@@ -151,7 +165,7 @@ public class Lights extends SubsystemBase {
                 break;
             case RIGHT:
                 for (int x = -letters.getLength(); x < LED_GRID_W; x += speed) {
-                    Image frame = new Image();
+                    Image frame = Image.from(background);
                     int xOffset = 0;
                     for (int[][] image : letters.getLetters()) {
                         frame.imposeGrid(image, x + xOffset, y);

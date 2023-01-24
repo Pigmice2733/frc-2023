@@ -1,5 +1,7 @@
 package frc.robot.lights;
 
+import frc.robot.lights.Text.TextSequence;
+
 public class Image {
     private int[][] buffer = {
             { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -21,11 +23,21 @@ public class Image {
     };
 
     public Image() {
-
     }
 
     public Image(int[][] buffer) {
         this.buffer = buffer;
+    }
+
+    public static Image from(Image other) {
+        Image newImage = new Image();
+        for (int y2 = 0; y2 < other.getBuffer().length; y2++) {
+            for (int x2 = 0; x2 < other.getBuffer()[0].length; x2++) {
+                newImage.getBuffer()[y2][x2] = other.getBuffer()[y2][x2];
+            }
+        }
+
+        return newImage;
     }
 
     public int getPixel(int x, int y) {
@@ -61,6 +73,23 @@ public class Image {
                     continue;
                 this.setPixel(grid[i][j], x + j, y + i);
             }
+        }
+    }
+
+    public void imposeText(String text, int x, int y, int color) {
+        TextSequence letters = Text.buildLetters(text);
+        int xOffset = 0;
+        for (int[][] letterImage : letters.getLetters()) {
+            for (int y_2 = 0; y_2 < letterImage.length; y_2++) {
+                for (int x_2 = 0; x_2 < letterImage[y_2].length; x_2++) {
+                    if (x + x_2 + xOffset < 0 || x + x_2 + xOffset >= 16 || y + y_2 < 0 || y + y_2 > 15)
+                        continue;
+                    if (letterImage[y_2][x_2] > 0) {
+                        this.setPixel(color, x + x_2 + xOffset, y + y_2);
+                    }
+                }
+            }
+            xOffset += letterImage[0].length + 1;
         }
     }
 }

@@ -1,7 +1,9 @@
 package frc.robot.commands.lights;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.lights.Images;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Lights;
 
@@ -32,7 +34,10 @@ public class LightsLevel extends CommandBase {
 
         lastFrameTimestamp = currentTimestamp;
 
-        double pitch = this.drivetrain.getPitch();
+        // TODO pitch might need to be inverted - needs to be tested
+        double pitch = MathUtil.applyDeadband(this.drivetrain.getPitch(), 2);
+        if (pitch >= 45)
+            return;
         double h = Math.tan(Math.toRadians(pitch)) * 8;
 
         int[][] grid = new int[][] {
@@ -59,9 +64,26 @@ public class LightsLevel extends CommandBase {
 
         for (int x = 0; x < 16; x++) {
             int y = (int) Math.floor(8 + h - dy * x / dx);
-            grid[y][x] = 1;
+            for (int y2 = 0; y2 < 16; y2++) {
+                if (y2 > y)
+                    grid[y2][x] = 0;
+                else if (y2 == y)
+                    grid[y][x] = Images.P;
+                else
+                    grid[y2][x] = Images.DB;
+            }
         }
 
         lights.displayGrid(grid);
+    }
+
+    @Override
+    public boolean isFinished() {
+        return false;
+    }
+
+    @Override
+    public boolean runsWhenDisabled() {
+        return true;
     }
 }

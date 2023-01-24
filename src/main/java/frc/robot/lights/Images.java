@@ -20,6 +20,14 @@ public class Images {
                         { 0, 0, 0, R, R, 0, 0, 0 }
         });
 
+        public static Image SMALL_HEART = new Image(new int[][] {
+                        { 0, R, 0, R, 0 },
+                        { R, 0, R, 0, R },
+                        { R, 0, 0, 0, R },
+                        { 0, R, 0, R, 0 },
+                        { 0, 0, R, 0, 0 },
+        });
+
         public static Image PIGMICE = new Image(new int[][] {
                         { 0, 0, 0, P, P, 0, 0, 0, 0, 0, 0, P, P, 0, 0, 0 },
                         { 0, 0, P, 0, 0, P, 0, 0, 0, 0, P, 0, 0, P, 0, 0 },
