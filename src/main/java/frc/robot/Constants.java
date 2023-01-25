@@ -76,7 +76,25 @@ public final class Constants {
     public final static class ClawConfig{
         public static final int clawPort = 1;
         public static final double speedMultipler = .5;
+        public static final double rotationConversion = 0.0; // ratio of encoder-measured rotations to arm rotations
 
         public static final double armLength = 0.0;
+
+        public static final double kP = 0.0;
+        public static final double kI = 0.0;
+        public static final double kD = 0.0;
+        public static final double maxVelocity = 0.0;
+        public static final double maxAcceleration = 0.0;
+    }
+    public static final class ElevatorConfig {
+        public static final double robotHeight = 15.0; //inches
+
+        public static final double rotationToDistanceConversion = 0.0; // ratio of encoder-measured rotations to distance moved
+
+        public static final double kP = 0.0;
+        public static final double kI = 0.0;
+        public static final double kD = 0.0;
+        public static final double maxVelocity = 0.0;
+        public static final double maxAcceleration = 0.0;
     }
 }
