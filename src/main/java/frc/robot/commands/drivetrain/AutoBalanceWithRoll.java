@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.DrivetrainConfig;
 import frc.robot.subsystems.Drivetrain;
 
+/** For use when not perfectly lined up with the charge station, but still facing it. If the robot is lined up well, use AutoBalance.java*/
 public class AutoBalanceWithRoll extends CommandBase {
   Drivetrain drivetrain;
   private boolean rollZero = false;

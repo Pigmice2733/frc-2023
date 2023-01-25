@@ -16,7 +16,7 @@ public class ScoreTwiceRoutine extends SequentialCommandGroup {
   public ScoreTwiceRoutine(Drivetrain drivetrain, RotatingArm arm, Elevator elevator, Claw claw) {
     addCommands(
       new ScoreObject(arm, elevator, claw),
-      // new PickUpNewObject(),
+      // TODO: Pick up a new object then drive back to the grid
       new ScoreObject(arm, elevator, claw)
     );
   }

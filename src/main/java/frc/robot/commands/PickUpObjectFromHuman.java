@@ -9,10 +9,11 @@ import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.RotatingArm;
 
-/** Automatically scores a cone or cube assuming the robot is already lined up and pushed up against the grid */
-public class ScoreObject extends SequentialCommandGroup {
-  public ScoreObject(RotatingArm arm, Elevator elevator, Claw claw) { // TODO: Add support for scoring cones and cubes at different heights
+/** Automatically picks up a cone or cube assuming the robot is already lined up */
+public class PickUpObjectFromHuman extends SequentialCommandGroup {
+  public PickUpObjectFromHuman(RotatingArm arm, Elevator elevator, Claw claw) {
     addRequirements(arm, elevator, claw);
-    addCommands(); // TODO: Add commands to score an object
+
+    addCommands(); // TODO: Add commands to pick up an object from the double substation
   }
 }

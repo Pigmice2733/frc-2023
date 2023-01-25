@@ -14,14 +14,15 @@ import frc.robot.commands.drivetrain.FollowPath;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
 
-public class AlignToDispense extends CommandBase {
+/** Uses Apriltags to line up with the grid to score */
+public class AlignToScore extends CommandBase {
   private final Vision vision;
   private final Drivetrain drivetrain;
   private final RuntimeTrajectoryGenerator.TargetType targetType;
 
   RamseteCommand pathCommand;
 
-  public AlignToDispense(Vision vision, Drivetrain drivetrain, RuntimeTrajectoryGenerator.TargetType targetType) {
+  public AlignToScore(Vision vision, Drivetrain drivetrain, RuntimeTrajectoryGenerator.TargetType targetType) {
     this.vision = vision;
     this.drivetrain = drivetrain;
     this.targetType = targetType;

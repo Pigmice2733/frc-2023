@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.DrivetrainConfig;
 import frc.robot.subsystems.Drivetrain;
 
+/** Robot must be lined up with the charge station */
 public class AutoBalance extends CommandBase {
   Drivetrain drivetrain;
 
