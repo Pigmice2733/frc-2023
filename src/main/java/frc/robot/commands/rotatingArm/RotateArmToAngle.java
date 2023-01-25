@@ -5,7 +5,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 
 import frc.robot.subsystems.RotatingArm;
-import frc.robot.Constants.ClawConfig;
+import frc.robot.Constants.RotatingArmConfig;
 
 public class RotateArmToAngle extends ProfiledPIDCommand {
 
@@ -14,13 +14,13 @@ public class RotateArmToAngle extends ProfiledPIDCommand {
      * @param targetAngle angle to rotate to above straight down in degrees
      * @param arm the rotating-arm subsystem
      */
-    public RotateArmToAngle (double targetAngle, RotatingArm arm){
+    public RotateArmToAngle (double targetAngle, RotatingArm arm) {
         super(
             new ProfiledPIDController(
-                ClawConfig.kP,
-                ClawConfig.kI,
-                ClawConfig.kD,
-                new Constraints(ClawConfig.maxAcceleration, ClawConfig.maxVelocity)),
+                RotatingArmConfig.kP,
+                RotatingArmConfig.kI,
+                RotatingArmConfig.kD,
+                new Constraints(RotatingArmConfig.maxAcceleration, RotatingArmConfig.maxVelocity)),
             arm::getAngle,
             targetAngle,
             (output, setpoint) -> {arm.rotateClaw(output);},

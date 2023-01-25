@@ -73,8 +73,8 @@ public final class Constants {
     public final static class ShuffleboardConfig {
         public static final boolean drivetrainPrintsEnabled = true;
     }
-    public final static class ClawConfig{
-        public static final int clawPort = 1;
+    public final static class RotatingArmConfig{
+        public static final int motorPort = 1;
         public static final double speedMultipler = .5;
         public static final double rotationConversion = 0.0; // ratio of encoder-measured rotations to arm rotations
 
@@ -87,6 +87,8 @@ public final class Constants {
         public static final double maxAcceleration = 0.0;
     }
     public static final class ElevatorConfig {
+        public static final int motorPort = 0;
+
         public static final double robotHeight = 15.0; //inches
 
         public static final double rotationToDistanceConversion = 0.0; // ratio of encoder-measured rotations to distance moved

@@ -4,7 +4,7 @@
 
 package frc.robot.subsystems;
 
-import frc.robot.Constants.ClawConfig;
+import frc.robot.Constants.RotatingArmConfig;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -12,34 +12,34 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class RotatingArm extends SubsystemBase {
-  double multiplier = ClawConfig.speedMultipler;
+  double multiplier = RotatingArmConfig.speedMultipler;
 
-  private final CANSparkMax claw = new CANSparkMax(ClawConfig.clawPort, MotorType.kBrushless);
+  private final CANSparkMax motor = new CANSparkMax(RotatingArmConfig.motorPort, MotorType.kBrushless);
 
   /** Creates a new rotating arm. */
   public RotatingArm() {
-    claw.restoreFactoryDefaults();
-    claw.getEncoder().setPositionConversionFactor(ClawConfig.rotationConversion);
+    motor.restoreFactoryDefaults();
+    motor.getEncoder().setPositionConversionFactor(RotatingArmConfig.rotationConversion);
   }
 
   /** Rotate the arm.
    * @param speed the speed to rotate at
    */
   public void rotateClaw(double speed){
-    claw.set(speed * multiplier);
+    motor.set(speed * multiplier);
   }
 
   /**
    * Get the current angle of the arm.
    */
   public double getAngle(){
-    return claw.getEncoder().getPosition();
+    return motor.getEncoder().getPosition();
   }
 
   /**
    * Reset the encoder to be at zero rotation.
    */
   public void resetEncoder(){
-    claw.getEncoder.setPosition(0);
+    motor.getEncoder().setPosition(0);
   }
 }
