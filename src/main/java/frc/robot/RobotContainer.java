@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
@@ -70,11 +71,29 @@ public class RobotContainer {
     // new JoystickButton(driver, Button.kA.value)
     //   .onTrue(new InstantCommand(() -> CommandScheduler.getInstance().schedule(new AlignWithTag(drivetrain, vision, alignRotate, alignLinear))));
 
-    new JoystickButton(driver, Button.kA.value)
-      .onTrue(new InstantCommand(() -> CommandScheduler.getInstance().schedule(new AlignToDispense(vision, drivetrain, RuntimeTrajectoryGenerator.TargetType.Cube))));
+    new JoystickButton(driver, Button.kA.value) 
+      .onTrue(new InstantCommand(() -> TestAlign()));
 
     new JoystickButton(driver , Button.kX.value)
       .onTrue(new InstantCommand(() -> drivetrain.resetOdometry()));
+  }
+
+  public void TestAlign() {
+    //CommandScheduler.getInstance().schedule(new AlignToDispense(vision, drivetrain, RuntimeTrajectoryGenerator.TargetType.Cube)));
+    
+    Pose2d tagPose = vision.getGlobalPositionNew();
+    Pose2d robotPose = new Pose2d();
+
+    //drivetrain.resetOdometry(robotPose);
+
+    if (robotPose == null || tagPose == null)
+      return;
+
+    System.out.println("TAGPOSE: " + robotPose);
+    System.out.println("ROBOTPOSE: " + tagPose);
+
+    Trajectory trajectory = RuntimeTrajectoryGenerator.generateLineupTrajectory(robotPose, tagPose, RuntimeTrajectoryGenerator.TargetType.Cube);
+    CommandScheduler.getInstance().schedule(new FollowPath(drivetrain, trajectory));
   }
 
   /**
@@ -88,7 +107,8 @@ public class RobotContainer {
     TrajectoryConfig config = new TrajectoryConfig(DrivetrainConfig.maxTrajectoryVel, DrivetrainConfig.maxTrajectoryAcc).setKinematics(drivetrain.getKinematics());
 
     //Trajectory trajectory = TrajectoryGenerator.generateTrajectory(List.of(new Pose2d(), new Pose2d(3, -0.5, new Rotation2d()), new Pose2d(6, 0, new Rotation2d()), new Pose2d(6, 0, new Rotation2d(-180)), new Pose2d(3, -0.5, new Rotation2d(-180)), new Pose2d(0, 0, new Rotation2d(-180))), config);
-    Trajectory trajectory = TrajectoryGenerator.generateTrajectory(List.of(new Pose2d(), new Pose2d(1.8, 0, new Rotation2d(0)), new Pose2d(2, 0, new Rotation2d(45)), new Pose2d(2.3, 2, new Rotation2d(90))), config);
+    //Trajectory trajectory = TrajectoryGenerator.generateTrajectory(List.of(new Pose2d(), new Pose2d(1.8, 0, new Rotation2d(0)), new Pose2d(2, 0, new Rotation2d(45)), new Pose2d(2.3, 2, new Rotation2d(90))), config);
+    Trajectory trajectory = RuntimeTrajectoryGenerator.generateLineupTrajectory(new Pose2d(), new Pose2d(1 + Units.inchesToMeters(31.0/2.0), 0, new Rotation2d(0)), RuntimeTrajectoryGenerator.TargetType.ConeLeft);
     return new FollowPath(drivetrain, trajectory);
 
     //return new SequentialCommandGroup(new DriveOntoChargeStation(drivetrain), new AutoBalanceWithRoll(drivetrain));

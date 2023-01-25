@@ -9,7 +9,7 @@ import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.RotatingArm;
 
-/** Automatically scores a cone or cube assuming the robot is already lined up */
+/** Automatically scores a cone or cube assuming the robot is already lined up with the grid */
 public class ScoreObject extends CommandBase {
   public ScoreObject(RotatingArm arm, Elevator elevator, Claw claw) {
     addRequirements(arm, elevator, claw);

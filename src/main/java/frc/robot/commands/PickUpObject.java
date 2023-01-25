@@ -9,6 +9,7 @@ import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.RotatingArm;
 
+/** Automatically picks up a cone or cube assuming the robot is already lined up */
 public class PickUpObject extends CommandBase {
   public PickUpObject(RotatingArm arm, Elevator elevator, Claw claw) {
     addRequirements(arm, elevator, claw);

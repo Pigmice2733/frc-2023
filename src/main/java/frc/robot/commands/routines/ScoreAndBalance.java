@@ -4,7 +4,6 @@
 
 package frc.robot.commands.routines;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.ScoreObject;
 import frc.robot.commands.drivetrain.AutoBalance;

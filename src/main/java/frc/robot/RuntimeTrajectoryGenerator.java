@@ -11,35 +11,38 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.DrivetrainConfig;
 
 public final class RuntimeTrajectoryGenerator {
-    public static double distanceFromTagToConeNode = Units.feetToMeters(0);
-    public static double distanceFromTagToPickup = Units.feetToMeters(0);
-    public static double robotLength = 0;
+    public static double distanceFromTagToConeNode = Units.inchesToMeters(22);
+    public static double distanceFromTagToPickup = Units.inchesToMeters(0);
+    public static double robotLength = Units.inchesToMeters(31);
     public static double tagRotation = 0;
 
     public static Trajectory generateLineupTrajectory(Pose2d currentRobotPose, Pose2d tagPose, TargetType targetType) {
-        System.out.println("Robot Pose: " + currentRobotPose);
-        System.out.println("Tag Pose: " + tagPose);
+
+        //double xPos = tagPose.getX();
         double xPos = tagPose.getX() + robotLength/2;
         double yPos = tagPose.getY();
 
         switch(targetType) {
             case ConeLeft:
-                xPos -= distanceFromTagToConeNode;
+                yPos += distanceFromTagToConeNode;
                 break;
             case ConeRight:
-                xPos += distanceFromTagToConeNode;;
+                yPos -= distanceFromTagToConeNode;;
                 break;
             case PickupLeft:
-                xPos -= distanceFromTagToPickup;
+                yPos += distanceFromTagToPickup;
                 break;
             case PickupRight:
-                xPos += distanceFromTagToPickup;;
+                yPos -= distanceFromTagToPickup;;
                 break;
             default:
                 break;
         }
 
         Pose2d targetPose = new Pose2d(xPos, yPos, new Rotation2d(tagRotation));
+
+        System.out.println("Robot Pose: " + currentRobotPose);
+        System.out.println("Target Pose: " + targetPose);
 
         TrajectoryConfig config = new TrajectoryConfig(DrivetrainConfig.maxTrajectoryVel, DrivetrainConfig.maxTrajectoryAcc);
 

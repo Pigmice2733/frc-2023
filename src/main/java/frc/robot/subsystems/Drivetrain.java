@@ -7,8 +7,6 @@ package frc.robot.subsystems;
 import frc.robot.Constants.DrivetrainConfig;
 import frc.robot.Constants.ShuffleboardConfig;
 
-import javax.sound.midi.SysexMessage;
-
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -20,13 +18,11 @@ import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 
 public class Drivetrain extends SubsystemBase {
@@ -200,7 +196,7 @@ public class Drivetrain extends SubsystemBase {
    * @param right voltage for right wheels
    */
   public void tankDriveVolts(double left, double right) {
-    updateOutputs(MathUtil.clamp(left/12, 0, 1), MathUtil.clamp(right/12, 0, 1)); // Divides by 12 to scale possible inputs between 0 and 1 (12 in max volts)
+    updateOutputs(MathUtil.clamp(left/12.0, -1, 1), MathUtil.clamp(right/12.0, -1, 1)); // Divides by 12 to scale possible inputs between 0 and 1 (12 in max volts)
   }
 
   /**
@@ -229,9 +225,9 @@ public class Drivetrain extends SubsystemBase {
       right *= -1;
     }
 
-    double clampValue = 1;
-    left = Math.max(Math.min(clampValue, left), -clampValue);
-    right = Math.max(Math.min(clampValue, right), -clampValue);
+    double maxSpeed = 1;
+    left = Math.max(Math.min(maxSpeed, left), -maxSpeed);
+    right = Math.max(Math.min(maxSpeed, right), -maxSpeed);
 
     leftDrive.set(left * outputFactor);
     rightDrive.set(right * outputFactor);

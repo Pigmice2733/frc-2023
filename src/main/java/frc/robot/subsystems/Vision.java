@@ -39,8 +39,8 @@ public class Vision extends SubsystemBase {
 
   private final PhotonCamera camera = new PhotonCamera("OV5647");
 
-  AprilTagFieldLayout layout = new AprilTagFieldLayout(List.of(new AprilTag(2, new Pose3d(new Translation3d(0, 0, Units.inchesToMeters(26.2)), new Rotation3d(0, 0, Math.toRadians(180))))), 5, 5);
-  private final RobotPoseEstimator poseEstimator = new RobotPoseEstimator(layout, RobotPoseEstimator.PoseStrategy.AVERAGE_BEST_TARGETS, Arrays.asList(new Pair(camera, new Transform3d(new Translation3d(0, 0, Units.inchesToMeters(9)), new Rotation3d(0, Math.toRadians(30), 0)))));
+  AprilTagFieldLayout layout = new AprilTagFieldLayout(List.of(new AprilTag(2, new Pose3d(new Translation3d(0, 0, Units.inchesToMeters(26.2)), new Rotation3d(0, 0, Math.toRadians(180))))), 50, 50);
+  private final RobotPoseEstimator poseEstimator = new RobotPoseEstimator(layout, RobotPoseEstimator.PoseStrategy.AVERAGE_BEST_TARGETS, Arrays.asList(new Pair(camera, new Transform3d(new Translation3d(0, 0, Units.inchesToMeters(9)), new Rotation3d(0, Math.toRadians(23), 0)))));
   
   Drivetrain drivetrain;
 
@@ -58,8 +58,9 @@ public class Vision extends SubsystemBase {
       return;
 
     var target = camera.getLatestResult().getBestTarget();
-    // //double currentDistance = PhotonUtils.calculateDistanceToTargetMeters(Units.inchesToMeters(9 + 3.0/8.0), Units.inchesToMeters(27 + 5.0/8.0), Units.degreesToRadians(33), Units.degreesToRadians(target.getPitch()));
-    Pose2d currentRobotPose = getGlobalRobotPosition();
+
+    //double currentDistance = PhotonUtils.calculateDistanceToTargetMeters(Units.inchesToMeters(9 + 3.0/8.0), Units.inchesToMeters(27 + 5.0/8.0), Units.degreesToRadians(33), Units.degreesToRadians(target.getPitch()));
+    Pose2d currentRobotPose = getGlobalPositionNew();
 
     SmartDashboard.putNumber("Yaw", target.getYaw());
 
@@ -92,6 +93,21 @@ public class Vision extends SubsystemBase {
     //drivetrain.resetOdometry(timedPose.getFirst().toPose2d());
     //return drivetrain.getPose();
     return optionalPose.get().getFirst().toPose2d();
+  }
+
+  public Pose2d getGlobalPositionNew() {
+    PhotonPipelineResult result = camera.getLatestResult();
+    if (!result.hasTargets())
+      return null;
+
+    PhotonTrackedTarget target = result.getBestTarget();
+    var optionalPose = layout.getTagPose(target.getFiducialId());
+    if (optionalPose.isEmpty()) return null;
+
+    Pose2d robotPose = optionalPose.get().transformBy(target.getBestCameraToTarget()).toPose2d();
+
+    //return robotPose;
+    return new Pose2d(target.getBestCameraToTarget().getX(), target.getBestCameraToTarget().getY(), new Rotation2d());
   }
 
   /** Returns the position and rotation of the nearest apriltag */

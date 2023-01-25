@@ -29,7 +29,7 @@ public class AlignToDispense extends CommandBase {
 
   @Override
   public void initialize() {
-    Pose2d robotPose = vision.getGlobalRobotPosition();
+    Pose2d robotPose = vision.getGlobalPositionNew();
     Pose2d tagPose = vision.getTagPosition();
 
     if (robotPose == null || tagPose == null)
