@@ -27,7 +27,7 @@ public class ScoreObjectFloor extends SequentialCommandGroup {
   public ScoreObjectFloor(RotatingArm arm, Elevator elevator, Claw claw, Drivetrain drivetrain) {
     addRequirements(arm, elevator, claw);
     addCommands(
-      new MoveClawToPoint(arm, elevator, 5.0, distance), // distance depends on robot length
+      new MoveClawToPoint(arm, elevator, 5.0, 0.0), // TODO correct distance
       new InstantCommand(claw::openClaw),
       new DriveDistance(drivetrain, -0.5),
       new RaiseElevatorToHeight(Constants.RotatingArmConfig.armLength, elevator),

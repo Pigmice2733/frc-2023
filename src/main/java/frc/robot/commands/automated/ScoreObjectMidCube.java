@@ -27,8 +27,8 @@ public class ScoreObjectMidCube extends SequentialCommandGroup {
   public ScoreObjectMidCube(RotatingArm arm, Elevator elevator, Claw claw, Drivetrain drivetrain) {
     addRequirements(arm, elevator, claw);
     addCommands(
-      new MoveClawToPoint(arm, elevator, 34.0, distance), // distance depends on robot length
-      new MoveClawToPoint(arm, elevator, 24.0, distance), // distance depends on robot length
+      new MoveClawToPoint(arm, elevator, 34.0, 0.0), // TODO correct distance
+      new MoveClawToPoint(arm, elevator, 24.0, 0.0),
       new InstantCommand(claw::openClaw),
       new DriveDistance(drivetrain, -0.5),
       new RaiseElevatorToHeight(Constants.RotatingArmConfig.armLength, elevator),

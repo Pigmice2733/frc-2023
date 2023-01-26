@@ -27,8 +27,8 @@ public class ScoreObjectHighCone extends SequentialCommandGroup {
   public ScoreObjectHighCone(RotatingArm arm, Elevator elevator, Claw claw, Drivetrain drivetrain) {
     addRequirements(arm, elevator, claw);
     addCommands(
-      new MoveClawToPoint(arm, elevator, 60.0, distance), // distance depends on robot length
-      new MoveClawToPoint(arm, elevator, 44.0, distance), // distance depends on robot length
+      new MoveClawToPoint(arm, elevator, 60.0, 0.0), // TODO correct distance
+      new MoveClawToPoint(arm, elevator, 44.0, 0.0),
       new InstantCommand(claw::openClaw),
       new DriveDistance(drivetrain, -0.5),
       new RaiseElevatorToHeight(Constants.RotatingArmConfig.armLength, elevator),
