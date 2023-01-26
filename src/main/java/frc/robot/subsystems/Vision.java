@@ -59,14 +59,15 @@ public class Vision extends SubsystemBase {
 
     var target = camera.getLatestResult().getBestTarget();
 
-    //double currentDistance = PhotonUtils.calculateDistanceToTargetMeters(Units.inchesToMeters(9 + 3.0/8.0), Units.inchesToMeters(27 + 5.0/8.0), Units.degreesToRadians(33), Units.degreesToRadians(target.getPitch()));
-    Pose2d currentRobotPose = getGlobalPositionNew();
+    Pose2d currentRobotPose = getGlobalRobotPosition();
 
-    SmartDashboard.putNumber("Yaw", target.getYaw());
+    SmartDashboard.putNumber("TargetYaw", target.getYaw());
 
     if (currentRobotPose == null) {
       return;
     }
+
+    SmartDashboard.putNumber("RobotYaw", currentRobotPose.getRotation().getDegrees());
     SmartDashboard.putNumber("X", currentRobotPose.getX());
     SmartDashboard.putNumber("Y", currentRobotPose.getY());
   }
@@ -95,7 +96,8 @@ public class Vision extends SubsystemBase {
     return optionalPose.get().getFirst().toPose2d();
   }
 
-  public Pose2d getGlobalPositionNew() {
+  /** Rotation in returned Pose2d is the robots estimated rotation */
+  public Pose2d getTranslationToTag() {
     PhotonPipelineResult result = camera.getLatestResult();
     if (!result.hasTargets())
       return null;
@@ -106,8 +108,7 @@ public class Vision extends SubsystemBase {
 
     Pose2d robotPose = optionalPose.get().transformBy(target.getBestCameraToTarget()).toPose2d();
 
-    //return robotPose;
-    return new Pose2d(target.getBestCameraToTarget().getX(), target.getBestCameraToTarget().getY(), new Rotation2d());
+    return new Pose2d(target.getBestCameraToTarget().getX(), target.getBestCameraToTarget().getY(), robotPose.getRotation());
   }
 
   /** Returns the position and rotation of the nearest apriltag */

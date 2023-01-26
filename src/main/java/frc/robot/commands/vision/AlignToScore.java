@@ -5,6 +5,7 @@
 package frc.robot.commands.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -30,14 +31,16 @@ public class AlignToScore extends CommandBase {
 
   @Override
   public void initialize() {
-    Pose2d robotPose = vision.getGlobalPositionNew();
-    Pose2d tagPose = vision.getTagPosition();
+    Pose2d tagPose = vision.getTranslationToTag();
+    tagPose = new Pose2d(tagPose.getX(), tagPose.getY(), new Rotation2d(-vision.getGlobalRobotPosition().getRotation().getRadians()));
+    
+    Pose2d robotPose = new Pose2d();
 
     if (robotPose == null || tagPose == null)
       return;
 
-    Trajectory trajectory = RuntimeTrajectoryGenerator.generateLineupTrajectory(robotPose, tagPose, targetType);
-
+    Trajectory trajectory = RuntimeTrajectoryGenerator.generateLineupTrajectory(robotPose, tagPose, RuntimeTrajectoryGenerator.TargetType.ConeLeft);
+    
     pathCommand = new FollowPath(drivetrain, trajectory);
     CommandScheduler.getInstance().schedule(pathCommand);
   }
