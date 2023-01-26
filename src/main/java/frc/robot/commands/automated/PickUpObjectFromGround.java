@@ -5,7 +5,6 @@
 package frc.robot.commands.automated;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 import frc.robot.subsystems.Claw;
@@ -27,7 +26,7 @@ public class PickUpObjectFromGround extends SequentialCommandGroup {
 
     addCommands(
       new InstantCommand(claw::openClaw),
-      new MoveClawToPoint(arm, elevator, 5.0, distance), // distance depends on robot specs and what we want
+      new MoveClawToPoint(arm, elevator, 5.0, 0.0), // TODO distance depends on robot specs and what we want
       new InstantCommand(claw::closeClaw),
       new RaiseElevatorToHeight(Constants.RotatingArmConfig.armLength, elevator),
       new RotateArmToAngle(0, arm)
