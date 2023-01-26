@@ -4,6 +4,10 @@
 
 package frc.robot;
 
+<<<<<<< HEAD
+=======
+import edu.wpi.first.math.controller.BangBangController;
+>>>>>>> 40b5599750db4ad66e4cfb93837201def3977d17
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -13,14 +17,24 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
+<<<<<<< HEAD
 import frc.robot.RuntimeTrajectoryGenerator.TargetType;
+=======
+import frc.robot.Constants.DrivetrainConfig;
+>>>>>>> 40b5599750db4ad66e4cfb93837201def3977d17
 import frc.robot.commands.drivetrain.ArcadeDrive;
 import frc.robot.commands.drivetrain.AutoBalanceWithRoll;
+<<<<<<< HEAD
 import frc.robot.commands.vision.AlignToScore;
+=======
+import frc.robot.commands.drivetrain.DriveOntoChargeStation;
+import frc.robot.commands.drivetrain.FollowPath;
+// import frc.robot.commands.vision.AlignToDispense;
+>>>>>>> 40b5599750db4ad66e4cfb93837201def3977d17
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
 
-/*
+/**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
@@ -73,6 +87,24 @@ public class RobotContainer {
     /** Fast way to reset odometry for testing */
     new JoystickButton(driver , Button.kX.value)
       .onTrue(new InstantCommand(() -> drivetrain.resetOdometry()));
+<<<<<<< HEAD
+=======
+  }
+
+  public void TestAlign() {
+    //CommandScheduler.getInstance().schedule(new (vision, drivetrain, RuntimeTrajectoryGenerator.TargetType.Cube)));
+    
+    Pose2d tagPose = vision.getGlobalPositionNew();
+    Pose2d robotPose = new Pose2d();
+
+    //drivetrain.resetOdometry(robotPose);
+
+    if (robotPose == null || tagPose == null)
+      return;
+
+    System.out.println("TAGPOSE: " + robotPose);
+    System.out.println("ROBOTPOSE: " + tagPose);
+>>>>>>> 40b5599750db4ad66e4cfb93837201def3977d17
 
     /** Enable slow mode when Y is pressed, stop slow mode when released */
     new JoystickButton(driver, Button.kY.value)

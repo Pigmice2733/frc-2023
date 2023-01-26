@@ -17,7 +17,7 @@ public class DriveDistance extends ProfiledPIDCommand {
   /**
    * Use profiled PID to drive the specified distance.
    * @param drivetrain a drivetrain subsystem
-   * @param distance The distance to drive. The robot will move forward if this is positive or backward if this is negative.
+   * @param distance The distance to drive in meters. The robot will move forward if this is positive or backward if this is negative.
    */
   public DriveDistance(Drivetrain drivetrain, double distance) {
     super(
