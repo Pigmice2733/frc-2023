@@ -9,12 +9,15 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Elevator extends SubsystemBase {
   private final CANSparkMax motor = new CANSparkMax(ElevatorConfig.motorPort, MotorType.kBrushless);
+  private final CANSparkMax motor2 = new CANSparkMax(ElevatorConfig.motorPort2, MotorType.kBrushless);
 
   /**
    * Create a new Elevator.
    */
   public Elevator() {
     motor.restoreFactoryDefaults();
+    motor2.restoreFactoryDefaults();
+    motor2.follow(motor);
     motor.getEncoder().setPositionConversionFactor(ElevatorConfig.rotationToDistanceConversion);
   }
 

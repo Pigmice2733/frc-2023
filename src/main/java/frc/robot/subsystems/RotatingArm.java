@@ -37,7 +37,7 @@ public class RotatingArm extends SubsystemBase {
   }
 
   /**
-   * Reset the encoder to be at zero rotation.
+   * Reset the encoder to be at zero rotation. This means the arm is pointed straight down.
    */
   public void resetEncoder(){
     motor.getEncoder().setPosition(0);

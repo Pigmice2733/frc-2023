@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import java.util.List;
-
 import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
@@ -24,17 +22,18 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+
 import frc.robot.Constants.DrivetrainConfig;
 import frc.robot.commands.drivetrain.ArcadeDrive;
 import frc.robot.commands.drivetrain.AutoBalance;
 import frc.robot.commands.drivetrain.AutoBalanceWithRoll;
 import frc.robot.commands.drivetrain.DriveOntoChargeStation;
 import frc.robot.commands.drivetrain.FollowPath;
-import frc.robot.commands.vision.AlignToDispense;
+// import frc.robot.commands.vision.AlignToDispense;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
 
-/*
+/**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
@@ -79,7 +78,7 @@ public class RobotContainer {
   }
 
   public void TestAlign() {
-    //CommandScheduler.getInstance().schedule(new AlignToDispense(vision, drivetrain, RuntimeTrajectoryGenerator.TargetType.Cube)));
+    //CommandScheduler.getInstance().schedule(new (vision, drivetrain, RuntimeTrajectoryGenerator.TargetType.Cube)));
     
     Pose2d tagPose = vision.getGlobalPositionNew();
     Pose2d robotPose = new Pose2d();

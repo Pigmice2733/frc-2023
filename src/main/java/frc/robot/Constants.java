@@ -15,6 +15,7 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+    public static final double robotHeight = 15.0; //inches
     public final static class DrivetrainConfig {
         public static final double axisThreshold = 0.25;
 
@@ -88,15 +89,21 @@ public final class Constants {
     }
     public static final class ElevatorConfig {
         public static final int motorPort = 0;
-
-        public static final double robotHeight = 15.0; //inches
+        public static final int motorPort2 = 0;
 
         public static final double rotationToDistanceConversion = 0.0; // ratio of encoder-measured rotations to distance moved
+        public static final double maxHeight = 0.0;
 
         public static final double kP = 0.0;
         public static final double kI = 0.0;
         public static final double kD = 0.0;
         public static final double maxVelocity = 0.0;
         public static final double maxAcceleration = 0.0;
+    }
+    public static final class ClawConfig {
+        public static final int piston1PortFor = 0;
+        public static final int piston1PortRev = 0;
+        public static final int piston2PortFor = 0;
+        public static final int piston2PortRev = 0;
     }
 }
