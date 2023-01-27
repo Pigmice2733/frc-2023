@@ -27,10 +27,6 @@ public class FollowPath extends RamseteCommand {
             drivetrain::tankDriveVolts,
             drivetrain
         );
-        
-        drivetrain.resetOdometry();
         addRequirements(drivetrain);
-
-        System.out.println("Started Command");
     }
 }

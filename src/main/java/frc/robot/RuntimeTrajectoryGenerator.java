@@ -13,7 +13,7 @@ public final class RuntimeTrajectoryGenerator {
     public static double yDistanceFromTagToConeNode = Units.inchesToMeters(22); // TODO: enter exact value
     public static double yDistanceFromTagToPickup = Units.inchesToMeters(0); // TODO: enter exact value
     public static double xDistanceFromTagToScoreLocation = Units.inchesToMeters(0); // TODO: enter exact value
-    public static double robotLength = Units.inchesToMeters(31); // TODO: enter exact value
+    public static double robotLength = Units.inchesToMeters(45); // TODO: enter exact value
 
     public static double tagRotation = 0;
 
@@ -42,7 +42,7 @@ public final class RuntimeTrajectoryGenerator {
 
         TrajectoryConfig config = new TrajectoryConfig(DrivetrainConfig.maxTrajectoryVel, DrivetrainConfig.maxTrajectoryAcc);
         Trajectory trajectory = TrajectoryGenerator.generateTrajectory(List.of(currentRobotPose, targetPose), config);
-
+        System.out.println(trajectory);
         return trajectory;
     }
 

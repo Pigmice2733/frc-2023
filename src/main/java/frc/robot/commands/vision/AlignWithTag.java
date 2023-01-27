@@ -51,8 +51,6 @@ public class AlignWithTag extends CommandBase {
     System.out.println(target.getYaw());
     angularController.setSetpoint(target.getYaw());
 
-    double currentDistance = PhotonUtils.calculateDistanceToTargetMeters(Units.inchesToMeters(9 + 5.0/8), Units.inchesToMeters(31.5), 33 * (Math.PI/180), 0);
-
     System.out.println();
     linearController.setSetpoint(1);
 

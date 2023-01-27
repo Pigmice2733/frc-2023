@@ -5,7 +5,6 @@
 package frc.robot.commands.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -31,15 +30,21 @@ public class AlignToScore extends CommandBase {
 
   @Override
   public void initialize() {
-    Pose2d tagPose = vision.getTranslationToTag();
-    tagPose = new Pose2d(tagPose.getX(), tagPose.getY(), new Rotation2d(-vision.getGlobalRobotPosition().getRotation().getRadians()));
-    
-    Pose2d robotPose = new Pose2d();
+    Pose2d robotPose = vision.getGlobalRobotPosition();    
+    Pose2d tagPose = vision.getTagPosition();
 
-    if (robotPose == null || tagPose == null)
+    System.out.println(tagPose);
+    System.out.println(robotPose);
+
+    if (robotPose == null || tagPose == null) {
+      cancel();
       return;
+    }
 
-    Trajectory trajectory = RuntimeTrajectoryGenerator.generateLineupTrajectory(robotPose, tagPose, RuntimeTrajectoryGenerator.TargetType.ConeLeft);
+    // Sets the robot odometry to the estimated gloabl position
+    drivetrain.setOdometryPose(robotPose);
+
+    Trajectory trajectory = RuntimeTrajectoryGenerator.generateLineupTrajectory(robotPose, tagPose, targetType);
     
     pathCommand = new FollowPath(drivetrain, trajectory);
     CommandScheduler.getInstance().schedule(pathCommand);
@@ -49,7 +54,10 @@ public class AlignToScore extends CommandBase {
   public void execute() {}
 
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    if (pathCommand != null)
+      pathCommand.cancel();
+  }
 
   @Override
   public boolean isFinished() {

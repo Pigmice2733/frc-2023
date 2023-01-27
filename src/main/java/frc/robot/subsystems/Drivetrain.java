@@ -168,8 +168,8 @@ public class Drivetrain extends SubsystemBase {
     rightDrive.getEncoder().setPosition(0);
   }
 
-  //Zeros odometry but starts at a different pose2d
-  public void resetOdometry(Pose2d newPose){
+  /** Sets odometry to a specific Pose2d */
+  public void setOdometryPose(Pose2d newPose){
     gyro.reset();
     gyro.setAngleAdjustment(newPose.getRotation().getDegrees());
     odometry.resetPosition(newPose.getRotation(), 0, 0, newPose);

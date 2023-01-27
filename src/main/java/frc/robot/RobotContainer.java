@@ -4,18 +4,16 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc.robot.RuntimeTrajectoryGenerator.TargetType;
 import frc.robot.commands.drivetrain.ArcadeDrive;
-import frc.robot.commands.drivetrain.AutoBalanceWithRoll;
+import frc.robot.commands.routines.BalanceRoutine;
 import frc.robot.commands.vision.AlignToScore;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
@@ -27,12 +25,8 @@ import frc.robot.subsystems.Vision;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  
-  public final PIDController alignRotate = new PIDController(0, 0, 0);
-  public final PIDController alignLinear = new PIDController(0, 0, 0);
-
   private final Drivetrain drivetrain = new Drivetrain();
-  private final Vision vision = new Vision(drivetrain);
+  private final Vision vision = new Vision();
 
   private final XboxController driver = new XboxController(0);
   private final XboxController operator = new XboxController(1);
@@ -41,8 +35,6 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {   
     drivetrain.setDefaultCommand(new ArcadeDrive(drivetrain, controls::getDriveSpeed, controls::getTurnSpeed));
-    SmartDashboard.putData("Rotate Controller", alignRotate);
-    SmartDashboard.putData("Linear Controller", alignLinear);
 
     configureButtonBindings();
   }
@@ -63,7 +55,7 @@ public class RobotContainer {
       }));
 
     /** Schedule AutoBalanceWithRoll when B is pressed, cancel when released */
-    final AutoBalanceWithRoll autoBalance = new AutoBalanceWithRoll(drivetrain);
+    final BalanceRoutine autoBalance = new BalanceRoutine(drivetrain);
     new JoystickButton(driver, Button.kB.value) 
       .onTrue(autoBalance)
       .onFalse(new InstantCommand(() -> {
@@ -86,18 +78,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-
-    //TrajectoryConfig config = new TrajectoryConfig(DrivetrainConfig.maxTrajectoryVel, DrivetrainConfig.maxTrajectoryAcc).setKinematics(drivetrain.getKinematics());
-
-    //Trajectory trajectory = TrajectoryGenerator.generateTrajectory(List.of(new Pose2d(), new Pose2d(3, -0.5, new Rotation2d()), new Pose2d(6, 0, new Rotation2d()), new Pose2d(6, 0, new Rotation2d(-180)), new Pose2d(3, -0.5, new Rotation2d(-180)), new Pose2d(0, 0, new Rotation2d(-180))), config);
-    //Trajectory trajectory = TrajectoryGenerator.generateTrajectory(List.of(new Pose2d(), new Pose2d(1.8, 0, new Rotation2d(0)), new Pose2d(2, 0, new Rotation2d(45)), new Pose2d(2.3, 2, new Rotation2d(90))), config);
-    // Trajectory trajectory = RuntimeTrajectoryGenerator.generateLineupTrajectory(new Pose2d(), new Pose2d(1 + Units.inchesToMeters(31.0/2.0), 0, new Rotation2d(0)), RuntimeTrajectoryGenerator.TargetType.ConeLeft);
-    // return new FollowPath(drivetrain, trajectory);
-
-    //return new SequentialCommandGroup(new DriveOntoChargeStation(drivetrain), new AutoBalanceWithRoll(drivetrain));
-    //return new SequentialCommandGroup(new AutoBalanceWithRoll(drivetrain));
-
     return null;
   }
 }

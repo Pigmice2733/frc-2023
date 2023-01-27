@@ -32,8 +32,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import frc.robot.subsystems.Drivetrain;
-
 public class Vision extends SubsystemBase {
 
   private final PhotonCamera camera = new PhotonCamera("OV5647");
@@ -41,10 +39,7 @@ public class Vision extends SubsystemBase {
   AprilTagFieldLayout layout = new AprilTagFieldLayout(List.of(new AprilTag(2, new Pose3d(new Translation3d(0, 0, Units.inchesToMeters(26.2)), new Rotation3d(0, 0, Math.toRadians(180))))), 50, 50);
   private final RobotPoseEstimator poseEstimator = new RobotPoseEstimator(layout, RobotPoseEstimator.PoseStrategy.AVERAGE_BEST_TARGETS, Arrays.asList(new Pair(camera, new Transform3d(new Translation3d(0, 0, Units.inchesToMeters(9)), new Rotation3d(0, Math.toRadians(23), 0)))));
   
-  Drivetrain drivetrain;
-
-  public Vision(Drivetrain drivetrain) {
-    this.drivetrain = drivetrain;
+  public Vision() {
   }
 
   @Override
@@ -66,7 +61,7 @@ public class Vision extends SubsystemBase {
       return;
     }
 
-    SmartDashboard.putNumber("RobotYaw", currentRobotPose.getRotation().getDegrees());
+    //SmartDashboard.putNumber("RobotYaw", currentRobotPose.getRotation().getDegrees());
     SmartDashboard.putNumber("X", currentRobotPose.getX());
     SmartDashboard.putNumber("Y", currentRobotPose.getY());
   }
@@ -80,34 +75,47 @@ public class Vision extends SubsystemBase {
     return result.getBestTarget();
   }
 
-  /** Returns the position of the robot on the feild based on the best target. Assumes the robot is level on the ground */
-  public Pose2d getGlobalRobotPosition(){
+  /** Returns the position of the robot on the feild based on the best target. Assumes the robot is level to the ground */
+  // public Pose2d getGlobalRobotPosition(){
 
-    // poseEstimator.setReferencePose(drivetrain.getPose());
-    Optional<Pair<Pose3d, Double>> optionalPose = poseEstimator.update();
+  //   // poseEstimator.setReferencePose(drivetrain.getPose());
+  //   Optional<Pair<Pose3d, Double>> optionalPose = poseEstimator.update();
 
-    if (optionalPose.isEmpty()) return null;
+  //   if (optionalPose.isEmpty()) return null;
 
-    Pair<Pose3d, Double> timedPose = optionalPose.get();
+  //   Pair<Pose3d, Double> timedPose = optionalPose.get();
 
-    //drivetrain.resetOdometry(timedPose.getFirst().toPose2d());
-    //return drivetrain.getPose();
-    return optionalPose.get().getFirst().toPose2d();
-  }
+  //   //drivetrain.resetOdometry(timedPose.getFirst().toPose2d());
+  //   //return drivetrain.getPose();
+  //   return optionalPose.get().getFirst().toPose2d();
+  // }
 
-  /** Rotation in returned Pose2d is the robots estimated rotation */
-  public Pose2d getTranslationToTag() {
+  /** Returns the position of the robot on the feild based on the best target. Assumes the robot is level to the ground */
+  public Pose2d getGlobalRobotPosition() {
     PhotonPipelineResult result = camera.getLatestResult();
     if (!result.hasTargets())
       return null;
 
     PhotonTrackedTarget target = result.getBestTarget();
-    var optionalPose = layout.getTagPose(target.getFiducialId());
-    if (optionalPose.isEmpty()) return null;
 
-    Pose2d robotPose = optionalPose.get().transformBy(target.getBestCameraToTarget()).toPose2d();
+    var tagPose = layout.getTagPose(target.getFiducialId());
+    if (tagPose.isEmpty()) 
+      return null;
 
-    return new Pose2d(target.getBestCameraToTarget().getX(), target.getBestCameraToTarget().getY(), robotPose.getRotation());
+    Pose2d robotPose = tagPose.get().transformBy(target.getBestCameraToTarget()).toPose2d();
+    return robotPose;
+  }
+
+  /** Returns a transform to bring the current robot position to the best target */
+  public Translation2d getTransformToTag() {
+    PhotonPipelineResult result = camera.getLatestResult();
+    if (!result.hasTargets())
+      return null;
+
+    PhotonTrackedTarget target = result.getBestTarget();
+    var toTag3d = target.getBestCameraToTarget();
+
+    return new Translation2d(toTag3d.getX(), toTag3d.getY());
   }
 
   /** Returns the position and rotation of the nearest apriltag */
@@ -118,7 +126,6 @@ public class Vision extends SubsystemBase {
     var target = camera.getLatestResult().getBestTarget();
 
     var pose = layout.getTagPose(target.getFiducialId());
-
     if (pose.isEmpty())
       return null;
 
