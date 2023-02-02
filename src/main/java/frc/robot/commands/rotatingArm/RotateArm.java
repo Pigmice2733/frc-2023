@@ -7,21 +7,41 @@ package frc.robot.commands.rotatingArm;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants.DrivetrainConfig;
 import frc.robot.subsystems.RotatingArm;
 
 public class RotateArm extends CommandBase {
-  RotatingArm arm;
-  DoubleSupplier speed;
+  private final RotatingArm arm;
+  private final DoubleSupplier speed;
+
+  private EnableBrake enableBrakeCommand;
+  private DisableBrake disableBrakeCommand;
 
   public RotateArm(RotatingArm arm, DoubleSupplier speed) {
     this.arm = arm;
     this.speed = speed;
+
+    enableBrakeCommand = new EnableBrake(arm);
+    disableBrakeCommand = new DisableBrake(arm);
     addRequirements(arm);
   }
 
   @Override
   public void execute() {
-    arm.rotateClaw(speed.getAsDouble());
-  }
+    // double inputSpeed = speed.getAsDouble();
 
+    // if (arm.brakeEnabled() && inputSpeed > DrivetrainConfig.axisThreshold) {
+    //   if (!EnableBrake.currentlyRunning) {
+    //     enableBrakeCommand.schedule();
+    //   }
+    //   return;
+    // }
+
+    // if (!arm.brakeEnabled() && inputSpeed < DrivetrainConfig.axisThreshold) {
+    //   disableBrakeCommand.schedule();
+    //   return;
+    // }
+
+    arm.setClawSpeed(speed.getAsDouble());
+  }
 }

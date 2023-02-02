@@ -12,27 +12,26 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Claw extends SubsystemBase {
-  private final DoubleSolenoid piston1 = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, ClawConfig.piston1PortFor, ClawConfig.piston1PortRev);
-  private final DoubleSolenoid piston2 = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, ClawConfig.piston2PortFor, ClawConfig.piston2PortRev);
+  private final DoubleSolenoid leftPiston = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, ClawConfig.leftPistonPorts[0],ClawConfig.leftPistonPorts[1]);
+  private final DoubleSolenoid rightPiston = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, ClawConfig.rightPistonPorts[0], ClawConfig.rightPistonPorts[1]);
   
   /** Creates a new Claw. */
   public Claw() {
-    piston1.set(Value.kOff);
-    piston2.set(Value.kOff);
+    leftPiston.set(Value.kReverse);
+    rightPiston.set(Value.kReverse);
 
-    // Shuffleboard stuff, probably
   }
 
   @Override
   public void periodic() {}
 
   public void closeClaw() {
-    piston1.set(Value.kForward);
-    piston2.set(Value.kForward);
+    leftPiston.set(Value.kForward);
+    rightPiston.set(Value.kForward);
   }
 
   public void openClaw() {
-    piston1.set(Value.kReverse);
-    piston2.set(Value.kReverse);
+    leftPiston.set(Value.kReverse);
+    rightPiston.set(Value.kReverse);
   }
 }

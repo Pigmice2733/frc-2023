@@ -23,7 +23,7 @@ public class RotateArmToAngle extends ProfiledPIDCommand {
                 new Constraints(RotatingArmConfig.maxAcceleration, RotatingArmConfig.maxVelocity)),
             arm::getAngle,
             targetAngle,
-            (output, setpoint) -> {arm.rotateClaw(output);},
+            (output, setpoint) -> {arm.setClawSpeed(output);},
             arm
         );
 
