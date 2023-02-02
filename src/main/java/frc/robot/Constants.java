@@ -76,7 +76,8 @@ public final class Constants {
     }
     public final static class RotatingArmConfig{
         public static final int motorPort = 1;
-        public static final double speedMultipler = .5;
+        public static final int[] brakePort = {0, 1};
+        public static final double speedMultipler = .1;
         public static final double rotationConversion = 0.0; // ratio of encoder-measured rotations to arm rotations
 
         public static final double armLength = 0.0;
@@ -101,9 +102,7 @@ public final class Constants {
         public static final double maxAcceleration = 0.0;
     }
     public static final class ClawConfig {
-        public static final int piston1PortFor = 0;
-        public static final int piston1PortRev = 0;
-        public static final int piston2PortFor = 0;
-        public static final int piston2PortRev = 0;
+        public static final int leftPistonPorts[] = {0, 0};
+        public static final int rightPistonPorts[] = {0, 0};
     }
 }
