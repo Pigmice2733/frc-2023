@@ -40,7 +40,7 @@ public class LightsLevel extends CommandBase {
             return;
         double h = Math.tan(Math.toRadians(pitch)) * 8;
 
-        int[][] grid = new int[][] {
+        byte[][] grid = new byte[][] {
                 { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
                 { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
                 { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },

@@ -3,7 +3,7 @@ package frc.robot.lights;
 import frc.robot.lights.Text.TextSequence;
 
 public class Image {
-    private int[][] buffer = {
+    private byte[][] buffer = {
             { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
             { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
             { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -25,7 +25,7 @@ public class Image {
     public Image() {
     }
 
-    public Image(int[][] buffer) {
+    public Image(byte[][] buffer) {
         this.buffer = buffer;
     }
 
@@ -40,21 +40,21 @@ public class Image {
         return newImage;
     }
 
-    public int getPixel(int x, int y) {
+    public byte getPixel(int x, int y) {
         return buffer[y][x];
     }
 
-    public void setPixel(int color, int x, int y) {
+    public void setPixel(byte color, int x, int y) {
         if (x < 0 || y < 0 || x > buffer[0].length - 1 || y > buffer.length - 1)
             return;
         buffer[y][x] = color;
     }
 
-    public void setBuffer(int[][] buffer) {
+    public void setBuffer(byte[][] buffer) {
         this.buffer = buffer;
     }
 
-    public int[][] getBuffer() {
+    public byte[][] getBuffer() {
         return this.buffer;
     }
 
@@ -66,7 +66,7 @@ public class Image {
         }
     }
 
-    public void imposeGrid(int[][] grid, int x, int y) {
+    public void imposeGrid(byte[][] grid, int x, int y) {
         for (int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid[0].length; j++) {
                 if (x + j < 0 || y + i < 0 || x + j > buffer[0].length - 1 || y + i > buffer.length - 1)
@@ -76,10 +76,10 @@ public class Image {
         }
     }
 
-    public void imposeText(String text, int x, int y, int color) {
+    public void imposeText(String text, int x, int y, byte color) {
         TextSequence letters = Text.buildLetters(text);
         int xOffset = 0;
-        for (int[][] letterImage : letters.getLetters()) {
+        for (byte[][] letterImage : letters.getLetters()) {
             for (int y_2 = 0; y_2 < letterImage.length; y_2++) {
                 for (int x_2 = 0; x_2 < letterImage[y_2].length; x_2++) {
                     if (x + x_2 + xOffset < 0 || x + x_2 + xOffset >= 16 || y + y_2 < 0 || y + y_2 > 15)

@@ -1,17 +1,16 @@
 package frc.robot.lights;
 
 public class Images {
-        public static final int P = 0x4b3048;
-        public static final int R = 0xff0000;
-        public static final int DR = 0x7f0000;
-        public static final int B = 0x0000ff;
-        public static final int LB = 0x00ffff;
-        public static final int DB = 0x000080;
-        public static final int G = 0x00ff00;
-        public static final int LG = 0x00ff80;
-        public static final int DG = 0x008000;
+        public static final byte P = 14;
+        public static final byte R = 2;
+        public static final byte B = 11;
+        public static final byte LB = 10;
+        public static final byte DB = 12;
+        public static final byte G = 7;
+        public static final byte LG = 8;
+        public static final byte DG = 6;
 
-        public static Image HEART = new Image(new int[][] {
+        public static Image HEART = new Image(new byte[][] {
                         { 0, R, R, 0, 0, R, R, 0 },
                         { R, 0, 0, R, R, 0, 0, R },
                         { R, 0, 0, 0, 0, 0, 0, R },
@@ -20,7 +19,7 @@ public class Images {
                         { 0, 0, 0, R, R, 0, 0, 0 }
         });
 
-        public static Image SMALL_HEART = new Image(new int[][] {
+        public static Image SMALL_HEART = new Image(new byte[][] {
                         { 0, R, 0, R, 0 },
                         { R, 0, R, 0, R },
                         { R, 0, 0, 0, R },
@@ -28,7 +27,7 @@ public class Images {
                         { 0, 0, R, 0, 0 },
         });
 
-        public static Image PIGMICE = new Image(new int[][] {
+        public static Image PIGMICE = new Image(new byte[][] {
                         { 0, 0, 0, P, P, 0, 0, 0, 0, 0, 0, P, P, 0, 0, 0 },
                         { 0, 0, P, 0, 0, P, 0, 0, 0, 0, P, 0, 0, P, 0, 0 },
                         { 0, P, 0, 0, 0, 0, P, 0, 0, P, 0, 0, 0, 0, P, 0 },
@@ -40,7 +39,7 @@ public class Images {
                         { 0, 0, 0, P, P, 0, 0, 0, 0, 0, 0, P, P, 0, 0, 0 },
         });
 
-        public static Image OWEN_PIGMICE = new Image(new int[][] {
+        public static Image OWEN_PIGMICE = new Image(new byte[][] {
                         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
                         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
                         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -59,7 +58,7 @@ public class Images {
                         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
         });
 
-        public static Image CLEVELAND = new Image(new int[][] {
+        public static Image CLEVELAND = new Image(new byte[][] {
                         { 0, 0, 0, 0, 0, 0, 0, 0, DG, DG, DG, DG, DG, 0, 0, 0 },
                         { 0, 0, 0, 0, 0, 0, DG, DG, G, LG, LG, LG, LG, DG, 0, 0 },
                         { 0, 0, 0, 0, DG, DG, LG, G, G, G, LG, LG, LG, LG, DG, 0 },

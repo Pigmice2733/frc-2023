@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Lights;
 
 public class CGOLLights extends CommandBase {
-    private int[][] board = {
+    private byte[][] board = {
             { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
             { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
             { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -32,7 +32,7 @@ public class CGOLLights extends CommandBase {
 
         for (int y = 0; y < board.length; y++) {
             for (int x = 0; x < board[0].length; x++) {
-                board[y][x] = (int) Math.round(Math.random());
+                board[y][x] = (byte) Math.round(Math.random());
             }
         }
 
@@ -67,7 +67,7 @@ public class CGOLLights extends CommandBase {
     }
 
     private void process_board() {
-        int[][] new_board = {
+        byte[][] new_board = {
                 { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
                 { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
                 { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
