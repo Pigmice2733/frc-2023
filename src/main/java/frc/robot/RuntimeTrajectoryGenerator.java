@@ -19,21 +19,23 @@ public final class RuntimeTrajectoryGenerator {
 
     /** Generates a trajectory to line the robot to pick up or score based on an apriltag location */
     public static Trajectory generateLineupTrajectory(Pose2d currentRobotPose, Pose2d tagPose, TargetType targetType) {
-        double xPos = tagPose.getX() - robotLength/2 - xDistanceFromTagToScoreLocation;
+        //if we are looking at a flipped tag then we have to invert all of our distances
+        double tagRotated = tagPose.getRotation().getDegrees() == 0 ? 1 : -1;
+        double xPos = tagPose.getX() - (robotLength/2 + xDistanceFromTagToScoreLocation) * tagRotated;
         double yPos = tagPose.getY();
 
         switch(targetType) {
             case ConeLeft:
-                yPos += yDistanceFromTagToConeNode;
+                yPos += yDistanceFromTagToConeNode * tagRotated;
                 break;
             case ConeRight:
-                yPos -= yDistanceFromTagToConeNode;;
+                yPos -= yDistanceFromTagToConeNode * tagRotated;
                 break;
             case PickupLeft:
-                yPos += yDistanceFromTagToPickup;
+                yPos += yDistanceFromTagToPickup * tagRotated;
                 break;
             case PickupRight:
-                yPos -= yDistanceFromTagToPickup;;
+                yPos -= yDistanceFromTagToPickup * tagRotated;
                 break;
             default:
                 break;
