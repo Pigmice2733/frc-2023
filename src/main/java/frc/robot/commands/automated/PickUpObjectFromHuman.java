@@ -8,8 +8,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 import frc.robot.Constants;
-import frc.robot.commands.elevator.RaiseElevatorToHeight;
-import frc.robot.commands.rotatingArm.RotateArmToAngle;
+import frc.robot.commands.elevator.RaiseElevatorToHeightPID;
+import frc.robot.commands.rotatingArm.RotateArmToAnglePID;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.RotatingArm;
@@ -30,8 +30,8 @@ public class PickUpObjectFromHuman extends SequentialCommandGroup {
       new InstantCommand(claw::openClaw),
       new MoveClawToPoint(arm, elevator, 40.0, 0.0), // TODO distance depends on robot specs and what we want
       new InstantCommand(claw::closeClaw),
-      new RaiseElevatorToHeight(Constants.RotatingArmConfig.armLength, elevator),
-      new RotateArmToAngle(0, arm) // these last two might not work dependent on robot specs if it hits the substation
+      new RaiseElevatorToHeightPID(Constants.RotatingArmConfig.armLength, elevator),
+      new RotateArmToAnglePID(0, arm) // these last two might not work dependent on robot specs if it hits the substation
     );
   }
 }

@@ -11,8 +11,8 @@ import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.RotatingArm;
 import frc.robot.Constants;
-import frc.robot.commands.elevator.RaiseElevatorToHeight;
-import frc.robot.commands.rotatingArm.RotateArmToAngle;
+import frc.robot.commands.elevator.RaiseElevatorToHeightPID;
+import frc.robot.commands.rotatingArm.RotateArmToAnglePID;
 
 public class PickUpObjectFromGround extends SequentialCommandGroup {
   /**
@@ -28,8 +28,8 @@ public class PickUpObjectFromGround extends SequentialCommandGroup {
       new InstantCommand(claw::openClaw),
       new MoveClawToPoint(arm, elevator, 5.0, 0.0), // TODO distance depends on robot specs and what we want
       new InstantCommand(claw::closeClaw),
-      new RaiseElevatorToHeight(Constants.RotatingArmConfig.armLength, elevator),
-      new RotateArmToAngle(0, arm)
+      new RaiseElevatorToHeightPID(Constants.RotatingArmConfig.armLength, elevator),
+      new RotateArmToAnglePID(0, arm)
     );
   }
 }

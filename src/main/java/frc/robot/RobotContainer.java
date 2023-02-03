@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
@@ -13,12 +16,17 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc.robot.RuntimeTrajectoryGenerator.TargetType;
 import frc.robot.commands.drivetrain.ArcadeDrive;
+import frc.robot.commands.elevator.RaiseElevatorManual;
+import frc.robot.commands.elevator.RaiseElevatorToHeightSimple;
 import frc.robot.commands.rotatingArm.DisableBrake;
 import frc.robot.commands.rotatingArm.EnableBrake;
-import frc.robot.commands.rotatingArm.RotateArm;
+import frc.robot.commands.rotatingArm.RotateArmManaul;
+import frc.robot.commands.rotatingArm.RotateArmToAngleSimple;
 import frc.robot.commands.routines.BalanceRoutine;
 import frc.robot.commands.vision.AlignToScore;
+import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.RotatingArm;
 import frc.robot.subsystems.Vision;
 
@@ -29,17 +37,17 @@ import frc.robot.subsystems.Vision;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  //private final Drivetrain drivetrain = new Drivetrain();
-  //private final Vision vision = new Vision();
-  private final RotatingArm arm = new RotatingArm();
+  private final Drivetrain drivetrain = new Drivetrain();
+  private final Vision vision = new Vision();
+  //private final RotatingArm arm = new RotatingArm();
+  //private final Elevator elevator = new Elevator();
   private final XboxController driver = new XboxController(0);
   private final XboxController operator = new XboxController(1);
   private final Controls controls = new Controls(driver, operator);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  public RobotContainer() {   
-    arm.setDefaultCommand(new RotateArm(arm, controls::getDriveSpeed));
-   // drivetrain.setDefaultCommand(new ArcadeDrive(drivetrain, controls::getDriveSpeed, controls::getTurnSpeed));
+  public RobotContainer() {     
+   drivetrain.setDefaultCommand(new ArcadeDrive(drivetrain, controls::getDriveSpeed, controls::getTurnSpeed));
 
     configureButtonBindings();
   }
@@ -52,35 +60,29 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     /** Schedule AlignToScore when A is pressed, cancel when released */
-    // final AlignToScore alignToScore = new AlignToScore(vision, drivetrain, TargetType.Cube);
-    // new JoystickButton(driver, Button.kA.value) 
-    //   .onTrue(alignToScore)
-    //   .onFalse(new InstantCommand(() -> {
-    //     alignToScore.cancel(); 
-    //   }));
+    final AlignToScore alignToScore = new AlignToScore(vision, drivetrain, TargetType.Cube);
+    new JoystickButton(driver, Button.kA.value) 
+      .onTrue(alignToScore)
+      .onFalse(new InstantCommand(() -> {
+        alignToScore.cancel(); 
+      }));
 
-    // /** Schedule AutoBalanceWithRoll when B is pressed, cancel when released */
-    // final BalanceRoutine autoBalance = new BalanceRoutine(drivetrain);
-    // new JoystickButton(driver, Button.kB.value) 
-    //   .onTrue(autoBalance)
-    //   .onFalse(new InstantCommand(() -> {
-    //     autoBalance.cancel(); 
-    //   }));
+    /** Schedule AutoBalanceWithRoll when B is pressed, cancel when released */
+    final BalanceRoutine autoBalance = new BalanceRoutine(drivetrain);
+    new JoystickButton(driver, Button.kB.value) 
+      .onTrue(autoBalance)
+      .onFalse(new InstantCommand(() -> {
+        autoBalance.cancel(); 
+      }));
 
-    // /** Fast way to reset odometry for testing */
-    // new JoystickButton(driver , Button.kX.value)
-    //   .onTrue(new InstantCommand(() -> drivetrain.resetOdometry()));
+    /** Fast way to reset odometry for testing */
+    new JoystickButton(driver , Button.kX.value)
+      .onTrue(new InstantCommand(() -> drivetrain.resetOdometry()));
 
-    // /** Enable slow mode when Y is pressed, stop slow mode when released */
-    // new JoystickButton(driver, Button.kY.value)
-    //   .onTrue(new InstantCommand(drivetrain::enableSlow))
-    //   .onFalse(new InstantCommand(drivetrain::disableSlow));
-
-
-    new JoystickButton(driver, Button.kA.value)
-       .onTrue(new EnableBrake(arm));
-    new JoystickButton(driver, Button.kB.value)
-       .onTrue(new DisableBrake(arm));
+    /** Enable slow mode when Y is pressed, stop slow mode when released */
+    new JoystickButton(driver, Button.kY.value)
+      .onTrue(new InstantCommand(drivetrain::enableSlow))
+      .onFalse(new InstantCommand(drivetrain::disableSlow));
   }
 
   /**

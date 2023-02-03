@@ -78,7 +78,7 @@ public final class Constants {
         public static final int motorPort = 1;
         public static final int[] brakePort = {0, 1};
         public static final double speedMultipler = .1;
-        public static final double rotationConversion = 0.0; // ratio of encoder-measured rotations to arm rotations
+        public static final double rotationConversion = 1; // ratio of encoder-measured rotations to arm rotations
 
         public static final double armLength = 0.0;
 
@@ -89,10 +89,12 @@ public final class Constants {
         public static final double maxAcceleration = 0.0;
     }
     public static final class ElevatorConfig {
-        public static final int motorPort = 0;
-        public static final int motorPort2 = 0;
+        public static final int leftMotorPort = 1;
+        public static final int rightMotorPort = 0;
 
-        public static final double rotationToDistanceConversion = 0.0; // ratio of encoder-measured rotations to distance moved
+        public static final double speedMultipler = 0.1;
+
+        public static final double rotationToDistanceConversion = 1; // ratio of encoder-measured rotations to distance moved
         public static final double maxHeight = 0.0;
 
         public static final double kP = 0.0;

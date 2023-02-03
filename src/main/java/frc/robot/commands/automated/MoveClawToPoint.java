@@ -3,8 +3,8 @@ package frc.robot.commands.automated;
 import frc.robot.subsystems.RotatingArm;
 import frc.robot.subsystems.Elevator;
 import frc.robot.Constants;
-import frc.robot.commands.elevator.RaiseElevatorToHeight;
-import frc.robot.commands.rotatingArm.RotateArmToAngle;
+import frc.robot.commands.elevator.RaiseElevatorToHeightPID;
+import frc.robot.commands.rotatingArm.RotateArmToAnglePID;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
@@ -41,6 +41,6 @@ public class MoveClawToPoint extends CommandBase {
 		elevatorHeight = targetHeight - (Constants.RotatingArmConfig.armLength * Math.sin(armRotation));
 	}}
 
-	RotateArmToAngle filler1 = new RotateArmToAngle(armAngle, arm);
-	RaiseElevatorToHeight filler2 = new RaiseElevatorToHeight(elevatorHeight, elevator);
+	RotateArmToAnglePID filler1 = new RotateArmToAnglePID(armAngle, arm);
+	RaiseElevatorToHeightPID filler2 = new RaiseElevatorToHeightPID(elevatorHeight, elevator);
 }

@@ -7,14 +7,14 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 
-public class RaiseElevatorToHeight extends ProfiledPIDCommand {
+public class RaiseElevatorToHeightPID extends ProfiledPIDCommand {
     
     /**
      * Raise the elevator to a particular height from its base.
      * @param targetHeight height to move to above bottom of elevator in inches
      * @param elevator the elevator subsystem
      */
-    public RaiseElevatorToHeight (double targetHeight, Elevator elevator) {
+    public RaiseElevatorToHeightPID (double targetHeight, Elevator elevator) {
         super(
             new ProfiledPIDController(
                 ElevatorConfig.kP,
@@ -23,7 +23,7 @@ public class RaiseElevatorToHeight extends ProfiledPIDCommand {
                 new Constraints(ElevatorConfig.maxAcceleration, ElevatorConfig.maxVelocity)),
             elevator::getHeight,
             targetHeight,
-            (output, setpoint) -> {elevator.rise(output);},
+            (output, setpoint) -> {elevator.outputToMotors(output);},
             elevator
         );
 
