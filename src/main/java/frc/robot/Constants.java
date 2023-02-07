@@ -75,7 +75,8 @@ public final class Constants {
         public static final boolean drivetrainPrintsEnabled = true;
     }
     public final static class RotatingArmConfig{
-        public static final int motorPort = 1;
+        public static final int driveMotorPort = 1;
+        public static final int followMotorPort = 1;
         public static final int[] brakePort = {0, 1};
         public static final double speedMultipler = .1;
         public static final double rotationConversion = 1; // ratio of encoder-measured rotations to arm rotations

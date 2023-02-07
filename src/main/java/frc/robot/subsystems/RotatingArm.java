@@ -11,6 +11,7 @@ import frc.robot.commands.rotatingArm.EnableBrake;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxRelativeEncoder.Type;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -20,7 +21,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class RotatingArm extends SubsystemBase {
-  private final CANSparkMax motor = new CANSparkMax(RotatingArmConfig.motorPort, MotorType.kBrushless);
+  private final CANSparkMax driveMotor = new CANSparkMax(RotatingArmConfig.driveMotorPort, MotorType.kBrushed);
+  private final CANSparkMax followMotor = new CANSparkMax(RotatingArmConfig.followMotorPort, MotorType.kBrushed);
+
   private final DoubleSolenoid brake = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, RotatingArmConfig.brakePort[0], RotatingArmConfig.brakePort[1]);
   private final Compressor compressor;
 
@@ -34,8 +37,14 @@ public class RotatingArm extends SubsystemBase {
   public RotatingArm() {
     compressor = new Compressor(PneumaticsModuleType.CTREPCM);
 
-    motor.restoreFactoryDefaults();
-    motor.getEncoder().setPositionConversionFactor(RotatingArmConfig.rotationConversion);
+    driveMotor.restoreFactoryDefaults();
+    followMotor.restoreFactoryDefaults();
+    followMotor.follow(driveMotor);
+
+    driveMotor.setInverted(false);
+    followMotor.setInverted(false);
+
+    driveMotor.getEncoder(Type.kQuadrature, 8192).setPositionConversionFactor(RotatingArmConfig.rotationConversion);
   }
 
   @Override
@@ -73,19 +82,20 @@ public class RotatingArm extends SubsystemBase {
   private void outputToMotor(double output) {
     if (brakeEnabled)
       return;
-    motor.set(output * RotatingArmConfig.speedMultipler);
+      
+    driveMotor.set(output * RotatingArmConfig.speedMultipler);
   }
 
   /** Get the current angle of the arm. */
   public double getAngle(){
-    return motor.getEncoder().getPosition();
+    return followMotor.getEncoder(Type.kQuadrature, 8192).getPosition();
   }
 
   /**
    * Reset the encoder to be at zero rotation. This means the arm is pointed straight down.
    */
   public void resetEncoder(){
-    motor.getEncoder().setPosition(0);
+    driveMotor.getEncoder(Type.kQuadrature, 8192).setPosition(0);
   }
 
   public void enableBrake() {
