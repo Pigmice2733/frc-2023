@@ -81,7 +81,8 @@ public final class Constants {
         public static final double speedMultipler = .1;
         public static final double rotationConversion = 1; // ratio of encoder-measured rotations to arm rotations
 
-        public static final double armLength = 0.0;
+        public static final double armLength = 1.0;
+        public static final double armHeight = 1.0; // height of arm mount on robot from ground
 
         public static final double kP = 0.0;
         public static final double kI = 0.0;
