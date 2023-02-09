@@ -7,14 +7,13 @@ package frc.robot.commands.rotatingArm;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants.DrivetrainConfig;
 import frc.robot.subsystems.RotatingArm;
 
-public class RotateArmManaul extends CommandBase {
+public class RotateArmManual extends CommandBase {
   private final RotatingArm arm;
   private final DoubleSupplier speed;
 
-  public RotateArmManaul(RotatingArm arm, DoubleSupplier speed) {
+  public RotateArmManual(RotatingArm arm, DoubleSupplier speed) {
     this.arm = arm;
     this.speed = speed;
 

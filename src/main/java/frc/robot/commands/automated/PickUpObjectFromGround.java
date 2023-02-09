@@ -11,6 +11,7 @@ import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.RotatingArm;
 import frc.robot.Constants;
+import frc.robot.commands.elevator.MoveClawToPoint;
 import frc.robot.commands.elevator.RaiseElevatorToHeightPID;
 import frc.robot.commands.rotatingArm.RotateArmToAnglePID;
 

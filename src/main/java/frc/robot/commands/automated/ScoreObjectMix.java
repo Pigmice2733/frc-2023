@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 import frc.robot.Constants;
 import frc.robot.commands.drivetrain.DriveDistance;
+import frc.robot.commands.elevator.MoveClawToPoint;
 import frc.robot.commands.elevator.RaiseElevatorToHeightPID;
 import frc.robot.commands.rotatingArm.RotateArmToAnglePID;
 import frc.robot.subsystems.Claw;
@@ -19,6 +20,7 @@ import frc.robot.subsystems.RotatingArm;
 public class ScoreObjectMix extends SequentialCommandGroup {
   /**
    * Automatically scores a cone in a middle-level node or a cube in a high-level node, assuming the robot is already lined up and pushed up against the grid.
+   * 
    * @param arm the arm subsystem
    * @param elevator the elevator subsystem
    * @param claw the claw subsystem

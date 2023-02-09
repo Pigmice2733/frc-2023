@@ -4,9 +4,6 @@
 
 package frc.robot;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
@@ -16,18 +13,9 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc.robot.RuntimeTrajectoryGenerator.TargetType;
 import frc.robot.commands.drivetrain.ArcadeDrive;
-import frc.robot.commands.elevator.RaiseElevatorManual;
-import frc.robot.commands.elevator.RaiseElevatorToHeightSimple;
-import frc.robot.commands.rotatingArm.DisableBrake;
-import frc.robot.commands.rotatingArm.EnableBrake;
-import frc.robot.commands.rotatingArm.RotateArmManaul;
-import frc.robot.commands.rotatingArm.RotateArmToAngleSimple;
 import frc.robot.commands.routines.BalanceRoutine;
 import frc.robot.commands.vision.AlignToScore;
-import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.RotatingArm;
 import frc.robot.subsystems.Vision;
 
 /**

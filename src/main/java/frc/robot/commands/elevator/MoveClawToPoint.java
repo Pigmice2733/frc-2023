@@ -1,13 +1,13 @@
-package frc.robot.commands.automated;
+package frc.robot.commands.elevator;
 
 import frc.robot.subsystems.RotatingArm;
 import frc.robot.subsystems.Elevator;
 import frc.robot.Constants;
-import frc.robot.commands.elevator.RaiseElevatorToHeightPID;
 import frc.robot.commands.rotatingArm.RotateArmToAnglePID;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
+// This command is deprecated until further notice because of the removal of the elevator subsystem.
 public class MoveClawToPoint extends CommandBase {
 	double targetHeight, targetDistance;
 	RotatingArm arm;
@@ -33,7 +33,7 @@ public class MoveClawToPoint extends CommandBase {
 	double armRotation = Math.acos(targetDistance / Constants.RotatingArmConfig.armLength);
 
 	double armAngle, elevatorHeight; {
-	if(targetHeight<Constants.ElevatorConfig.maxHeight) {
+	if(targetHeight < Constants.ElevatorConfig.maxHeight) {
 		armAngle = (armRotation * -180 / Math.PI) + 90;
 		elevatorHeight = targetHeight + (Constants.RotatingArmConfig.armLength * Math.sin(armRotation));
 	} else {

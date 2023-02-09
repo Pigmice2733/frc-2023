@@ -9,10 +9,10 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.DrivetrainConfig;
 import frc.robot.subsystems.Drivetrain;
 
-/** Robot must be lined up with the charge station */
 public class AutoBalance extends CommandBase {
   Drivetrain drivetrain;
 
+  /** Robot must be lined up with the charge station. */
   public AutoBalance(Drivetrain drivetrain) {
     this.drivetrain = drivetrain;
     addRequirements(drivetrain);
@@ -22,9 +22,9 @@ public class AutoBalance extends CommandBase {
   public void execute() {
     double pitch = MathUtil.applyDeadband(drivetrain.getPitch(), 5);
 
-    double proportional = pitch/15.0;
+    double proportional = pitch / 15.0;
 
-    double speed = proportional * DrivetrainConfig.autoBalanceProportional + 0.03*Math.signum(pitch); // was 0.1, 0.07
+    double speed = proportional * DrivetrainConfig.autoBalanceProportional + 0.03 * Math.signum(pitch); // was 0.1, 0.07
     speed = MathUtil.clamp(speed, -0.5, 0.5);
 
     drivetrain.arcadeDrive(speed, 0);

@@ -14,13 +14,13 @@ import frc.robot.commands.drivetrain.FollowPath;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
 
-/** Uses Apriltags to line up with the grid to score */
+/** Uses Apriltags to line up with the grid to score. */
 public class AlignToScore extends CommandBase {
   private final Vision vision;
   private final Drivetrain drivetrain;
   private final RuntimeTrajectoryGenerator.TargetType targetType;
 
-  RamseteCommand pathCommand;
+  private RamseteCommand pathCommand;
 
   public AlignToScore(Vision vision, Drivetrain drivetrain, RuntimeTrajectoryGenerator.TargetType targetType) {
     this.vision = vision;
@@ -37,11 +37,11 @@ public class AlignToScore extends CommandBase {
     System.out.println(robotPose);
 
     if (robotPose == null || tagPose == null) {
-      cancel();
+      this.cancel();
       return;
     }
 
-    // Sets the robot odometry to the estimated gloabl position
+    // Sets the robot odometry to the estimated global position
     drivetrain.setOdometryPose(robotPose);
 
     Trajectory trajectory = RuntimeTrajectoryGenerator.generateLineupTrajectory(robotPose, tagPose, targetType);

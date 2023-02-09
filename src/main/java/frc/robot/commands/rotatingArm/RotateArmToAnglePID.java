@@ -9,33 +9,30 @@ import frc.robot.Constants.RotatingArmConfig;
 
 public class RotateArmToAnglePID extends ProfiledPIDCommand {
 
-    /**
-     * Rotate the claw arm to a particular angle.
-     * @param targetAngle angle to rotate to above straight down in degrees
-     * @param arm the rotating-arm subsystem
-     */
-    public RotateArmToAnglePID (double targetAngle, RotatingArm arm) {
-        super(
-            new ProfiledPIDController(
-                RotatingArmConfig.kP,
-                RotatingArmConfig.kI,
-                RotatingArmConfig.kD,
-                new Constraints(RotatingArmConfig.maxAcceleration, RotatingArmConfig.maxVelocity)),
-            arm::getAngle,
-            targetAngle,
-            (output, setpoint) -> {arm.setTargetOutput(output);},
-            arm
-        );
+  /**
+   * Rotate the claw arm to a particular angle.
+   * 
+   * @param targetAngle angle to rotate to, above straight-down, in degrees
+   * @param arm         the RotatingArm subsystem
+   */
+  public RotateArmToAnglePID(double targetAngle, RotatingArm arm) {
+    super(
+      new ProfiledPIDController(
+        RotatingArmConfig.kP,
+        RotatingArmConfig.kI,
+        RotatingArmConfig.kD,
+        new Constraints(RotatingArmConfig.maxAcceleration, RotatingArmConfig.maxVelocity)),
+      arm::getAngle,
+      targetAngle,
+      (output, setpoint) -> arm.setTargetOutput(output),
+      arm);
 
-        getController().setTolerance(0.5, 0.1);
-        addRequirements(arm);
-    }
-    
-    @Override
-    public void initialize() { }
-  
-    @Override
-    public boolean isFinished() {
-      return getController().atSetpoint();
-    }
+    getController().setTolerance(0.5, 0.1);
+    addRequirements(arm);
+  }
+
+  @Override
+  public boolean isFinished() {
+    return getController().atSetpoint();
+  }
 }

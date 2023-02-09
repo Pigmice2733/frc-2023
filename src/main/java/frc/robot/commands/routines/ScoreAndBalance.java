@@ -12,8 +12,8 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.RotatingArm;
 
-/** A routine to be run in auto. Scores the object the robot starts with then balances. Robot needs to be placed in line with charge station */
 public class ScoreAndBalance extends SequentialCommandGroup {
+  /** A routine to be run in auto. Scores the object the robot starts with then balances. Robot needs to start in line with charge station. */
   public ScoreAndBalance(Drivetrain drivetrain, RotatingArm arm, Elevator elevator, Claw claw) {
     addCommands(
       new ScoreObjectFloor(arm, elevator, claw, drivetrain),

@@ -111,12 +111,12 @@ public class Drivetrain extends SubsystemBase {
     }
   }
 
-  /** Returns the robot's current rotation in radians. */
+  /** Returns the robot's current rotation as a Rotation2d object (in radians). */
   public Rotation2d getHeadingRadians() {
     return new Rotation2d(-gyro.getAngle() * (Math.PI / 180));
   }
 
-  /** Returns the robot's current pitch in degrees */
+  /** Returns the robot's current pitch in degrees. */
   public double getPitch() {
     return gyro.getPitch();
   }
@@ -159,7 +159,7 @@ public class Drivetrain extends SubsystemBase {
     return pose;
   }
 
-  /** Zeros odometry, gyro, and drive encoders. Heading gets reset to 180 degrees. */
+  /** Zeros odometry, gyro, and drive encoders. */
   public void resetOdometry() {
     gyro.reset();
     odometry.resetPosition(new Rotation2d(), 0.0, 0.0, new Pose2d());
@@ -168,7 +168,7 @@ public class Drivetrain extends SubsystemBase {
     rightDrive.getEncoder().setPosition(0);
   }
 
-  /** Sets odometry to a specific Pose2d */
+  /** Sets odometry to a specific Pose2d. */
   public void setOdometryPose(Pose2d newPose){
     gyro.reset();
     gyro.setAngleAdjustment(newPose.getRotation().getDegrees());
@@ -219,6 +219,7 @@ public class Drivetrain extends SubsystemBase {
   public void updateOutputs(double left, double right) {
     // Clamp outputs FOR TESTING (to make sure drivetrain does not go crazy while testing auto commands)
     // WILL BE REMOVED FOR COMP
+    // TODO (see above)
 
     if(backwards){
       left *= -1;

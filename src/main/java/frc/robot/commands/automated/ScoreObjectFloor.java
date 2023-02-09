@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 import frc.robot.Constants;
 import frc.robot.commands.drivetrain.DriveDistance;
+import frc.robot.commands.elevator.MoveClawToPoint;
 import frc.robot.commands.elevator.RaiseElevatorToHeightPID;
 import frc.robot.commands.rotatingArm.RotateArmToAnglePID;
 import frc.robot.subsystems.Claw;

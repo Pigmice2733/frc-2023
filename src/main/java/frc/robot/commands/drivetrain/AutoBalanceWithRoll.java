@@ -12,7 +12,7 @@ import frc.robot.subsystems.Drivetrain;
 /** For use when not perfectly lined up with the charge station, but still facing it. If the robot is lined up well, use AutoBalance.java*/
 public class AutoBalanceWithRoll extends CommandBase {
   Drivetrain drivetrain;
-  private boolean rollZero = false;
+  // private boolean rollZero = false;
 
   public AutoBalanceWithRoll(Drivetrain drivetrain) {
     this.drivetrain = drivetrain;
@@ -22,21 +22,27 @@ public class AutoBalanceWithRoll extends CommandBase {
   @Override
   public void execute() {
     double pitch = MathUtil.applyDeadband(drivetrain.getPitch(), 5);
-    double proportionalPitch = pitch/15.0;
-    double speedPitch = proportionalPitch * DrivetrainConfig.autoBalanceProportional + 0.03*Math.signum(pitch); // was 0.1, 0.07
+    double proportionalPitch = pitch / 15.0;
+    double speedPitch = proportionalPitch * DrivetrainConfig.autoBalanceProportional + 0.03 * Math.signum(pitch); // was 0.1, 0.07
     speedPitch = MathUtil.clamp(speedPitch, -0.5, 0.5);
 
-    double roll = -drivetrain.getRoll();
+    /* double roll = -drivetrain.getRoll();
     if (Math.abs(roll) < 1) {
       rollZero = true;
     }
     
     double speedRoll = 0.0;
     if (!rollZero) {
-      double proportionalRoll = roll/(15.0);
-      speedRoll = proportionalRoll * DrivetrainConfig.autoBalanceProportional + 0.03*Math.signum(roll);
+      double proportionalRoll = roll / 15.0;
+      speedRoll = proportionalRoll * DrivetrainConfig.autoBalanceProportional + 0.03 * Math.signum(roll);
       speedRoll = MathUtil.clamp(speedRoll, -0.1, 0.1);
-    }
+    } */
+
+    double roll = MathUtil.applyDeadband(-drivetrain.getRoll(), 5);
+    double proportionalRoll = roll / 15.0;
+    double speedRoll = proportionalRoll * DrivetrainConfig.autoBalanceProportional + 0.03 * Math.signum(roll);
+    speedRoll = MathUtil.clamp(speedRoll, -0.1, 0.1);
+
     drivetrain.arcadeDrive(speedPitch, speedRoll);
   }
 

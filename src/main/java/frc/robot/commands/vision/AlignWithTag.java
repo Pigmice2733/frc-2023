@@ -4,14 +4,9 @@
 
 package frc.robot.commands.vision;
 
-import java.sql.DriverAction;
-
-import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drivetrain;
@@ -25,8 +20,6 @@ public class AlignWithTag extends CommandBase {
 
   private final Drivetrain drivetrain;
   private final Vision vision;
-
-  private double targetYaw;
 
   /** Creates a new AlignWithTag. */
   public AlignWithTag(Drivetrain drivetrain, Vision vision, PIDController rotateController, PIDController linearController) {

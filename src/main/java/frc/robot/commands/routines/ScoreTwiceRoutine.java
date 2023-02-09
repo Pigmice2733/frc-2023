@@ -11,8 +11,8 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.RotatingArm;
 
-/** Scores the object the robot starts with, then the robot drives to pick up another object to score */
 public class ScoreTwiceRoutine extends SequentialCommandGroup {
+  /** Scores the object the robot starts with, then drives the robot to pick up another object to score. */
   public ScoreTwiceRoutine(Drivetrain drivetrain, RotatingArm arm, Elevator elevator, Claw claw) {
     addCommands(
       new ScoreObjectFloor(arm, elevator, claw, drivetrain),

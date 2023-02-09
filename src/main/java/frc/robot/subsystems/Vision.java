@@ -4,25 +4,21 @@
 
 package frc.robot.subsystems;
 
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import org.photonvision.RobotPoseEstimator;
 import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import org.photonvision.RobotPoseEstimator;
 
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -37,7 +33,7 @@ public class Vision extends SubsystemBase {
   private final PhotonCamera camera = new PhotonCamera("OV5647");
 
   AprilTagFieldLayout layout = new AprilTagFieldLayout(List.of(new AprilTag(2, new Pose3d(new Translation3d(0, 0, Units.inchesToMeters(26.2)), new Rotation3d(0, 0, Math.toRadians(180))))), 50, 50);
-  private final RobotPoseEstimator poseEstimator = new RobotPoseEstimator(layout, RobotPoseEstimator.PoseStrategy.AVERAGE_BEST_TARGETS, Arrays.asList(new Pair(camera, new Transform3d(new Translation3d(0, 0, Units.inchesToMeters(9)), new Rotation3d(0, Math.toRadians(23), 0)))));
+  private final RobotPoseEstimator poseEstimator = new RobotPoseEstimator(layout, RobotPoseEstimator.PoseStrategy.AVERAGE_BEST_TARGETS, Arrays.asList(new Pair<PhotonCamera, Transform3d>(camera, new Transform3d(new Translation3d(0, 0, Units.inchesToMeters(9)), new Rotation3d(0, Math.toRadians(23), 0)))));
   
   public Vision() {
   }
@@ -75,7 +71,7 @@ public class Vision extends SubsystemBase {
     return result.getBestTarget();
   }
 
-  /** Returns the position of the robot on the feild based on the best target. Assumes the robot is level to the ground */
+  /** Returns the position of the robot on the field based on the best target. Assumes the robot is level to the ground. */
   // public Pose2d getGlobalRobotPosition(){
 
   //   // poseEstimator.setReferencePose(drivetrain.getPose());
@@ -90,7 +86,7 @@ public class Vision extends SubsystemBase {
   //   return optionalPose.get().getFirst().toPose2d();
   // }
 
-  /** Returns the position of the robot on the feild based on the best target. Assumes the robot is level to the ground */
+  /** Returns the position of the robot on the field based on the best target. Assumes the robot is level to the ground. */
   public Pose2d getGlobalRobotPosition() {
     PhotonPipelineResult result = camera.getLatestResult();
     if (!result.hasTargets())
@@ -106,26 +102,26 @@ public class Vision extends SubsystemBase {
     return robotPose;
   }
 
-  /** Returns a transform to bring the current robot position to the best target */
+  /** Returns a transform to bring the current robot position to the best target. */
   public Translation2d getTransformToTag() {
     PhotonPipelineResult result = camera.getLatestResult();
     if (!result.hasTargets())
       return null;
 
     PhotonTrackedTarget target = result.getBestTarget();
-    var toTag3d = target.getBestCameraToTarget();
+    Transform3d toTag3d = target.getBestCameraToTarget();
 
     return new Translation2d(toTag3d.getX(), toTag3d.getY());
   }
 
-  /** Returns the position and rotation of the nearest apriltag */
+  /** Returns the position and rotation of the nearest AprilTag. */
   public Pose2d getTagPosition() {
     if (!camera.getLatestResult().hasTargets())
       return null;
 
-    var target = camera.getLatestResult().getBestTarget();
+    PhotonTrackedTarget target = camera.getLatestResult().getBestTarget();
 
-    var pose = layout.getTagPose(target.getFiducialId());
+    Optional<Pose3d> pose = layout.getTagPose(target.getFiducialId());
     if (pose.isEmpty())
       return null;
 
