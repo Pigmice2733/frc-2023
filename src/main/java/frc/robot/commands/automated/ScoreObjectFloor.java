@@ -7,10 +7,7 @@ package frc.robot.commands.automated;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
-import frc.robot.Constants;
 import frc.robot.commands.drivetrain.DriveDistance;
-import frc.robot.commands.elevator.MoveClawToPoint;
-import frc.robot.commands.elevator.RaiseElevatorToHeightPID;
 import frc.robot.commands.rotatingArm.RotateArmToAnglePID;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Drivetrain;
@@ -28,10 +25,10 @@ public class ScoreObjectFloor extends SequentialCommandGroup {
   public ScoreObjectFloor(RotatingArm arm, Elevator elevator, Claw claw, Drivetrain drivetrain) {
     addRequirements(arm, elevator, claw);
     addCommands(
-      new MoveClawToPoint(arm, elevator, 5.0, 0.0), // TODO correct distance
+      //new MoveClawToPoint(arm, elevator, 5.0, 0.0), // TODO correct distance
       new InstantCommand(claw::openClaw),
       new DriveDistance(drivetrain, -0.5),
-      new RaiseElevatorToHeightPID(Constants.RotatingArmConfig.armLength, elevator),
+      //new RaiseElevatorToHeightPID(Constants.RotatingArmConfig.armLength, elevator),
       new RotateArmToAnglePID(0, arm),
       new InstantCommand(claw::closeClaw)
     );

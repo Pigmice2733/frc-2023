@@ -7,10 +7,7 @@ package frc.robot.commands.automated;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
-import frc.robot.Constants;
 import frc.robot.commands.drivetrain.DriveDistance;
-import frc.robot.commands.elevator.MoveClawToPoint;
-import frc.robot.commands.elevator.RaiseElevatorToHeightPID;
 import frc.robot.commands.rotatingArm.RotateArmToAnglePID;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Drivetrain;
@@ -29,11 +26,11 @@ public class ScoreObjectMix extends SequentialCommandGroup {
   public ScoreObjectMix(RotatingArm arm, Elevator elevator, Claw claw, Drivetrain drivetrain) {
     addRequirements(arm, elevator, claw);
     addCommands(
-      new MoveClawToPoint(arm, elevator, 46.0, 0.0), // TODO correct distance
-      new MoveClawToPoint(arm, elevator, 36.0, 0.0),
+      //new MoveClawToPoint(arm, elevator, 46.0, 0.0), // TODO correct distance
+      //new MoveClawToPoint(arm, elevator, 36.0, 0.0),
       new InstantCommand(claw::openClaw),
       new DriveDistance(drivetrain, -0.5),
-      new RaiseElevatorToHeightPID(Constants.RotatingArmConfig.armLength, elevator),
+      //new RaiseElevatorToHeightPID(Constants.RotatingArmConfig.armLength, elevator),
       new RotateArmToAnglePID(0, arm),
       new InstantCommand(claw::closeClaw)
     );
