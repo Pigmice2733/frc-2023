@@ -3,6 +3,7 @@ package frc.robot;
 import java.util.List;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
@@ -20,7 +21,7 @@ public final class RuntimeTrajectoryGenerator {
     /** Generates a trajectory to line up the robot to pick up or score based on an AprilTag's location. */
     public static Trajectory generateLineupTrajectory(Pose2d currentRobotPose, Pose2d tagPose, TargetType targetType) {
         // if we are looking at a flipped tag then we have to invert all of our distances
-        double tagRotated = tagPose.getRotation().getDegrees() == 0 ? 1 : -1;
+        double tagRotated = tagPose.getRotation().getDegrees() == 0 ? -1 : 1;
         double xPos = tagPose.getX() - (robotLength/2 + xDistanceFromTagToScoreLocation) * tagRotated;
         double yPos = tagPose.getY();
 
@@ -40,11 +41,15 @@ public final class RuntimeTrajectoryGenerator {
             default:
                 break;
         }
-        Pose2d targetPose = new Pose2d(xPos, yPos, tagPose.getRotation());
+        Pose2d targetPose = new Pose2d(xPos, yPos, new Rotation2d(tagPose.getRotation().getRadians()-3.1415));
 
         TrajectoryConfig config = new TrajectoryConfig(DrivetrainConfig.maxTrajectoryVel, DrivetrainConfig.maxTrajectoryAcc);
         Trajectory trajectory = TrajectoryGenerator.generateTrajectory(List.of(currentRobotPose, targetPose), config);
+        
+        System.out.println("Current Pose "+ currentRobotPose);
+        System.out.println("Target Pose "+ targetPose);
         System.out.println(trajectory);
+
         return trajectory;
     }
 

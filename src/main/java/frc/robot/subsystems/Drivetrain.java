@@ -111,7 +111,7 @@ public class Drivetrain extends SubsystemBase {
     }
   }
 
-  /** Returns the robot's current rotation as a Rotation2d object (in radians). */
+  /** Returns the robot's current yaw as a Rotation2d object (in radians). */
   public Rotation2d getHeadingRadians() {
     return new Rotation2d(-gyro.getAngle() * (Math.PI / 180));
   }
@@ -121,12 +121,9 @@ public class Drivetrain extends SubsystemBase {
     return gyro.getPitch();
   }
 
+  /** Returns the robot's current roll in degrees. */
   public double getRoll() {
     return gyro.getRoll();
-  }
-
-  public double getYaw() {
-    return gyro.getYaw();
   }
 
   /** Returns a DifferentialDriveWheelSpeeds object from the encoder velocities. */
@@ -162,6 +159,8 @@ public class Drivetrain extends SubsystemBase {
   /** Zeros odometry, gyro, and drive encoders. */
   public void resetOdometry() {
     gyro.reset();
+    gyro.setAngleAdjustment(0);
+    
     odometry.resetPosition(new Rotation2d(), 0.0, 0.0, new Pose2d());
 
     leftDrive.getEncoder().setPosition(0);

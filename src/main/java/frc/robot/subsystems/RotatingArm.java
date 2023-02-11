@@ -25,7 +25,7 @@ public class RotatingArm extends SubsystemBase {
   private final CANSparkMax followMotor = new CANSparkMax(RotatingArmConfig.followMotorPort, MotorType.kBrushed);
 
   private final DoubleSolenoid brake = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, RotatingArmConfig.brakePort[0], RotatingArmConfig.brakePort[1]);
-  private final Compressor compressor;
+  private final Compressor compressor = new Compressor(PneumaticsModuleType.CTREPCM);
 
   private boolean brakeEnabled = false;
 
@@ -35,8 +35,6 @@ public class RotatingArm extends SubsystemBase {
   private DisableBrake disableBrakeCommand = new DisableBrake(this);
 
   public RotatingArm() {
-    compressor = new Compressor(PneumaticsModuleType.CTREPCM);
-
     driveMotor.restoreFactoryDefaults();
     followMotor.restoreFactoryDefaults();
     followMotor.follow(driveMotor);
@@ -109,7 +107,7 @@ public class RotatingArm extends SubsystemBase {
     brakeEnabled = false;
   }
 
-  public boolean brakeEnabled() {
+  public boolean getBrakeEnabled() {
     return brakeEnabled;
   }
 }

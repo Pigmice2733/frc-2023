@@ -5,6 +5,7 @@
 package frc.robot.commands.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -14,7 +15,6 @@ import frc.robot.commands.drivetrain.FollowPath;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
 
-/** Uses Apriltags to line up with the grid to score. */
 public class AlignToScore extends CommandBase {
   private final Vision vision;
   private final Drivetrain drivetrain;
@@ -30,11 +30,9 @@ public class AlignToScore extends CommandBase {
 
   @Override
   public void initialize() {
-    Pose2d robotPose = vision.getGlobalRobotPosition();    
-    Pose2d tagPose = vision.getTagPosition();
-
-    System.out.println(tagPose);
-    System.out.println(robotPose);
+    var transformToTag = vision.getTransformToTag();
+    Pose2d robotPose = new Pose2d(-transformToTag.getX(), -transformToTag.getY(), new Rotation2d());
+    Pose2d tagPose = vision.getRecentTagPose();
 
     if (robotPose == null || tagPose == null) {
       this.cancel();

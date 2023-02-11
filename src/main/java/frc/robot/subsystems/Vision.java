@@ -12,7 +12,6 @@ import org.photonvision.RobotPoseEstimator;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
-import org.photonvision.RobotPoseEstimator;
 
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -24,7 +23,6 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -32,94 +30,85 @@ public class Vision extends SubsystemBase {
 
   private final PhotonCamera camera = new PhotonCamera("OV5647");
 
-  AprilTagFieldLayout layout = new AprilTagFieldLayout(List.of(new AprilTag(2, new Pose3d(new Translation3d(0, 0, Units.inchesToMeters(26.2)), new Rotation3d(0, 0, Math.toRadians(180))))), 50, 50);
+  private final AprilTagFieldLayout layout = new AprilTagFieldLayout(List.of(new AprilTag(2, new Pose3d(new Translation3d(0, 0, Units.inchesToMeters(26.2)), new Rotation3d(0, 0, Math.toRadians(180))))), 50, 50);
   private final RobotPoseEstimator poseEstimator = new RobotPoseEstimator(layout, RobotPoseEstimator.PoseStrategy.AVERAGE_BEST_TARGETS, Arrays.asList(new Pair<PhotonCamera, Transform3d>(camera, new Transform3d(new Translation3d(0, 0, Units.inchesToMeters(9)), new Rotation3d(0, Math.toRadians(23), 0)))));
-  
-  public Vision() {
-  }
+  private PhotonPipelineResult camResult;
+
+  public Vision() { }
+
+  private Pose2d estimatedRobotPose;
+  private Pose2d recentTagPose;
+
+  public Pose2d getEstimatedRobotPose() { return estimatedRobotPose; }
+  public Pose2d getRecentTagPose() { return recentTagPose; }
 
   @Override
   public void periodic() {
-    updateDrivetrainPose();
+    camResult = camera.getLatestResult();
+
+    calculateGlobalRobotPosition();
+    updateShuffleboard();
   }
 
-  private void updateDrivetrainPose() {
-    if (!camera.getLatestResult().hasTargets())
+  private void updateShuffleboard() {
+    SmartDashboard.putNumber("RobotYaw", estimatedRobotPose.getRotation().getDegrees());
+    SmartDashboard.putNumber("RobotX", estimatedRobotPose.getX());
+    SmartDashboard.putNumber("RobotY", estimatedRobotPose.getY());
+
+    SmartDashboard.putNumber("tagYaw", recentTagPose.getRotation().getDegrees());
+    SmartDashboard.putNumber("tagX", recentTagPose.getX());
+    SmartDashboard.putNumber("tagY", recentTagPose.getY());
+  }
+
+  /** Returns the current best target or null if no targets are found */
+  public PhotonTrackedTarget getBestTarget() {
+    if (camResult == null)
+      return null;
+
+    return camResult.getBestTarget();
+  }
+
+  /** Sets the estimated robot pose and recent target pose */
+  private void calculateGlobalRobotPosition() {
+    if (!camResult.hasTargets())
       return;
 
-    var target = camera.getLatestResult().getBestTarget();
+    var poseEstimation = poseEstimator.update();
+    if (poseEstimation.isEmpty())
+      return;
 
-    Pose2d currentRobotPose = getGlobalRobotPosition();
+    Pose2d currentRobotPose = poseEstimation.get().getFirst().toPose2d();
+    Pose2d tagPosition = getTagPosition();
 
-    SmartDashboard.putNumber("TargetYaw", target.getYaw());
-
-    if (currentRobotPose == null) {
+    if (currentRobotPose == null || tagPosition == null) {
       return;
     }
 
-    //SmartDashboard.putNumber("RobotYaw", currentRobotPose.getRotation().getDegrees());
-    SmartDashboard.putNumber("X", currentRobotPose.getX());
-    SmartDashboard.putNumber("Y", currentRobotPose.getY());
+    // Stops code from occasionally crashing when tag pose is NaN
+    if (Double.isNaN(currentRobotPose.getX()))
+      return;
+  
+    estimatedRobotPose = currentRobotPose;
+    recentTagPose = tagPosition;
   }
 
-  public PhotonTrackedTarget getBestTarget() {
-    
-    var result = camera.getLatestResult();
-    if (result == null)
-      return null;
-
-    return result.getBestTarget();
-  }
-
-  /** Returns the position of the robot on the field based on the best target. Assumes the robot is level to the ground. */
-  // public Pose2d getGlobalRobotPosition(){
-
-  //   // poseEstimator.setReferencePose(drivetrain.getPose());
-  //   Optional<Pair<Pose3d, Double>> optionalPose = poseEstimator.update();
-
-  //   if (optionalPose.isEmpty()) return null;
-
-  //   Pair<Pose3d, Double> timedPose = optionalPose.get();
-
-  //   //drivetrain.resetOdometry(timedPose.getFirst().toPose2d());
-  //   //return drivetrain.getPose();
-  //   return optionalPose.get().getFirst().toPose2d();
-  // }
-
-  /** Returns the position of the robot on the field based on the best target. Assumes the robot is level to the ground. */
-  public Pose2d getGlobalRobotPosition() {
-    PhotonPipelineResult result = camera.getLatestResult();
-    if (!result.hasTargets())
-      return null;
-
-    PhotonTrackedTarget target = result.getBestTarget();
-
-    var tagPose = layout.getTagPose(target.getFiducialId());
-    if (tagPose.isEmpty()) 
-      return null;
-
-    Pose2d robotPose = tagPose.get().transformBy(target.getBestCameraToTarget()).toPose2d();
-    return robotPose;
-  }
-
-  /** Returns a transform to bring the current robot position to the best target. */
+  /** Returns a transform to bring the current robot position to the best target */
   public Translation2d getTransformToTag() {
-    PhotonPipelineResult result = camera.getLatestResult();
-    if (!result.hasTargets())
+    if (!camResult.hasTargets())
       return null;
 
-    PhotonTrackedTarget target = result.getBestTarget();
-    Transform3d toTag3d = target.getBestCameraToTarget();
+    PhotonTrackedTarget target = camResult.getBestTarget();
+    Transform3d toTag = target.getBestCameraToTarget();
 
-    return new Translation2d(toTag3d.getX(), toTag3d.getY());
+    return toTag.getTranslation().toTranslation2d();
   }
 
-  /** Returns the position and rotation of the nearest AprilTag. */
+  /** Returns the position and rotation of the nearest AprilTag*/
   public Pose2d getTagPosition() {
-    if (!camera.getLatestResult().hasTargets())
+    if (!camResult.hasTargets())
       return null;
 
-    PhotonTrackedTarget target = camera.getLatestResult().getBestTarget();
+    PhotonTrackedTarget target = camResult.getBestTarget();
 
     Optional<Pose3d> pose = layout.getTagPose(target.getFiducialId());
     if (pose.isEmpty())
