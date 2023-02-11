@@ -14,17 +14,25 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxRelativeEncoder.Type;
 
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class RotatingArm extends SubsystemBase {
   private final CANSparkMax driveMotor = new CANSparkMax(RotatingArmConfig.driveMotorPort, MotorType.kBrushed);
   private final CANSparkMax followMotor = new CANSparkMax(RotatingArmConfig.followMotorPort, MotorType.kBrushed);
+
+  private final ShuffleboardTab armTab;
+  private final GenericEntry topSwitchEntry, bottomSwitchEntry, angleEntry;
+
 
   private final DoubleSolenoid brake = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, RotatingArmConfig.brakePort[0], RotatingArmConfig.brakePort[1]);
   private final Compressor compressor;
@@ -57,11 +65,16 @@ public class RotatingArm extends SubsystemBase {
     followMotor.setInverted(false);
 
     driveMotor.getEncoder(Type.kQuadrature, 8192).setPositionConversionFactor(RotatingArmConfig.rotationConversion);
+
+    armTab = Shuffleboard.getTab("armTab");
+    topSwitchEntry = armTab.add("Top Switch", false).getEntry();
+    bottomSwitchEntry = armTab.add("Bottom Switch", false).getEntry();
+    angleEntry = armTab.add("Arm Angle", 0).getEntry();
   }
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Angle", getAngle());
+    updateShuffleboard();
     applyClawOutput();
   }
 
@@ -103,6 +116,12 @@ public class RotatingArm extends SubsystemBase {
     }
 
     driveMotor.set(output * RotatingArmConfig.speedMultipler);
+  }
+
+  private void updateShuffleboard() {
+    angleEntry.setDouble(getAngle());
+    topSwitchEntry.setBoolean(topLimitSwitch.get());
+    bottomSwitchEntry.setBoolean(bottomLimitSwitch.get());    
   }
 
   /** Get the current angle of the arm. */
