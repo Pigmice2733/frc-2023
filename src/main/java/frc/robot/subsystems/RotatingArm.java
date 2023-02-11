@@ -51,15 +51,9 @@ public class RotatingArm extends SubsystemBase {
   public boolean getBottomSwitch() { return !bottomLimitSwitch.get(); } 
 
   public RotatingArm() {
-<<<<<<< HEAD
-=======
-
     topLimitSwitch = new DigitalInput(RotatingArmConfig.topLimitSwitchID);
     bottomLimitSwitch = new DigitalInput(RotatingArmConfig.bottomLimitSwitchID);
 
-    compressor = new Compressor(PneumaticsModuleType.CTREPCM);
-
->>>>>>> 43bdcc18ef1f202b1881956cab70b67835904e94
     driveMotor.restoreFactoryDefaults();
     followMotor.restoreFactoryDefaults();
     followMotor.follow(driveMotor);
