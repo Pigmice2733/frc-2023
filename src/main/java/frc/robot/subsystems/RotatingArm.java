@@ -8,12 +8,14 @@ import frc.robot.Constants.DrivetrainConfig;
 import frc.robot.Constants.RotatingArmConfig;
 import frc.robot.commands.rotatingArm.DisableBrake;
 import frc.robot.commands.rotatingArm.EnableBrake;
+import frc.robot.commands.rotatingArm.RotateArmManual;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxRelativeEncoder.Type;
 
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -26,7 +28,7 @@ public class RotatingArm extends SubsystemBase {
 
   private final DoubleSolenoid brake = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, RotatingArmConfig.brakePort[0], RotatingArmConfig.brakePort[1]);
   private final Compressor compressor;
-
+  
   private boolean brakeEnabled = false;
 
   private double targetMotorOutput = 0;
@@ -34,7 +36,17 @@ public class RotatingArm extends SubsystemBase {
   private EnableBrake enableBrakeCommand = new EnableBrake(this);
   private DisableBrake disableBrakeCommand = new DisableBrake(this);
 
+  private final DigitalInput topLimitSwitch;
+  private final DigitalInput bottomLimitSwitch;
+
+  public boolean getTopSwitch() { return !topLimitSwitch.get(); }
+  public boolean getBottomSwitch() { return !bottomLimitSwitch.get(); } 
+
   public RotatingArm() {
+
+    topLimitSwitch = new DigitalInput(RotatingArmConfig.topLimitSwitchID);
+    bottomLimitSwitch = new DigitalInput(RotatingArmConfig.bottomLimitSwitchID);
+
     compressor = new Compressor(PneumaticsModuleType.CTREPCM);
 
     driveMotor.restoreFactoryDefaults();
@@ -83,6 +95,13 @@ public class RotatingArm extends SubsystemBase {
     if (brakeEnabled)
       return;
       
+    if (getTopSwitch()){
+      output = Math.min(0, output);
+    }
+    if (getBottomSwitch()){
+      output = Math.max(0, output);
+    }
+
     driveMotor.set(output * RotatingArmConfig.speedMultipler);
   }
 
