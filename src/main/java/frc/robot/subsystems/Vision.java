@@ -23,7 +23,9 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Vision extends SubsystemBase {
@@ -34,7 +36,18 @@ public class Vision extends SubsystemBase {
   private final RobotPoseEstimator poseEstimator = new RobotPoseEstimator(layout, RobotPoseEstimator.PoseStrategy.AVERAGE_BEST_TARGETS, Arrays.asList(new Pair<PhotonCamera, Transform3d>(camera, new Transform3d(new Translation3d(0, 0, Units.inchesToMeters(9)), new Rotation3d(0, Math.toRadians(23), 0)))));
   private PhotonPipelineResult camResult;
 
-  public Vision() { }
+  private final GenericEntry robotXEntry, robotYEntry, robotYawEntry, tagXEntry, tagYEntry, tagYawEntry; 
+
+  public Vision() { 
+    ShuffleboardTab visionTab = Shuffleboard.getTab("Vision");
+    robotXEntry = visionTab.add("Robot X", 0).getEntry();
+    robotYEntry = visionTab.add("Robot Y", 0).getEntry();
+    robotYawEntry = visionTab.add("Robot Yaw", 0).getEntry();
+
+    tagXEntry = visionTab.add("Tag X", 0).getEntry();
+    tagYEntry = visionTab.add("Tag Y", 0).getEntry();
+    tagYawEntry = visionTab.add("Tag Yaw", 0).getEntry();
+  }
 
   private Pose2d estimatedRobotPose;
   private Pose2d recentTagPose;
@@ -51,13 +64,16 @@ public class Vision extends SubsystemBase {
   }
 
   private void updateShuffleboard() {
-    SmartDashboard.putNumber("RobotYaw", estimatedRobotPose.getRotation().getDegrees());
-    SmartDashboard.putNumber("RobotX", estimatedRobotPose.getX());
-    SmartDashboard.putNumber("RobotY", estimatedRobotPose.getY());
+    if (estimatedRobotPose == null || recentTagPose == null || Double.isNaN(estimatedRobotPose.getX()))
+      return;
 
-    SmartDashboard.putNumber("tagYaw", recentTagPose.getRotation().getDegrees());
-    SmartDashboard.putNumber("tagX", recentTagPose.getX());
-    SmartDashboard.putNumber("tagY", recentTagPose.getY());
+    robotYawEntry.setDouble(estimatedRobotPose.getRotation().getDegrees());
+    robotXEntry.setDouble(estimatedRobotPose.getX());
+    robotYEntry.setDouble(estimatedRobotPose.getY());
+
+    tagYawEntry.setDouble(recentTagPose.getRotation().getDegrees());
+    tagXEntry.setDouble(recentTagPose.getX());
+    tagYEntry.setDouble(recentTagPose.getY());
   }
 
   /** Returns the current best target or null if no targets are found */
