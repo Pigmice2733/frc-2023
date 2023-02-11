@@ -89,6 +89,10 @@ public final class Constants {
         public static final double kD = 0.0;
         public static final double maxVelocity = 0.0;
         public static final double maxAcceleration = 0.0;
+
+        public static final int topLimitSwitchID = 0;
+        public static final int bottomLimitSwitchID = 0;
+        
     }
     public static final class ElevatorConfig {
         public static final int leftMotorPort = 1;
