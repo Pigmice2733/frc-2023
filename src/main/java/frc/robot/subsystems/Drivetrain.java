@@ -4,26 +4,25 @@
 
 package frc.robot.subsystems;
 
-import frc.robot.Constants.DrivetrainConfig;
-import frc.robot.Constants.ShuffleboardConfig;
-
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import frc.robot.Constants.DrivetrainConfig;
+import frc.robot.Constants.ShuffleboardConfig;
 
 public class Drivetrain extends SubsystemBase {
   GenericEntry xPosEntry;
@@ -38,10 +37,13 @@ public class Drivetrain extends SubsystemBase {
 
   private final AHRS gyro = new AHRS();
 
-  private final DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(DrivetrainConfig.drivetrainWidthMeters);
-  private final DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(new Rotation2d(), 0, 0, new Pose2d());
+  private final DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(
+      DrivetrainConfig.drivetrainWidthMeters);
+  private final DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(new Rotation2d(), 0, 0,
+      new Pose2d());
 
-  private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(DrivetrainConfig.kS, DrivetrainConfig.kV, DrivetrainConfig.kA);
+  private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(DrivetrainConfig.kS,
+      DrivetrainConfig.kV, DrivetrainConfig.kA);
 
   private Pose2d pose = new Pose2d();
 
@@ -59,7 +61,7 @@ public class Drivetrain extends SubsystemBase {
 
     leftFollow.follow(leftDrive);
     rightFollow.follow(rightDrive);
-    
+
     leftDrive.setInverted(false);
     rightDrive.setInverted(true);
 
@@ -80,29 +82,53 @@ public class Drivetrain extends SubsystemBase {
 
   public void periodic() {
     SmartDashboard.putNumber("Roll", gyro.getRoll());
+    SmartDashboard.putNumber("Pitch", this.getPitch());
     updateOdometry();
   }
 
   /**
-   * Sets motor output factor to a slowMultiplier if slowmode is enabled or 1 if slowmode is disabled.
+   * Sets motor output factor to a slowMultiplier if slowmode is enabled or 1 if
+   * slowmode is disabled.
+   * 
    * @param slowEnabled whether or not slowmode should be enabled
    */
-  public void setSlow(boolean slowEnabled) { 
-    this.slowEnabled = slowEnabled; 
-    outputFactor = slowEnabled ? DrivetrainConfig.slowMultiplier : 1; 
+  public void setSlow(boolean slowEnabled) {
+    this.slowEnabled = slowEnabled;
+    outputFactor = slowEnabled ? DrivetrainConfig.slowMultiplier : 1;
   }
-  public void enableSlow() { setSlow(true); }
-  public void disableSlow() { setSlow(false); }
-  public void toggleSlow() { setSlow(!this.slowEnabled); }
-  
-  public void setBackwards(boolean backwards) {this.backwards = backwards;}   
-  public void enableBackwards() { setBackwards(true); }
-  public void disableBackwards() { setBackwards(false); }
-  public void toggleBackwards() { setBackwards(!this.backwards); }
+
+  public void enableSlow() {
+    setSlow(true);
+  }
+
+  public void disableSlow() {
+    setSlow(false);
+  }
+
+  public void toggleSlow() {
+    setSlow(!this.slowEnabled);
+  }
+
+  public void setBackwards(boolean backwards) {
+    this.backwards = backwards;
+  }
+
+  public void enableBackwards() {
+    setBackwards(true);
+  }
+
+  public void disableBackwards() {
+    setBackwards(false);
+  }
+
+  public void toggleBackwards() {
+    setBackwards(!this.backwards);
+  }
 
   /** Updates the odometry pose with the heading and position measurements. */
   private void updateOdometry() {
-    pose = odometry.update(getHeadingRadians(), leftDrive.getEncoder().getPosition(), rightDrive.getEncoder().getPosition());
+    pose = odometry.update(getHeadingRadians(), leftDrive.getEncoder().getPosition(),
+        rightDrive.getEncoder().getPosition());
 
     if (ShuffleboardConfig.drivetrainPrintsEnabled) {
       xPosEntry.setDouble(pose.getX());
@@ -126,7 +152,9 @@ public class Drivetrain extends SubsystemBase {
     return gyro.getRoll();
   }
 
-  /** Returns a DifferentialDriveWheelSpeeds object from the encoder velocities. */
+  /**
+   * Returns a DifferentialDriveWheelSpeeds object from the encoder velocities.
+   */
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
     double left = leftDrive.getEncoder().getVelocity();
     double right = rightDrive.getEncoder().getVelocity();
@@ -134,10 +162,12 @@ public class Drivetrain extends SubsystemBase {
     return new DifferentialDriveWheelSpeeds(left, right);
   }
 
- /** Returns the average distance moved by left and right wheels since last reset. */
+  /**
+   * Returns the average distance moved by left and right wheels since last reset.
+   */
   public double getAverageDistance() {
     double distance = (leftDrive.getEncoder().getPosition() + rightDrive.getEncoder().getPosition()) / 2;
-    
+
     return (Math.abs(distance) < 0.1) ? 0.1 : distance;
   }
 
@@ -148,7 +178,7 @@ public class Drivetrain extends SubsystemBase {
 
   /** Returns the DifferentialDriveKinematics object used by the drivetrain. */
   public DifferentialDriveKinematics getKinematics() {
-    return kinematics;  
+    return kinematics;
   }
 
   /** Returns the robot's current pose. */
@@ -160,7 +190,7 @@ public class Drivetrain extends SubsystemBase {
   public void resetOdometry() {
     gyro.reset();
     gyro.setAngleAdjustment(0);
-    
+
     odometry.resetPosition(new Rotation2d(), 0.0, 0.0, new Pose2d());
 
     leftDrive.getEncoder().setPosition(0);
@@ -168,7 +198,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   /** Sets odometry to a specific Pose2d. */
-  public void setOdometryPose(Pose2d newPose){
+  public void setOdometryPose(Pose2d newPose) {
     gyro.reset();
     gyro.setAngleAdjustment(newPose.getRotation().getDegrees());
     odometry.resetPosition(newPose.getRotation(), 0, 0, newPose);
@@ -189,20 +219,23 @@ public class Drivetrain extends SubsystemBase {
 
   /**
    * Drives the robot with given voltages for left and right wheels.
-   * Input values are clamped between -12 and 12 because the motor cannot handle voltages more than 12V.
+   * Input values are clamped between -12 and 12 because the motor cannot handle
+   * voltages more than 12V.
    * 
    * @param left  voltage for left wheels
    * @param right voltage for right wheels
    */
   public void tankDriveVolts(double left, double right) {
-    updateOutputs(MathUtil.clamp(left/12.0, -1, 1), MathUtil.clamp(right/12.0, -1, 1)); // Divides by 12 to scale possible inputs between 0 and 1 (12 in max volts)
+    updateOutputs(MathUtil.clamp(left / 12.0, -1, 1), MathUtil.clamp(right / 12.0, -1, 1)); // Divides by 12 to scale
+                                                                                            // possible inputs between 0
+                                                                                            // and 1 (12 in max volts)
   }
 
   /**
    * Drives the robot with given directional and rotational speeds.
    * 
    * @param forward speed in robot's current direction
-   * @param turn turn speed (clockwise is positive)
+   * @param turn    turn speed (clockwise is positive)
    */
   public void arcadeDrive(double forward, double turn) {
     double left = forward + turn;
@@ -216,11 +249,12 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void updateOutputs(double left, double right) {
-    // Clamp outputs FOR TESTING (to make sure drivetrain does not go crazy while testing auto commands)
+    // Clamp outputs FOR TESTING (to make sure drivetrain does not go crazy while
+    // testing auto commands)
     // WILL BE REMOVED FOR COMP
     // TODO (see above)
 
-    if(backwards){
+    if (backwards) {
       left *= -1;
       right *= -1;
     }
@@ -231,7 +265,7 @@ public class Drivetrain extends SubsystemBase {
 
     leftDrive.set(left * outputFactor);
     rightDrive.set(right * outputFactor);
-    
+
     if (ShuffleboardConfig.drivetrainPrintsEnabled) {
       leftOutputEntry.setDouble(left);
       rightOutputEntry.setDouble(right);
@@ -244,7 +278,7 @@ public class Drivetrain extends SubsystemBase {
     leftFollow.setIdleMode(IdleMode.kBrake);
     rightFollow.setIdleMode(IdleMode.kBrake);
   }
-  
+
   public void enableCoastMode() {
     leftDrive.setIdleMode(IdleMode.kCoast);
     rightDrive.setIdleMode(IdleMode.kCoast);

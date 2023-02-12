@@ -10,11 +10,10 @@ import frc.robot.commands.drivetrain.DriveOntoChargeStation;
 import frc.robot.subsystems.Drivetrain;
 
 public class BalanceRoutine extends SequentialCommandGroup {
-  /** Drives the robot onto the Charge Station and balances.*/
+  /** Drives the robot onto the Charge Station and balances. */
   public BalanceRoutine(Drivetrain drivetrain) {
     addCommands(
-      new DriveOntoChargeStation(drivetrain),
-      new AutoBalanceWithRoll(drivetrain)
-    );
+        new DriveOntoChargeStation(drivetrain, true),
+        new AutoBalanceWithRoll(drivetrain, true));
   }
 }
