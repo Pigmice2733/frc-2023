@@ -5,7 +5,9 @@
 package frc.robot.commands.automated;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.RuntimeTrajectoryGenerator;
 import frc.robot.Constants.RotatingArmConfig;
+import frc.robot.RuntimeTrajectoryGenerator.TargetType;
 import frc.robot.commands.claw.OpenClaw;
 import frc.robot.commands.drivetrain.DriveDistance;
 import frc.robot.commands.rotatingArm.RotateArmToAngleSimple;
@@ -18,23 +20,15 @@ public class ScoreObject extends SequentialCommandGroup {
   public ScoreObject(Drivetrain drivetrain, RotatingArm arm, Claw claw) {
     double height = 0;
 
-    switch(selectedScoreHeight) { // TODO: enter correct heights
-      case CubeMid:
-        height = 0;
-        break;
-      case CubeHigh:
-        height = 0;
-        break;
-      case ConeMid:
-        height = 0;
-        break;
-      case ConeHigh:
-        height = 0;
-        break;
-      default: // Floor
-        height = 0;
-        break;
-    }
+    TargetType targetType = RuntimeTrajectoryGenerator.getTargetType();
+
+    if (selectedScoreHeight == ScoreHeight.Mid && targetType == TargetType.Cube) { height = 0; }
+    else if (selectedScoreHeight == ScoreHeight.Mid && targetType == TargetType.Cube) { height = 0; }
+    else if (selectedScoreHeight == ScoreHeight.Mid && targetType != TargetType.Cube) { height = 0; }
+    else if (selectedScoreHeight == ScoreHeight.High && targetType == TargetType.Cube) { height = 0; }
+    else if (selectedScoreHeight == ScoreHeight.High && targetType != TargetType.Cube) { height = 0; }
+    else {height = 0; } // Floor
+
     height -= RotatingArmConfig.armLength-RotatingArmConfig.armHeight;
     double armAngle = -Math.acos(height/(RotatingArmConfig.armLength*2) - 1) + Math.PI;
 
@@ -52,10 +46,8 @@ public class ScoreObject extends SequentialCommandGroup {
           
   public enum ScoreHeight {
     Floor,
-    CubeMid,
-    CubeHigh,
-    ConeMid,
-    ConeHigh
+    Mid,
+    High
   }
 
   private static ScoreHeight selectedScoreHeight = ScoreHeight.Floor;

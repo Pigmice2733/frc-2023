@@ -17,6 +17,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.RuntimeTrajectoryGenerator.TargetType;
+import frc.robot.commands.automated.ScoreObject;
+import frc.robot.commands.automated.ScoreObject.ScoreHeight;
 import frc.robot.commands.drivetrain.ArcadeDrive;
 import frc.robot.commands.routines.BalanceRoutine;
 import frc.robot.commands.routines.ScoreAndBalance;
@@ -118,6 +120,15 @@ public class RobotContainer {
       .onTrue(new InstantCommand(() -> RuntimeTrajectoryGenerator.setTargetType(TargetType.ConeLeft)));
 
     // OPERATOR
+    /** [operator] Set the ScoreHeight in ScoreObject with D-pad */
+    new POVButton(driver, 0) // up
+      .onTrue(new InstantCommand(() -> ScoreObject.setScoreHeight(ScoreHeight.High)));
+    new POVButton(driver, 90) // left
+      .onTrue(new InstantCommand(() -> ScoreObject.setScoreHeight(ScoreHeight.Mid)));
+    new POVButton(driver, 270) // right
+      .onTrue(new InstantCommand(() -> ScoreObject.setScoreHeight(ScoreHeight.Mid)));
+    new POVButton(driver, 180) // down
+      .onTrue(new InstantCommand(() -> ScoreObject.setScoreHeight(ScoreHeight.Floor)));
 
 
     // OLD
