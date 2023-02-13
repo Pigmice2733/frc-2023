@@ -21,21 +21,12 @@ import frc.robot.subsystems.Vision;
 public class AlignToScore extends CommandBase {
   private final Vision vision;
   private final Drivetrain drivetrain;
-  private final Supplier<RuntimeTrajectoryGenerator.TargetType> targetType;
 
   private RamseteCommand pathCommand;
 
-  public AlignToScore(Vision vision, Drivetrain drivetrain, RuntimeTrajectoryGenerator.TargetType targetType) {
+  public AlignToScore(Vision vision, Drivetrain drivetrain) {
     this.vision = vision;
     this.drivetrain = drivetrain;
-    this.targetType = () -> targetType;
-  }
-
-  public AlignToScore(Vision vision, Drivetrain drivetrain,
-      Supplier<RuntimeTrajectoryGenerator.TargetType> targetTypeSupplier) {
-    this.vision = vision;
-    this.drivetrain = drivetrain;
-    this.targetType = targetTypeSupplier;
   }
 
   @Override
@@ -53,11 +44,7 @@ public class AlignToScore extends CommandBase {
     // Sets the robot odometry to the estimated global position
     drivetrain.setOdometryPose(robotPose);
 
-    TargetType type = targetType.get();
-
-    System.out.println("TARGET TYPE " + type);
-
-    Trajectory trajectory = RuntimeTrajectoryGenerator.generateLineupTrajectory(robotPose, tagPose, type);
+    Trajectory trajectory = RuntimeTrajectoryGenerator.generateLineupTrajectory(robotPose, tagPose);
 
     pathCommand = new FollowPath(drivetrain, trajectory);
     CommandScheduler.getInstance().schedule(pathCommand);

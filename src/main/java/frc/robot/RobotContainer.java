@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
@@ -13,10 +15,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.RuntimeTrajectoryGenerator.TargetType;
 import frc.robot.commands.drivetrain.ArcadeDrive;
 import frc.robot.commands.routines.BalanceRoutine;
 import frc.robot.commands.routines.ScoreAndBalance;
+import frc.robot.commands.vision.AlignAndScore;
 import frc.robot.commands.vision.AlignToScore;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
@@ -38,7 +42,7 @@ public class RobotContainer {
   private final XboxController driver = new XboxController(0);
   private final XboxController operator = new XboxController(1);
   private final Controls controls = new Controls(driver, operator);
-  private final SendableChooser<RuntimeTrajectoryGenerator.TargetType> targetTypeChooser = new SendableChooser<>();
+  //private final SendableChooser<RuntimeTrajectoryGenerator.TargetType> targetTypeChooser = new SendableChooser<>();
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -46,13 +50,13 @@ public class RobotContainer {
   public RobotContainer() {
     drivetrain.setDefaultCommand(new ArcadeDrive(drivetrain, controls::getDriveSpeed, controls::getTurnSpeed));
 
-    targetTypeChooser.addOption("LEFT CONE", TargetType.ConeLeft);
-    targetTypeChooser.setDefaultOption("CUBE", TargetType.Cube);
-    targetTypeChooser.addOption("RIGHT CONE", TargetType.ConeRight);
-    targetTypeChooser.addOption("LEFT PICKUP", TargetType.PickupLeft);
-    targetTypeChooser.addOption("RIGHT PICKUP", TargetType.PickupRight);
+    // targetTypeChooser.addOption("LEFT CONE", TargetType.ConeLeft);
+    // targetTypeChooser.setDefaultOption("CUBE", TargetType.Cube);
+    // targetTypeChooser.addOption("RIGHT CONE", TargetType.ConeRight);
+    // targetTypeChooser.addOption("LEFT PICKUP", TargetType.PickupLeft);
+    // targetTypeChooser.addOption("RIGHT PICKUP", TargetType.PickupRight);
 
-    Shuffleboard.getTab("Drivetrain").add("Target", targetTypeChooser).withWidget(BuiltInWidgets.kComboBoxChooser);
+    // Shuffleboard.getTab("Drivetrain").add("Target", targetTypeChooser).withWidget(BuiltInWidgets.kComboBoxChooser);
 
     configureButtonBindings();
   }
@@ -66,30 +70,59 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    /** Schedule AlignToScore when A is pressed, cancel when released */
-    final AlignToScore alignToScore = new AlignToScore(vision, drivetrain, targetTypeChooser::getSelected);
+    // DRIVER
+
+    /** [driver] Enable slow mode when Y or Start is pressed, stop slow mode when released */
+    new JoystickButton(driver, Button.kY.value)
+        .onTrue(new InstantCommand(drivetrain::enableSlow))
+        .onFalse(new InstantCommand(drivetrain::disableSlow));
+    new JoystickButton(driver, Button.kRightBumper.value)
+        .onTrue(new InstantCommand(drivetrain::enableSlow))
+        .onFalse(new InstantCommand(drivetrain::disableSlow));
+
+
+    /** [driver] Schedule AlignToScore when A is pressed, cancel when released */
+    final AlignToScore alignToScore = new AlignToScore(vision, drivetrain);
     new JoystickButton(driver, Button.kA.value)
         .onTrue(alignToScore)
         .onFalse(new InstantCommand(() -> {
           alignToScore.cancel();
-        }));
+    }));
 
-    /** Schedule AutoBalanceWithRoll when B is pressed, cancel when released */
+    /** [driver] Schedule AlignAndScore when X is pressed, cancel when released */
+    final AlignAndScore alignAndScore = new AlignAndScore(vision, drivetrain);
+    new JoystickButton(driver, Button.kX.value)
+        .onTrue(alignAndScore)
+        .onFalse(new InstantCommand(() -> {
+          alignAndScore.cancel();
+    }));
+
+    /** [driver] Schedule AutoBalanceWithRoll when B is pressed, cancel when released */
     final BalanceRoutine autoBalance = new BalanceRoutine(drivetrain);
     new JoystickButton(driver, Button.kB.value)
         .onTrue(autoBalance)
         .onFalse(new InstantCommand(() -> {
-          autoBalance.cancel();
-        }));
+          autoBalance.cancel(); 
+    }));
 
-    /** Fast way to reset odometry for testing */
-    new JoystickButton(driver, Button.kX.value)
+    /** [driver] Force reset odometry when Start is pressed */
+    new JoystickButton(driver, Button.kStart.value)
         .onTrue(new InstantCommand(() -> drivetrain.resetOdometry()));
 
-    /** Enable slow mode when Y is pressed, stop slow mode when released */
-    new JoystickButton(driver, Button.kY.value)
-        .onTrue(new InstantCommand(drivetrain::enableSlow))
-        .onFalse(new InstantCommand(drivetrain::disableSlow));
+    /** [driver] Set the TargetType in RuntimeTrajectoryGenerator with D-pad */
+    new POVButton(driver, 0) // up
+      .onTrue(new InstantCommand(() -> RuntimeTrajectoryGenerator.setTargetType(TargetType.Cube)));
+    new POVButton(driver, 90) // right
+      .onTrue(new InstantCommand(() -> RuntimeTrajectoryGenerator.setTargetType(TargetType.ConeRight)));
+    new POVButton(driver, 270) // left
+      .onTrue(new InstantCommand(() -> RuntimeTrajectoryGenerator.setTargetType(TargetType.ConeLeft)));
+
+    // OPERATOR
+
+
+    // OLD
+
+  
   }
 
   /**
