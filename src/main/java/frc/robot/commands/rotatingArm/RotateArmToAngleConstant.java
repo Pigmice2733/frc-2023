@@ -6,15 +6,15 @@ package frc.robot.commands.rotatingArm;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants.RotatingArmConfig;
 import frc.robot.subsystems.RotatingArm;
 
-public class RotateArmToAngleSimple extends CommandBase {
+public class RotateArmToAngleConstant extends CommandBase {
   private final RotatingArm arm;
   private final double targetAngleDegrees;
   private boolean reverse;
 
-  /** Creates a new RotateArmToAngleSimple. */
-  public RotateArmToAngleSimple(RotatingArm arm, double targetAngleDegrees) {
+  public RotateArmToAngleConstant(RotatingArm arm, double targetAngleDegrees) {
     this.arm = arm;
     this.targetAngleDegrees = targetAngleDegrees;
 
@@ -30,7 +30,7 @@ public class RotateArmToAngleSimple extends CommandBase {
 
   @Override
   public void execute() {
-    arm.setTargetOutput(0.5 * (reverse ? -1 : 1));
+    arm.setTargetOutput(RotatingArmConfig.constantTurnSpeed * (reverse ? -1 : 1));
   }
 
   @Override

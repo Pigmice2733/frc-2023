@@ -7,7 +7,7 @@ package frc.robot.commands.automated.oldScore;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.commands.drivetrain.DriveDistance;
+import frc.robot.commands.drivetrain.DriveDistancePID;
 import frc.robot.commands.rotatingArm.RotateArmToAnglePID;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Drivetrain;

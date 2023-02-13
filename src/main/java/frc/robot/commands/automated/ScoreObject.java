@@ -10,8 +10,8 @@ import frc.robot.RuntimeTrajectoryGenerator;
 import frc.robot.Constants.RotatingArmConfig;
 import frc.robot.RuntimeTrajectoryGenerator.TargetLocation;
 import frc.robot.commands.claw.OpenClaw;
-import frc.robot.commands.drivetrain.DriveDistance;
-import frc.robot.commands.rotatingArm.RotateArmToAngleSimple;
+import frc.robot.commands.drivetrain.DriveDistancePID;
+import frc.robot.commands.rotatingArm.RotateArmToAngleConstant;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.RotatingArm;
@@ -33,12 +33,12 @@ public class ScoreObject extends SequentialCommandGroup {
     double armAngle = -Math.acos(MathUtil.clamp(height/(RotatingArmConfig.armLength*2) - 1, -1.0, 1.0)) + Math.PI;
 
     addCommands(
-      new DriveDistance(drivetrain, -0.5),
-      new RotateArmToAngleSimple(arm, armAngle),
-      new DriveDistance(drivetrain, 0.5),
+      new DriveDistancePID(drivetrain, -0.5),
+      new RotateArmToAngleConstant(arm, armAngle),
+      new DriveDistancePID(drivetrain, 0.5),
       new OpenClaw(claw),
-      new DriveDistance(drivetrain, 0.5),
-      new RotateArmToAngleSimple(arm, 0)
+      new DriveDistancePID(drivetrain, 0.5),
+      new RotateArmToAngleConstant(arm, 0)
     );
 
     addRequirements(drivetrain, arm, claw);
