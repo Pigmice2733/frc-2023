@@ -4,6 +4,7 @@
 
 package frc.robot.commands.automated;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RuntimeTrajectoryGenerator;
 import frc.robot.Constants.RotatingArmConfig;
@@ -23,14 +24,13 @@ public class ScoreObject extends SequentialCommandGroup {
     TargetType targetType = RuntimeTrajectoryGenerator.getTargetType();
 
     if (selectedScoreHeight == ScoreHeight.Mid && targetType == TargetType.Cube) { height = 0; }
-    else if (selectedScoreHeight == ScoreHeight.Mid && targetType == TargetType.Cube) { height = 0; }
     else if (selectedScoreHeight == ScoreHeight.Mid && targetType != TargetType.Cube) { height = 0; }
     else if (selectedScoreHeight == ScoreHeight.High && targetType == TargetType.Cube) { height = 0; }
     else if (selectedScoreHeight == ScoreHeight.High && targetType != TargetType.Cube) { height = 0; }
     else {height = 0; } // Floor
 
     height -= RotatingArmConfig.armLength-RotatingArmConfig.armHeight;
-    double armAngle = -Math.acos(height/(RotatingArmConfig.armLength*2) - 1) + Math.PI;
+    double armAngle = -Math.acos(MathUtil.clamp(height/(RotatingArmConfig.armLength*2) - 1, -1.0, 1.0)) + Math.PI;
 
     addCommands(
       new DriveDistance(drivetrain, -0.5),
