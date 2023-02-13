@@ -1,18 +1,19 @@
-Updated 2/9. May change based on what commands work well or driveteam feedback.
+Updated 2/12. May change based on what commands work well or driveteam feedback.
 
 Driver:
 
 Left Y - Driver
 Right X - Turn
 
-Y or right button - Enable slow mode (hold, release to disable)
+Y or right bumper - Enable slow mode (hold, release to disable)
 A - Auto align with selected location (hold, release to cancel)
 X - Auto align and dispense/pickup at selected location (hold, release to cancel)
+
+Start - Force reset odometry
 
 D-pad up - Select center cube align
 D-pad left - Select left cone align
 D-pad right - Select right code align
-
 
 
 Operator:
@@ -20,8 +21,8 @@ Operator:
 Right trigger - Manual rotate arm up
 Left trigger - Manual rotate arm down
 
-Right button - Open claw
-Left button - Close claw
+Right bumper - Open claw
+Left bumper - Close claw
 
 Y - Auto dispense if already aligned (hold, release to cancel)
 A - Auto pick up from human player if already aligned (hold, release to calcel)
