@@ -25,18 +25,12 @@ public final class RuntimeTrajectoryGenerator {
         double xPos = tagPose.getX() - (robotLength/2 + xDistanceFromTagToScoreLocation) * tagRotated;
         double yPos = tagPose.getY();
 
-        switch(selectedTargetType) {
-            case ConeLeft:
+        switch(selectedTargetType) { // TODO: Add support for knowing when picking up or scoring
+            case Left:
                 yPos += yDistanceFromTagToConeNode * tagRotated;
                 break;
-            case ConeRight:
+            case Right:
                 yPos -= yDistanceFromTagToConeNode * tagRotated;
-                break;
-            case PickupLeft:
-                yPos += yDistanceFromTagToPickup * tagRotated;
-                break;
-            case PickupRight:
-                yPos -= yDistanceFromTagToPickup * tagRotated;
                 break;
             default:
                 break;
@@ -53,16 +47,14 @@ public final class RuntimeTrajectoryGenerator {
         return trajectory;
     }
 
-    public enum TargetType {
-        Cube,
-        ConeLeft,
-        ConeRight,
-        PickupLeft,
-        PickupRight
+    public enum TargetLocation {
+        Center,
+        Left,
+        Right
     }
 
-    private static TargetType selectedTargetType = TargetType.Cube;
+    private static TargetLocation selectedTargetType = TargetLocation.Center;
 
-    public static void setTargetType(TargetType targetType) { selectedTargetType = targetType; }
-    public static TargetType getTargetType() { return selectedTargetType; }
+    public static void setTargetType(TargetLocation targetType) { selectedTargetType = targetType; }
+    public static TargetLocation getTargetType() { return selectedTargetType; }
 }

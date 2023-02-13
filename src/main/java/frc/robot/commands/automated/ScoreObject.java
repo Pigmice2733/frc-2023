@@ -8,7 +8,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RuntimeTrajectoryGenerator;
 import frc.robot.Constants.RotatingArmConfig;
-import frc.robot.RuntimeTrajectoryGenerator.TargetType;
+import frc.robot.RuntimeTrajectoryGenerator.TargetLocation;
 import frc.robot.commands.claw.OpenClaw;
 import frc.robot.commands.drivetrain.DriveDistance;
 import frc.robot.commands.rotatingArm.RotateArmToAngleSimple;
@@ -21,12 +21,12 @@ public class ScoreObject extends SequentialCommandGroup {
   public ScoreObject(Drivetrain drivetrain, RotatingArm arm, Claw claw) {
     double height = 0;
 
-    TargetType targetType = RuntimeTrajectoryGenerator.getTargetType();
+    TargetLocation targetType = RuntimeTrajectoryGenerator.getTargetType();
 
-    if (selectedScoreHeight == ScoreHeight.Mid && targetType == TargetType.Cube) { height = 0; }
-    else if (selectedScoreHeight == ScoreHeight.Mid && targetType != TargetType.Cube) { height = 0; }
-    else if (selectedScoreHeight == ScoreHeight.High && targetType == TargetType.Cube) { height = 0; }
-    else if (selectedScoreHeight == ScoreHeight.High && targetType != TargetType.Cube) { height = 0; }
+    if (selectedScoreHeight == ScoreHeight.Mid && targetType == TargetLocation.Center) { height = 0; }
+    else if (selectedScoreHeight == ScoreHeight.Mid && targetType != TargetLocation.Center) { height = 0; }
+    else if (selectedScoreHeight == ScoreHeight.High && targetType == TargetLocation.Center) { height = 0; }
+    else if (selectedScoreHeight == ScoreHeight.High && targetType != TargetLocation.Center) { height = 0; }
     else {height = 0; } // Floor
 
     height -= RotatingArmConfig.armLength-RotatingArmConfig.armHeight;

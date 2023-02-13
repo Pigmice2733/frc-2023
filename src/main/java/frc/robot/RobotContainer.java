@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
-import frc.robot.RuntimeTrajectoryGenerator.TargetType;
+import frc.robot.RuntimeTrajectoryGenerator.TargetLocation;
 import frc.robot.commands.automated.ScoreObject;
 import frc.robot.commands.automated.ScoreObject.ScoreHeight;
 import frc.robot.commands.drivetrain.ArcadeDrive;
@@ -113,27 +113,22 @@ public class RobotContainer {
 
     /** [driver] Set the TargetType in RuntimeTrajectoryGenerator with D-pad */
     new POVButton(driver, 0) // up
-      .onTrue(new InstantCommand(() -> RuntimeTrajectoryGenerator.setTargetType(TargetType.Cube)));
+      .onTrue(new InstantCommand(() -> RuntimeTrajectoryGenerator.setTargetType(TargetLocation.Center)));
     new POVButton(driver, 90) // right
-      .onTrue(new InstantCommand(() -> RuntimeTrajectoryGenerator.setTargetType(TargetType.ConeRight)));
+      .onTrue(new InstantCommand(() -> RuntimeTrajectoryGenerator.setTargetType(TargetLocation.Right)));
     new POVButton(driver, 270) // left
-      .onTrue(new InstantCommand(() -> RuntimeTrajectoryGenerator.setTargetType(TargetType.ConeLeft)));
+      .onTrue(new InstantCommand(() -> RuntimeTrajectoryGenerator.setTargetType(TargetLocation.Left)));
 
     // OPERATOR
     /** [operator] Set the ScoreHeight in ScoreObject with D-pad */
     new POVButton(driver, 0) // up
       .onTrue(new InstantCommand(() -> ScoreObject.setScoreHeight(ScoreHeight.High)));
-    new POVButton(driver, 90) // left
+    new POVButton(driver, 90) // right
       .onTrue(new InstantCommand(() -> ScoreObject.setScoreHeight(ScoreHeight.Mid)));
-    new POVButton(driver, 270) // right
+    new POVButton(driver, 270) // left
       .onTrue(new InstantCommand(() -> ScoreObject.setScoreHeight(ScoreHeight.Mid)));
     new POVButton(driver, 180) // down
       .onTrue(new InstantCommand(() -> ScoreObject.setScoreHeight(ScoreHeight.Floor)));
-
-
-    // OLD
-
-  
   }
 
   /**
