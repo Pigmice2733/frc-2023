@@ -14,6 +14,11 @@ public class RotateArmToAngleConstant extends CommandBase {
   private final double targetAngleDegrees;
   private boolean reverse;
 
+  /**
+   * Rotate the arm to a particular angle.
+   * @param arm the arm subsystem
+   * @param targetAngleDegrees the angle to rotate to in degrees
+   */
   public RotateArmToAngleConstant(RotatingArm arm, double targetAngleDegrees) {
     this.arm = arm;
     this.targetAngleDegrees = targetAngleDegrees;

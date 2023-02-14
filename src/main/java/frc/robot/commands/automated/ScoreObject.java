@@ -19,18 +19,19 @@ import frc.robot.subsystems.RotatingArm;
 public class ScoreObject extends SequentialCommandGroup {
   /** Creates a new ScoreObject. */
   public ScoreObject(Drivetrain drivetrain, RotatingArm arm, Claw claw) {
-    double height = 0;
+    double height = 0.0; // inches
 
     TargetLocation targetType = RuntimeTrajectoryGenerator.getTargetType();
 
-    if (selectedScoreHeight == ScoreHeight.Mid && targetType == TargetLocation.Center) { height = 0; }
-    else if (selectedScoreHeight == ScoreHeight.Mid && targetType != TargetLocation.Center) { height = 0; }
-    else if (selectedScoreHeight == ScoreHeight.High && targetType == TargetLocation.Center) { height = 0; }
-    else if (selectedScoreHeight == ScoreHeight.High && targetType != TargetLocation.Center) { height = 0; }
-    else {height = 0; } // Floor
+    if (selectedScoreHeight == ScoreHeight.Mid && targetType == TargetLocation.Center) { height = 24.0; } // mid cube
+    else if (selectedScoreHeight == ScoreHeight.Mid && targetType != TargetLocation.Center) { height = 36.0; } // mid cone
+    else if (selectedScoreHeight == ScoreHeight.High && targetType == TargetLocation.Center) { height = 36.0; } // high cube
+    else if (selectedScoreHeight == ScoreHeight.High && targetType != TargetLocation.Center) { height = 44.0; } // high cone
+    else {height = 0; } // floor
 
-    height -= RotatingArmConfig.armLength-RotatingArmConfig.armHeight;
-    double armAngle = -Math.acos(MathUtil.clamp(height/(RotatingArmConfig.armLength*2) - 1, -1.0, 1.0)) + Math.PI;
+    height -= RotatingArmConfig.armHeight - RotatingArmConfig.armLength;
+    double clampedHeight = MathUtil.clamp(height/(RotatingArmConfig.armLength*2) - 1, -1.0, 1.0);
+    double armAngle = Math.asin(clampedHeight)*(180/Math.PI) + 90;
 
     addCommands(
       new DriveDistancePID(drivetrain, -0.5),
