@@ -78,9 +78,9 @@ public final class Constants {
         public static final boolean drivetrainPrintsEnabled = true;
     }
     public final static class RotatingArmConfig{
-        public static final int driveMotorPort = 1;
-        public static final int followMotorPort = 1;
-        public static final int[] brakePort = {0, 1};
+        public static final int driveMotorPort = 5;
+        public static final int followMotorPort = 6;
+        public static final int[] brakePort = {4, 5};
         public static final double speedMultipler = .1;
         public static final double rotationConversion = 1; // ratio of encoder-measured rotations to arm rotations
 
@@ -96,7 +96,7 @@ public final class Constants {
         public static final double constantTurnSpeed = 0.15;
 
         public static final int topLimitSwitchID = 0;
-        public static final int bottomLimitSwitchID = 0;
+        public static final int bottomLimitSwitchID = 1;
 
         public static double armHeightToAngle(double height) {
             height -= RotatingArmConfig.armHeightMeters - RotatingArmConfig.armLengthMeters;
@@ -106,8 +106,8 @@ public final class Constants {
         }
     }
     public static final class ElevatorConfig {
-        public static final int leftMotorPort = 1;
-        public static final int rightMotorPort = 0;
+        public static final int leftMotorPort = 7;
+        public static final int rightMotorPort = 8;
 
         public static final double speedMultipler = 0.1;
 
@@ -121,7 +121,7 @@ public final class Constants {
         public static final double maxAcceleration = 0.0;
     }
     public static final class ClawConfig {
-        public static final int leftPistonPorts[] = {0, 0};
-        public static final int rightPistonPorts[] = {0, 0};
+        public static final int leftPistonPorts[] = {0, 1};
+        public static final int rightPistonPorts[] = {2, 3};
     }
 }

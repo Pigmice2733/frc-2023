@@ -4,12 +4,17 @@
 
 package frc.robot;
 
+import java.util.List;
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -17,6 +22,7 @@ import frc.robot.RuntimeTrajectoryGenerator.TargetLocation;
 import frc.robot.commands.automated.PickUpObjectFromHuman;
 import frc.robot.commands.automated.ScoreObject;
 import frc.robot.commands.drivetrain.ArcadeDrive;
+import frc.robot.commands.drivetrain.DriveDistanceConstant;
 import frc.robot.commands.rotatingArm.RotateArmManual;
 import frc.robot.commands.rotatingArm.RotateArmToScoreHeight;
 import frc.robot.commands.rotatingArm.RotateArmToScoreHeight.ScoreHeight;
@@ -47,8 +53,8 @@ public class RobotContainer {
   private final XboxController driver = new XboxController(0);
   private final XboxController operator = new XboxController(1);
   private final Controls controls = new Controls(driver, operator);
-  // private final SendableChooser<RuntimeTrajectoryGenerator.TargetType>
-  // targetTypeChooser = new SendableChooser<>();
+
+  private SendableChooser<Command> autoChooser;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -59,6 +65,29 @@ public class RobotContainer {
     arm.setDefaultCommand(new RotateArmManual(arm, controls::getArmRotationSpeed));
 
     configureButtonBindings();
+    configureAutoChooser();
+  }
+
+  private void configureAutoChooser() {
+    List<Command> autoCommands = List.of(
+      new DriveDistanceConstant(drivetrain, 2),
+      new BalanceRoutine(drivetrain),
+      new ScoreAndBalance(drivetrain, arm, claw)
+    );
+
+    autoCommands.get(0).setName("Drive 2 Meters");
+    autoCommands.get(1).setName("Balance");
+    autoCommands.get(2).setName("Score and Balance");
+
+    autoChooser = new SendableChooser<Command>();
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+
+    autoCommands.forEach(command -> {
+      System.out.println(command.getName());
+      autoChooser.addOption(command.getName(), command);
+    });
+
+    autoChooser.addOption("None", new WaitCommand(1));
   }
 
   /**
@@ -158,6 +187,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new ScoreAndBalance(drivetrain, null, null);
+    return autoChooser.getSelected();
   }
 }
