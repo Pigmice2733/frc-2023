@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -12,10 +13,14 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc.robot.RuntimeTrajectoryGenerator.TargetType;
+import frc.robot.commands.claw.OpenClaw;
 import frc.robot.commands.drivetrain.ArcadeDrive;
+import frc.robot.commands.rotatingArm.RotateArmManual;
 import frc.robot.commands.routines.BalanceRoutine;
 import frc.robot.commands.vision.AlignToScore;
+import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.RotatingArm;
 import frc.robot.subsystems.Vision;
 
 /**
@@ -33,9 +38,19 @@ public class RobotContainer {
   private final XboxController operator = new XboxController(1);
   private final Controls controls = new Controls(driver, operator);
 
+  private final Claw claw;
+
+  private final RotatingArm rotatingArm;
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {     
+    rotatingArm = new RotatingArm();
+    claw = new Claw();
+
    drivetrain.setDefaultCommand(new ArcadeDrive(drivetrain, controls::getDriveSpeed, controls::getTurnSpeed));
+   rotatingArm.setDefaultCommand(new RotateArmManual(rotatingArm, controls::getRakeRotationSpeed));
+   rotatingArm.setDefaultCommand(new RotateArmManual(rotatingArm, controls::getRakeRotationSpeed));
+
 
     configureButtonBindings();
   }
@@ -71,6 +86,14 @@ public class RobotContainer {
     new JoystickButton(driver, Button.kY.value)
       .onTrue(new InstantCommand(drivetrain::enableSlow))
       .onFalse(new InstantCommand(drivetrain::disableSlow));
+
+    /** Open Claw */
+    new JoystickButton(operator, Button.kRightBumper.value)
+      .onTrue(new InstantCommand(claw::openClaw));
+    
+    /** Close Claw */
+    new JoystickButton(operator, Button.kLeftBumper.value)
+      .onTrue(new InstantCommand(claw::closeClaw));
   }
 
   /**
