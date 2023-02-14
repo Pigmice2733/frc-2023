@@ -18,9 +18,10 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.RuntimeTrajectoryGenerator.TargetLocation;
 import frc.robot.commands.automated.PickUpObjectFromHuman;
 import frc.robot.commands.automated.ScoreObject;
-import frc.robot.commands.automated.ScoreObject.ScoreHeight;
 import frc.robot.commands.drivetrain.ArcadeDrive;
 import frc.robot.commands.rotatingArm.RotateArmManual;
+import frc.robot.commands.rotatingArm.RotateArmToScoreHeight;
+import frc.robot.commands.rotatingArm.RotateArmToScoreHeight.ScoreHeight;
 import frc.robot.commands.routines.BalanceRoutine;
 import frc.robot.commands.routines.ScoreAndBalance;
 import frc.robot.commands.vision.AlignAndScore;
@@ -99,7 +100,7 @@ public class RobotContainer {
         }));
 
     /** [driver] Schedule AlignAndScore when X is pressed, cancel when released */
-    final AlignAndScore alignAndScore = new AlignAndScore(vision, drivetrain);
+    final AlignAndScore alignAndScore = new AlignAndScore(vision, drivetrain, rotatingArm, claw);
     new JoystickButton(driver, Button.kX.value)
         .onTrue(alignAndScore)
         .onFalse(new InstantCommand(() -> {
@@ -132,13 +133,13 @@ public class RobotContainer {
     // OPERATOR
     /** [operator] Set the ScoreHeight in ScoreObject with D-pad */
     new POVButton(operator, 0) // up
-        .onTrue(new InstantCommand(() -> ScoreObject.setScoreHeight(ScoreHeight.High)));
+        .onTrue(new InstantCommand(() -> RotateArmToScoreHeight.setScoreHeight(ScoreHeight.High)));
     new POVButton(operator, 90) // right
-        .onTrue(new InstantCommand(() -> ScoreObject.setScoreHeight(ScoreHeight.Mid)));
+        .onTrue(new InstantCommand(() -> RotateArmToScoreHeight.setScoreHeight(ScoreHeight.Mid)));
     new POVButton(operator, 270) // left
-        .onTrue(new InstantCommand(() -> ScoreObject.setScoreHeight(ScoreHeight.Mid)));
+        .onTrue(new InstantCommand(() -> RotateArmToScoreHeight.setScoreHeight(ScoreHeight.Mid)));
     new POVButton(operator, 180) // down
-        .onTrue(new InstantCommand(() -> ScoreObject.setScoreHeight(ScoreHeight.Floor)));
+        .onTrue(new InstantCommand(() -> RotateArmToScoreHeight.setScoreHeight(ScoreHeight.Floor)));
 
     /** [operator] Open Claw */
     new JoystickButton(operator, Button.kRightBumper.value)
@@ -148,9 +149,11 @@ public class RobotContainer {
     new JoystickButton(operator, Button.kLeftBumper.value)
         .onTrue(new InstantCommand(claw::closeClaw));
 
+    /** [operator] Schedule ScoreObject when Y is pressed, cancel when released */
     new JoystickButton(operator, Button.kY.value)
         .whileTrue(new ScoreObject(drivetrain, rotatingArm, claw));
 
+    /** [operator] Schedule PickUpObjectFromHuman when A is pressed, cancel when released */
     new JoystickButton(operator, Button.kA.value)
         .whileTrue(new PickUpObjectFromHuman(rotatingArm, claw, drivetrain));
   }
