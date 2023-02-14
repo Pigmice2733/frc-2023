@@ -7,9 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -43,28 +41,22 @@ import frc.robot.subsystems.Vision;
 public class RobotContainer {
   private final Drivetrain drivetrain = new Drivetrain();
   private final Vision vision = new Vision();
-  // private final RotatingArm arm = new RotatingArm();
-  // private final Elevator elevator = new Elevator();
+  private final RotatingArm arm = new RotatingArm();
+  private final Claw claw = new Claw();
+
   private final XboxController driver = new XboxController(0);
   private final XboxController operator = new XboxController(1);
   private final Controls controls = new Controls(driver, operator);
   // private final SendableChooser<RuntimeTrajectoryGenerator.TargetType>
   // targetTypeChooser = new SendableChooser<>();
 
-  private final Claw claw;
-
-  private final RotatingArm rotatingArm;
-
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    rotatingArm = new RotatingArm();
-    claw = new Claw();
-
     drivetrain.setDefaultCommand(new ArcadeDrive(drivetrain, controls::getDriveSpeed, controls::getTurnSpeed));
-    rotatingArm.setDefaultCommand(new RotateArmManual(rotatingArm, controls::getArmRotationSpeed));
-    rotatingArm.setDefaultCommand(new RotateArmManual(rotatingArm, controls::getArmRotationSpeed));
+    arm.setDefaultCommand(new RotateArmManual(arm, controls::getArmRotationSpeed));
+    arm.setDefaultCommand(new RotateArmManual(arm, controls::getArmRotationSpeed));
 
     configureButtonBindings();
   }
@@ -81,7 +73,7 @@ public class RobotContainer {
     // DRIVER
 
     /**
-     * [driver] Enable slow mode when Y or Start is pressed, stop slow mode when
+     * [driver] Enable slow mode when Y or RB is pressed, stop slow mode when
      * released
      */
     new JoystickButton(driver, Button.kY.value)
@@ -100,7 +92,7 @@ public class RobotContainer {
         }));
 
     /** [driver] Schedule AlignAndScore when X is pressed, cancel when released */
-    final AlignAndScore alignAndScore = new AlignAndScore(vision, drivetrain, rotatingArm, claw);
+    final AlignAndScore alignAndScore = new AlignAndScore(vision, drivetrain, arm, claw);
     new JoystickButton(driver, Button.kX.value)
         .onTrue(alignAndScore)
         .onFalse(new InstantCommand(() -> {
@@ -130,6 +122,7 @@ public class RobotContainer {
         .onTrue(new InstantCommand(() -> RuntimeTrajectoryGenerator.setTargetType(TargetLocation.Left)));
 
 
+
     // OPERATOR
     /** [operator] Set the ScoreHeight in ScoreObject with D-pad */
     new POVButton(operator, 0) // up
@@ -151,11 +144,11 @@ public class RobotContainer {
 
     /** [operator] Schedule ScoreObject when Y is pressed, cancel when released */
     new JoystickButton(operator, Button.kY.value)
-        .whileTrue(new ScoreObject(drivetrain, rotatingArm, claw));
+        .whileTrue(new ScoreObject(drivetrain, arm, claw));
 
     /** [operator] Schedule PickUpObjectFromHuman when A is pressed, cancel when released */
     new JoystickButton(operator, Button.kA.value)
-        .whileTrue(new PickUpObjectFromHuman(rotatingArm, claw, drivetrain));
+        .whileTrue(new PickUpObjectFromHuman(arm, claw, drivetrain));
   }
   
 

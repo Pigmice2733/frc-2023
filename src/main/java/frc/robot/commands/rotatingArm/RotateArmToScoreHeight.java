@@ -4,8 +4,8 @@
 
 package frc.robot.commands.rotatingArm;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RuntimeTrajectoryGenerator;
 import frc.robot.Constants.RotatingArmConfig;
@@ -58,6 +58,7 @@ public class RotateArmToScoreHeight extends CommandBase {
 
   private static ScoreHeight selectedScoreHeight = ScoreHeight.Floor;
 
-  public static void setScoreHeight(ScoreHeight targetType) { selectedScoreHeight = targetType; }
+  public static void setScoreHeight(ScoreHeight scoreHeight) { selectedScoreHeight = scoreHeight; 
+    SmartDashboard.putString("Score Height", scoreHeight.toString()); }
   public static ScoreHeight getScoreHeight() { return selectedScoreHeight; }
 }

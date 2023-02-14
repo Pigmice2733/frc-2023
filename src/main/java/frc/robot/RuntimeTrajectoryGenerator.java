@@ -8,6 +8,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DrivetrainConfig;
 
 public final class RuntimeTrajectoryGenerator {
@@ -55,6 +56,7 @@ public final class RuntimeTrajectoryGenerator {
 
     private static TargetLocation selectedTargetType = TargetLocation.Center;
 
-    public static void setTargetType(TargetLocation targetType) { selectedTargetType = targetType; }
+    public static void setTargetType(TargetLocation targetType) { selectedTargetType = targetType; 
+        SmartDashboard.putString("Target Type", targetType.toString()); }
     public static TargetLocation getTargetType() { return selectedTargetType; }
 }
