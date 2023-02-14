@@ -33,7 +33,7 @@ public class Controls {
         return joystickValue * DrivetrainConfig.turnSpeed;
     }
 
-    public double getRakeRotationSpeed() {
+    public double getArmRotationSpeed() {
         double joystickValue = operator.getRightTriggerAxis() - operator.getLeftTriggerAxis();
         joystickValue = MathUtil.applyDeadband(joystickValue, threshold);
         return joystickValue * RotatingArmConfig.speedMultipler;

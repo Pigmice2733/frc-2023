@@ -4,10 +4,7 @@
 
 package frc.robot;
 
-import java.util.function.Supplier;
-
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -17,9 +14,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
-import frc.robot.commands.claw.OpenClaw;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.RuntimeTrajectoryGenerator.TargetLocation;
+import frc.robot.commands.automated.PickUpObjectFromHuman;
 import frc.robot.commands.automated.ScoreObject;
 import frc.robot.commands.automated.ScoreObject.ScoreHeight;
 import frc.robot.commands.drivetrain.ArcadeDrive;
@@ -65,8 +62,8 @@ public class RobotContainer {
     claw = new Claw();
 
     drivetrain.setDefaultCommand(new ArcadeDrive(drivetrain, controls::getDriveSpeed, controls::getTurnSpeed));
-    rotatingArm.setDefaultCommand(new RotateArmManual(rotatingArm, controls::getRakeRotationSpeed));
-    rotatingArm.setDefaultCommand(new RotateArmManual(rotatingArm, controls::getRakeRotationSpeed));
+    rotatingArm.setDefaultCommand(new RotateArmManual(rotatingArm, controls::getArmRotationSpeed));
+    rotatingArm.setDefaultCommand(new RotateArmManual(rotatingArm, controls::getArmRotationSpeed));
 
     configureButtonBindings();
   }
@@ -131,16 +128,16 @@ public class RobotContainer {
     new POVButton(driver, 270) // left
         .onTrue(new InstantCommand(() -> RuntimeTrajectoryGenerator.setTargetType(TargetLocation.Left)));
 
-        
+
     // OPERATOR
     /** [operator] Set the ScoreHeight in ScoreObject with D-pad */
-    new POVButton(driver, 0) // up
+    new POVButton(operator, 0) // up
         .onTrue(new InstantCommand(() -> ScoreObject.setScoreHeight(ScoreHeight.High)));
-    new POVButton(driver, 90) // right
+    new POVButton(operator, 90) // right
         .onTrue(new InstantCommand(() -> ScoreObject.setScoreHeight(ScoreHeight.Mid)));
-    new POVButton(driver, 270) // left
+    new POVButton(operator, 270) // left
         .onTrue(new InstantCommand(() -> ScoreObject.setScoreHeight(ScoreHeight.Mid)));
-    new POVButton(driver, 180) // down
+    new POVButton(operator, 180) // down
         .onTrue(new InstantCommand(() -> ScoreObject.setScoreHeight(ScoreHeight.Floor)));
 
     /** [operator] Open Claw */
@@ -150,7 +147,14 @@ public class RobotContainer {
     /** [operator] Close Claw */
     new JoystickButton(operator, Button.kLeftBumper.value)
         .onTrue(new InstantCommand(claw::closeClaw));
+
+    new JoystickButton(operator, Button.kY.value)
+        .whileTrue(new ScoreObject(drivetrain, rotatingArm, claw));
+
+    new JoystickButton(operator, Button.kA.value)
+        .whileTrue(new PickUpObjectFromHuman(rotatingArm, claw, drivetrain));
   }
+  
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

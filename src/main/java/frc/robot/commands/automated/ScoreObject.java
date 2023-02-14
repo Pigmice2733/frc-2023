@@ -56,3 +56,4 @@ public class ScoreObject extends SequentialCommandGroup {
   public static void setScoreHeight(ScoreHeight targetType) { selectedScoreHeight = targetType; }
   public static ScoreHeight getScoreHeight() { return selectedScoreHeight; }
 }
+
