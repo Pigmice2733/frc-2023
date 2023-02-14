@@ -4,34 +4,33 @@
 
 package frc.robot.commands.rotatingArm;
 
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants.RotatingArmConfig;
 import frc.robot.subsystems.RotatingArm;
 
-public class RotateArmToAngleSimple extends CommandBase {
+public class RotateArmToAngleConstant extends CommandBase {
   private final RotatingArm arm;
-  private final double targetAngle;
+  private final double targetAngleDegrees;
   private boolean reverse;
 
-  /** Creates a new RotateArmToAngleSimple. */
-  public RotateArmToAngleSimple(RotatingArm arm, double targetAngle) {
+  public RotateArmToAngleConstant(RotatingArm arm, double targetAngleDegrees) {
     this.arm = arm;
-    this.targetAngle = targetAngle;
+    this.targetAngleDegrees = targetAngleDegrees;
 
     addRequirements(arm);
   }
 
   @Override
   public void initialize() {
-    reverse = (arm.getAngle() > targetAngle) ? true : false;
+    reverse = (arm.getAngle() > targetAngleDegrees) ? true : false;
     System.out.println(reverse);
     SmartDashboard.putBoolean("Command Running", true);
   }
 
   @Override
   public void execute() {
-    arm.setTargetOutput(0.5 * (reverse ? -1 : 1));
+    arm.setTargetOutput(RotatingArmConfig.constantTurnSpeed * (reverse ? -1 : 1));
   }
 
   @Override
@@ -43,8 +42,8 @@ public class RotateArmToAngleSimple extends CommandBase {
   @Override
   public boolean isFinished() {
     if (reverse)
-      return arm.getAngle() < targetAngle;
+      return arm.getAngle() < targetAngleDegrees;
     else 
-      return arm.getAngle() > targetAngle;
+      return arm.getAngle() > targetAngleDegrees;
   }
 }

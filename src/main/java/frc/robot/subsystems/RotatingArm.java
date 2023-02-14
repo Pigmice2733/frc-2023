@@ -35,8 +35,8 @@ public class RotatingArm extends SubsystemBase {
 
 
   private final DoubleSolenoid brake = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, RotatingArmConfig.brakePort[0], RotatingArmConfig.brakePort[1]);
-  private final Compressor compressor;
-  
+  private final Compressor compressor = new Compressor(PneumaticsModuleType.CTREPCM);
+
   private boolean brakeEnabled = false;
 
   private double targetMotorOutput = 0;
@@ -51,11 +51,8 @@ public class RotatingArm extends SubsystemBase {
   public boolean getBottomSwitch() { return !bottomLimitSwitch.get(); } 
 
   public RotatingArm() {
-
     topLimitSwitch = new DigitalInput(RotatingArmConfig.topLimitSwitchID);
     bottomLimitSwitch = new DigitalInput(RotatingArmConfig.bottomLimitSwitchID);
-
-    compressor = new Compressor(PneumaticsModuleType.CTREPCM);
 
     driveMotor.restoreFactoryDefaults();
     followMotor.restoreFactoryDefaults();
@@ -147,7 +144,7 @@ public class RotatingArm extends SubsystemBase {
     brakeEnabled = false;
   }
 
-  public boolean brakeEnabled() {
+  public boolean getBrakeEnabled() {
     return brakeEnabled;
   }
 }

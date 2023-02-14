@@ -7,9 +7,6 @@ package frc.robot.commands.automated;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
-import frc.robot.Constants;
-import frc.robot.commands.elevator.MoveClawToPoint;
-import frc.robot.commands.elevator.RaiseElevatorToHeightPID;
 import frc.robot.commands.rotatingArm.RotateArmToAnglePID;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Elevator;
@@ -29,9 +26,9 @@ public class PickUpObjectFromHuman extends SequentialCommandGroup {
     addCommands(
       // use Vision to move to the correct spot
       new InstantCommand(claw::openClaw),
-      new MoveClawToPoint(arm, elevator, 40.0, 0.0), // TODO distance depends on robot specs and what we want
+      //new MoveClawToPoint(arm, elevator, 40.0, 0.0), // TODO distance depends on robot specs and what we want
       new InstantCommand(claw::closeClaw),
-      new RaiseElevatorToHeightPID(Constants.RotatingArmConfig.armLength, elevator),
+      //new RaiseElevatorToHeightPID(Constants.RotatingArmConfig.armLength, elevator),
       new RotateArmToAnglePID(0, arm) // these last two might not work dependent on robot specs if it hits the substation
     );
   }

@@ -9,22 +9,30 @@ import frc.robot.subsystems.Drivetrain;
 
 public class DriveOntoChargeStation extends CommandBase {
   private final Drivetrain drivetrain;
-  
-  public DriveOntoChargeStation(Drivetrain drivetrain) {
+  private boolean backwards = false;
+
+  public DriveOntoChargeStation(Drivetrain drivetrain, boolean backwards) {
     this.drivetrain = drivetrain;
+    this.backwards = backwards;
     addRequirements(drivetrain);
   }
 
-  @Override
-  public void initialize() {}
-
-  @Override
-  public void execute() {
-    drivetrain.arcadeDrive(0.3, 0);
+  public DriveOntoChargeStation(Drivetrain drivetrain) {
+    this(drivetrain, false);
   }
 
   @Override
-  public void end(boolean interrupted) {}
+  public void initialize() {
+  }
+
+  @Override
+  public void execute() {
+    drivetrain.arcadeDrive((backwards ? -1 : 1) * 0.3, 0);
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+  }
 
   @Override
   public boolean isFinished() {

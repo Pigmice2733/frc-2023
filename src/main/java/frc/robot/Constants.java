@@ -35,6 +35,8 @@ public final class Constants {
         public static final double rotationToDistanceConversion = (Math.PI * wheelDiameterMeters) * gearRatio; // Encoder rotations to distance moved
         public static final double drivetrainWidthMeters = Units.inchesToMeters(24); // Distance between left and right wheels in meters
     
+        public static final double constantDriveDistSpeed = 0.1;
+
         // Path following PID
         //public static final double pathP = 0.017108; // <- value from SysId
         public static final double pathP = 0;
@@ -90,9 +92,10 @@ public final class Constants {
         public static final double maxVelocity = 0.0;
         public static final double maxAcceleration = 0.0;
 
+        public static final double constantTurnSpeed = 0.15;
+
         public static final int topLimitSwitchID = 0;
         public static final int bottomLimitSwitchID = 0;
-        
     }
     public static final class ElevatorConfig {
         public static final int leftMotorPort = 1;

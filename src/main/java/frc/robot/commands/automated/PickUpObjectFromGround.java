@@ -8,11 +8,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 import frc.robot.subsystems.Claw;
-import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.RotatingArm;
 import frc.robot.Constants.RotatingArmConfig;
-import frc.robot.commands.elevator.MoveClawToPoint;
-import frc.robot.commands.elevator.RaiseElevatorToHeightPID;
 import frc.robot.commands.rotatingArm.RotateArmToAnglePID;
 
 public class PickUpObjectFromGround extends SequentialCommandGroup {

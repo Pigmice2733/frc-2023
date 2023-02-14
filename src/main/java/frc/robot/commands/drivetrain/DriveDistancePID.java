@@ -12,14 +12,14 @@ import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import frc.robot.Constants.DrivetrainConfig;
 import frc.robot.subsystems.Drivetrain;
 
-public class DriveDistance extends ProfiledPIDCommand {
+public class DriveDistancePID extends ProfiledPIDCommand {
 
   /**
    * Use profiled PID to drive the specified distance.
    * @param drivetrain a drivetrain subsystem
    * @param distance The distance to drive in meters. The robot will move forward if this is positive or backward if this is negative.
    */
-  public DriveDistance(Drivetrain drivetrain, double distance) {
+  public DriveDistancePID(Drivetrain drivetrain, double distance) {
     super(
       new ProfiledPIDController(DrivetrainConfig.driveDistP, DrivetrainConfig.driveDistI, DrivetrainConfig.driveDistD, new Constraints(1, 1.5)), 
       drivetrain::getAverageDistance,
