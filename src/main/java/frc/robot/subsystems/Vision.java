@@ -5,46 +5,34 @@
 package frc.robot.subsystems;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import org.photonvision.RobotPoseEstimator;
 import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
-import org.photonvision.RobotPoseEstimator;
 
-import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import frc.robot.subsystems.Drivetrain;
 
 public class Vision extends SubsystemBase {
 
   private final PhotonCamera camera = new PhotonCamera("OV5647");
 
   private AprilTagFieldLayout layout;
-  // AprilTagFieldLayout layout = new AprilTagFieldLayout(
-  // List.of(new AprilTag(2,
-  // new Pose3d(new Translation3d(0, 0, Units.inchesToMeters(26.2)), new
-  // Rotation3d(0, 0, Math.toRadians(180))))),
-  // 50, 50);
   private final RobotPoseEstimator poseEstimator = new RobotPoseEstimator(layout,
       RobotPoseEstimator.PoseStrategy.AVERAGE_BEST_TARGETS,
       Arrays.asList(new Pair(camera, new Transform3d(new Translation3d(0, 0, Units.inchesToMeters(9)),
@@ -52,96 +40,117 @@ public class Vision extends SubsystemBase {
 
   Drivetrain drivetrain;
 
-  public Vision(Drivetrain drivetrain) {
-    this.drivetrain = drivetrain;
+  private PhotonPipelineResult camResult;
 
+  private final GenericEntry robotXEntry, robotYEntry, robotYawEntry, tagXEntry, tagYEntry, tagYawEntry;
+
+  public Vision() {
     try {
       this.layout = AprilTagFields.k2023ChargedUp.loadAprilTagLayoutField();
       System.out.println("LOADED FIELD WITH " + this.layout.getTags().size() + " TAGS.");
     } catch (IOException e) {
       e.printStackTrace();
     }
+
+    ShuffleboardTab visionTab = Shuffleboard.getTab("Vision");
+    robotXEntry = visionTab.add("Robot X", 0).getEntry();
+    robotYEntry = visionTab.add("Robot Y", 0).getEntry();
+    robotYawEntry = visionTab.add("Robot Yaw", 0).getEntry();
+
+    tagXEntry = visionTab.add("Tag X", 0).getEntry();
+    tagYEntry = visionTab.add("Tag Y", 0).getEntry();
+    tagYawEntry = visionTab.add("Tag Yaw", 0).getEntry();
+  }
+
+  private Pose2d estimatedRobotPose;
+  private Pose2d recentTagPose;
+
+  public Pose2d getEstimatedRobotPose() {
+    return estimatedRobotPose;
+  }
+
+  public Pose2d getRecentTagPose() {
+    return recentTagPose;
   }
 
   @Override
   public void periodic() {
-    updateDrivetrainPose();
+    camResult = camera.getLatestResult();
+
+    calculateGlobalRobotPosition();
+    updateShuffleboard();
   }
 
-  private void updateDrivetrainPose() {
-    if (!camera.getLatestResult().hasTargets())
+  private void updateShuffleboard() {
+    if (estimatedRobotPose == null || recentTagPose == null || Double.isNaN(estimatedRobotPose.getX()))
       return;
 
-    var target = camera.getLatestResult().getBestTarget();
+    robotYawEntry.setDouble(estimatedRobotPose.getRotation().getDegrees());
+    robotXEntry.setDouble(estimatedRobotPose.getX());
+    robotYEntry.setDouble(estimatedRobotPose.getY());
 
-    // double currentDistance =
-    // PhotonUtils.calculateDistanceToTargetMeters(Units.inchesToMeters(9 +
-    // 3.0/8.0), Units.inchesToMeters(27 + 5.0/8.0), Units.degreesToRadians(33),
-    // Units.degreesToRadians(target.getPitch()));
-    Pose2d currentRobotPose = getGlobalPositionNew();
-
-    SmartDashboard.putNumber("Yaw", target.getYaw());
-
-    if (currentRobotPose == null) {
-      return;
-    }
-    SmartDashboard.putNumber("X", currentRobotPose.getX());
-    SmartDashboard.putNumber("Y", currentRobotPose.getY());
+    tagYawEntry.setDouble(recentTagPose.getRotation().getDegrees());
+    tagXEntry.setDouble(recentTagPose.getX());
+    tagYEntry.setDouble(recentTagPose.getY());
   }
 
+  /** Returns the current best target or null if no targets are found. */
   public PhotonTrackedTarget getBestTarget() {
-
-    var result = camera.getLatestResult();
-    if (result == null)
+    if (camResult == null)
       return null;
 
-    return result.getBestTarget();
+    return camResult.getBestTarget();
+  }
+
+  public double getRotationToTag() {
+    return camResult.getBestTarget().getYaw();
+  }
+
+  /** Sets the estimated robot pose and recent target pose. */
+  private void calculateGlobalRobotPosition() {
+    if (!camResult.hasTargets())
+      return;
+
+    var poseEstimation = poseEstimator.update();
+    if (poseEstimation.isEmpty())
+      return;
+
+    Pose2d currentRobotPose = poseEstimation.get().getFirst().toPose2d();
+    Pose2d tagPosition = getTagPosition();
+
+    if (currentRobotPose == null || tagPosition == null) {
+      return;
+    }
+
+    // Stops code from occasionally crashing when tag pose is NaN
+    if (Double.isNaN(currentRobotPose.getX()))
+      return;
+
+    estimatedRobotPose = currentRobotPose;
+    recentTagPose = tagPosition;
   }
 
   /**
-   * Returns the position of the robot on the feild based on the best target.
-   * Assumes the robot is level on the ground
+   * Returns a transform to bring the current robot position to the best target.
    */
-  public Pose2d getGlobalRobotPosition() {
-
-    // poseEstimator.setReferencePose(drivetrain.getPose());
-    Optional<Pair<Pose3d, Double>> optionalPose = poseEstimator.update();
-
-    if (optionalPose.isEmpty())
+  public Translation2d getTranslationToTag() {
+    if (!camResult.hasTargets())
       return null;
 
-    Pair<Pose3d, Double> timedPose = optionalPose.get();
+    PhotonTrackedTarget target = camResult.getBestTarget();
+    Transform3d toTag = target.getBestCameraToTarget();
 
-    // drivetrain.resetOdometry(timedPose.getFirst().toPose2d());
-    // return drivetrain.getPose();
-    return optionalPose.get().getFirst().toPose2d();
+    return toTag.getTranslation().toTranslation2d();
   }
 
-  public Pose2d getGlobalPositionNew() {
-    PhotonPipelineResult result = camera.getLatestResult();
-    if (!result.hasTargets())
-      return null;
-
-    PhotonTrackedTarget target = result.getBestTarget();
-    var optionalPose = layout.getTagPose(target.getFiducialId());
-    if (optionalPose.isEmpty())
-      return null;
-
-    Pose2d robotPose = optionalPose.get().transformBy(target.getBestCameraToTarget()).toPose2d();
-
-    // return robotPose;
-    return new Pose2d(target.getBestCameraToTarget().getX(), target.getBestCameraToTarget().getY(), new Rotation2d());
-  }
-
-  /** Returns the position and rotation of the nearest apriltag */
+  /** Returns the position and rotation of the nearest AprilTag. */
   public Pose2d getTagPosition() {
-    if (!camera.getLatestResult().hasTargets())
+    if (!camResult.hasTargets())
       return null;
 
-    var target = camera.getLatestResult().getBestTarget();
+    PhotonTrackedTarget target = camResult.getBestTarget();
 
-    var pose = layout.getTagPose(target.getFiducialId());
-
+    Optional<Pose3d> pose = layout.getTagPose(target.getFiducialId());
     if (pose.isEmpty())
       return null;
 

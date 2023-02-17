@@ -24,8 +24,8 @@ public final class Constants {
         public static final int leftFollowPort = 2;
         public static final int rightFollowPort = 3;
     
-        public static final double driveSpeed = .5;
-        public static final double turnSpeed = .5;
+        public static final double driveSpeed = .75;
+        public static final double turnSpeed = .4;
     
         // Multiplied by drive speed when in slow mode
         public static final double slowMultiplier = 0.25;
@@ -35,6 +35,8 @@ public final class Constants {
         public static final double rotationToDistanceConversion = (Math.PI * wheelDiameterMeters) * gearRatio; // Encoder rotations to distance moved
         public static final double drivetrainWidthMeters = Units.inchesToMeters(24); // Distance between left and right wheels in meters
     
+        public static final double constantDriveDistSpeed = 0.1;
+
         // Path following PID
         //public static final double pathP = 0.017108; // <- value from SysId
         public static final double pathP = 0;
@@ -75,23 +77,33 @@ public final class Constants {
         public static final boolean drivetrainPrintsEnabled = true;
     }
     public final static class RotatingArmConfig{
-        public static final int motorPort = 1;
-        public static final double speedMultipler = .5;
-        public static final double rotationConversion = 0.0; // ratio of encoder-measured rotations to arm rotations
+        public static final int driveMotorPort = 5;
+        public static final int followMotorPort = 6;
+        public static final int[] brakePort = {4, 5};
+        public static final double speedMultipler = .1;
+        public static final double rotationConversion = 1; // ratio of encoder-measured rotations to arm rotations
 
-        public static final double armLength = 0.0;
+        public static final double armLengthMeters = Units.inchesToMeters(1.0);
+        public static final double armHeightMeters = Units.inchesToMeters(1.0); // height of arm mount on robot from ground
 
         public static final double kP = 0.0;
         public static final double kI = 0.0;
         public static final double kD = 0.0;
         public static final double maxVelocity = 0.0;
         public static final double maxAcceleration = 0.0;
+
+        public static final double constantTurnSpeed = 0.15;
+
+        public static final int topLimitSwitchID = 0;
+        public static final int bottomLimitSwitchID = 1;
     }
     public static final class ElevatorConfig {
-        public static final int motorPort = 0;
-        public static final int motorPort2 = 0;
+        public static final int leftMotorPort = 7;
+        public static final int rightMotorPort = 8;
 
-        public static final double rotationToDistanceConversion = 0.0; // ratio of encoder-measured rotations to distance moved
+        public static final double speedMultipler = 0.1;
+
+        public static final double rotationToDistanceConversion = 1; // ratio of encoder-measured rotations to distance moved
         public static final double maxHeight = 0.0;
 
         public static final double kP = 0.0;
@@ -101,9 +113,7 @@ public final class Constants {
         public static final double maxAcceleration = 0.0;
     }
     public static final class ClawConfig {
-        public static final int piston1PortFor = 0;
-        public static final int piston1PortRev = 0;
-        public static final int piston2PortFor = 0;
-        public static final int piston2PortRev = 0;
+        public static final int leftPistonPorts[] = {0, 1};
+        public static final int rightPistonPorts[] = {2, 3};
     }
 }

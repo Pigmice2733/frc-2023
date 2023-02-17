@@ -4,32 +4,29 @@
 
 package frc.robot.commands.automated;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 import frc.robot.subsystems.Claw;
-import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.RotatingArm;
-import frc.robot.Constants;
-import frc.robot.commands.elevator.RaiseElevatorToHeight;
-import frc.robot.commands.rotatingArm.RotateArmToAngle;
+import frc.robot.commands.rotatingArm.RotateArmToAnglePID;
 
 public class PickUpObjectFromGround extends SequentialCommandGroup {
   /**
-   * Automatically picks up a cone or cube assuming the robot is already lined up.
+   * Picks up a cone or cube, assuming the robot is already lined up, then lifts the arm to horizontal.
+   * 
    * @param arm the rotating-arm subsystem
-   * @param elevator the elevator subsystem
    * @param claw the claw subsystem
    */
-  public PickUpObjectFromGround(RotatingArm arm, Elevator elevator, Claw claw) {
-    addRequirements(arm, elevator, claw);
+  public PickUpObjectFromGround(RotatingArm arm, Claw claw) {
+    addRequirements(arm, claw);
 
     addCommands(
       new InstantCommand(claw::openClaw),
-      new MoveClawToPoint(arm, elevator, 5.0, 0.0), // TODO distance depends on robot specs and what we want
+      new RotateArmToAnglePID(arm.armHeightToAngle(Units.inchesToMeters(90.0)), arm), // TODO distance depends on robot specs and what we want
       new InstantCommand(claw::closeClaw),
-      new RaiseElevatorToHeight(Constants.RotatingArmConfig.armLength, elevator),
-      new RotateArmToAngle(0, arm)
+      new RotateArmToAnglePID(90, arm)
     );
   }
 }

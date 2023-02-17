@@ -9,19 +9,19 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.RotatingArm;
 
-public class RotateArm extends CommandBase {
-  RotatingArm arm;
-  DoubleSupplier speed;
+public class RotateArmManual extends CommandBase {
+  private final RotatingArm arm;
+  private final DoubleSupplier speed;
 
-  public RotateArm(RotatingArm arm, DoubleSupplier speed) {
+  public RotateArmManual(RotatingArm arm, DoubleSupplier speed) {
     this.arm = arm;
     this.speed = speed;
+
     addRequirements(arm);
   }
 
   @Override
   public void execute() {
-    arm.rotateClaw(speed.getAsDouble());
+    arm.setTargetOutput(speed.getAsDouble());
   }
-
 }

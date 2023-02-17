@@ -2,20 +2,19 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.claw;
+package frc.robot.commands.rotatingArm;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.subsystems.Claw;
+import frc.robot.subsystems.RotatingArm;
 
-public class OpenClaw extends InstantCommand {
-private final Claw claw;
-  public OpenClaw(Claw claw) {
-    this.claw = claw;
-    addRequirements(claw);
+public class EnableBrake extends InstantCommand {
+  RotatingArm rotatingArm;
+  public EnableBrake(RotatingArm rotatingArm) {
+    this.rotatingArm = rotatingArm;
   }
 
   @Override
   public void initialize() {
-    claw.openClaw();
+    rotatingArm.enableBrake();
   }
 }

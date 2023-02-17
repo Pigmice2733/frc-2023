@@ -4,34 +4,35 @@
 
 package frc.robot.commands.automated;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-
-import frc.robot.Constants;
-import frc.robot.commands.elevator.RaiseElevatorToHeight;
-import frc.robot.commands.rotatingArm.RotateArmToAngle;
+import frc.robot.commands.drivetrain.DriveDistanceConstant;
+import frc.robot.commands.rotatingArm.RotateArmToAngleConstant;
+import frc.robot.commands.rotatingArm.RotateArmToAnglePID;
 import frc.robot.subsystems.Claw;
-import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.RotatingArm;
 
-/** Automatically picks up a cone or cube assuming the robot is already lined up */
 public class PickUpObjectFromHuman extends SequentialCommandGroup {
   /**
-   * Automatically pick up an object from the DoubleSubstation shelf.
+   * Automatically pick up an object from the DoubleSubstation shelf, assuming the robot is already aligned.
    * @param arm the arm subsystem
-   * @param elevator the elevator subsystem
    * @param claw the claw subsystem
    */
-  public PickUpObjectFromHuman(RotatingArm arm, Elevator elevator, Claw claw) {
-    addRequirements(arm, elevator, claw);
-
+  public PickUpObjectFromHuman(RotatingArm arm, Claw claw, Drivetrain drivetrain) {
+    double armAngle = arm.armHeightToAngle(Units.inchesToMeters(40.0));
     addCommands(
-      // use Vision to move to the correct spot
+      new DriveDistanceConstant(drivetrain, -0.5),
+      new RotateArmToAngleConstant(arm, armAngle + 20.0),
+      new DriveDistanceConstant(drivetrain, 0.5),
       new InstantCommand(claw::openClaw),
-      new MoveClawToPoint(arm, elevator, 40.0, 0.0), // TODO distance depends on robot specs and what we want
+      new RotateArmToAngleConstant(arm, armAngle),
       new InstantCommand(claw::closeClaw),
-      new RaiseElevatorToHeight(Constants.RotatingArmConfig.armLength, elevator),
-      new RotateArmToAngle(0, arm) // these last two might not work dependent on robot specs if it hits the substation
+      new RotateArmToAngleConstant(arm, armAngle + 20.0),
+      new DriveDistanceConstant(drivetrain, -0.5),
+      new RotateArmToAnglePID(0, arm)
     );
+    addRequirements(arm, claw);
   }
 }

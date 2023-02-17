@@ -4,10 +4,10 @@
 
 package frc.robot.commands.claw;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.Claw;
 
-public class CloseClaw extends CommandBase {
+public class CloseClaw extends InstantCommand {
   private final Claw claw;
 
   public CloseClaw(Claw claw) {
@@ -17,18 +17,6 @@ public class CloseClaw extends CommandBase {
 
   @Override
   public void initialize() {
-    // TODO: Close Claw
-  }
-
-  @Override
-  public void execute() {}
-
-  @Override
-  public void end(boolean interrupted) {}
-
-  @Override
-  public boolean isFinished() {
-    // TODO: Return true when claw is closed
-    return false;
+    claw.closeClaw();
   }
 }

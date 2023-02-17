@@ -10,27 +10,24 @@ import frc.robot.subsystems.Drivetrain;
 public class FollowPath extends RamseteCommand {
     /**
      * Use a RamseteController to follow a specified path.
-     * Call only from autonomous path-following commands that define a trajectory and a trajectory configuration.
+     * Call only from autonomous path-following commands that define a trajectory
+     * and a trajectory configuration.
+     * 
      * @param drivetrain a drivetrain subsystem
      * @param trajectory a path-following trajectory
      */
     public FollowPath(Drivetrain drivetrain, Trajectory trajectory) {
         super(
-            trajectory,
-            drivetrain::getPose,
-            new RamseteController(DrivetrainConfig.kB, DrivetrainConfig.kZeta),
-            drivetrain.getFeedForward(),
-            drivetrain.getKinematics(),
-            drivetrain::getWheelSpeeds,
-            new PIDController(DrivetrainConfig.pathP, DrivetrainConfig.pathI, DrivetrainConfig.pathD), // Left
-            new PIDController(DrivetrainConfig.pathP, DrivetrainConfig.pathI, DrivetrainConfig.pathD), // Right
-            drivetrain::tankDriveVolts,
-            drivetrain
-        );
-        
-        drivetrain.resetOdometry();
+                trajectory,
+                drivetrain::getPose,
+                new RamseteController(DrivetrainConfig.kB, DrivetrainConfig.kZeta),
+                drivetrain.getFeedForward(),
+                drivetrain.getKinematics(),
+                drivetrain::getWheelSpeeds,
+                new PIDController(DrivetrainConfig.pathP, DrivetrainConfig.pathI, DrivetrainConfig.pathD), // Left
+                new PIDController(DrivetrainConfig.pathP, DrivetrainConfig.pathI, DrivetrainConfig.pathD), // Right
+                drivetrain::tankDriveVolts,
+                drivetrain);
         addRequirements(drivetrain);
-
-        System.out.println("Started Command");
     }
 }
