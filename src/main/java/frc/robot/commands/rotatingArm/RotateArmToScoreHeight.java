@@ -45,10 +45,12 @@ public class RotateArmToScoreHeight extends CommandBase {
   }
 
   @Override
-  public void execute() {}
+  public void execute() {
+  }
 
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+  }
 
   @Override
   public boolean isFinished() {
@@ -69,6 +71,11 @@ public class RotateArmToScoreHeight extends CommandBase {
   public static void setScoreHeight(ScoreHeight scoreHeight) {
     selectedScoreHeight = scoreHeight;
     SmartDashboard.putString("Score Height", scoreHeight.toString());
+  }
+
+  public RotateArmToScoreHeight withHeight(ScoreHeight scoreHeight) {
+    setScoreHeight(scoreHeight);
+    return this;
   }
 
   public static ScoreHeight getScoreHeight() {

@@ -5,19 +5,21 @@
 package frc.robot.commands.routines;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commands.automated.ScoreObject;
 import frc.robot.commands.automated.oldScore.ScoreObjectFloor;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.RotatingArm;
 
 public class ScoreTwiceRoutine extends SequentialCommandGroup {
-  /** Scores the object the robot starts with, then drives the robot to pick up another object to score. */
-  public ScoreTwiceRoutine(Drivetrain drivetrain, RotatingArm arm, Elevator elevator, Claw claw) {
+  /**
+   * Scores the object the robot starts with, then drives the robot to pick up
+   * another object to score.
+   */
+  public ScoreTwiceRoutine(Drivetrain drivetrain, RotatingArm arm, Claw claw) {
     addCommands(
-      new ScoreObjectFloor(arm, elevator, claw, drivetrain),
-      // TODO: Pick up a new object then drive back to the grid
-      new ScoreObjectFloor(arm, elevator, claw, drivetrain)
-    );
+        new ScoreObject(drivetrain, arm, claw),
+        // TODO: Pick up a new object then drive back to the grid
+        new ScoreObject(drivetrain, arm, claw));
   }
 }

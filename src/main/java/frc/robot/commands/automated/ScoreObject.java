@@ -9,26 +9,30 @@ import frc.robot.commands.claw.OpenClaw;
 import frc.robot.commands.drivetrain.DriveDistancePID;
 import frc.robot.commands.rotatingArm.RotateArmToAngleConstant;
 import frc.robot.commands.rotatingArm.RotateArmToScoreHeight;
+import frc.robot.commands.rotatingArm.RotateArmToScoreHeight.ScoreHeight;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.RotatingArm;
 
 public class ScoreObject extends SequentialCommandGroup {
-  /** Automatically scores a held object at the currently set score height and location. Does not auto align. */
-  public ScoreObject(Drivetrain drivetrain, RotatingArm arm, Claw claw) {
-    
+  /**
+   * Automatically scores a held object at the currently set score height and
+   * location. Does not auto align.
+   */
+  public ScoreObject(Drivetrain drivetrain, RotatingArm arm, Claw claw, ScoreHeight height) {
+
     addCommands(
-      new DriveDistancePID(drivetrain, -0.5),
-      new RotateArmToScoreHeight(arm),
-      new DriveDistancePID(drivetrain, 0.5),
-      new OpenClaw(claw),
-      new DriveDistancePID(drivetrain, 0.5),
-      new RotateArmToAngleConstant(arm, 0)
-    );
+        new DriveDistancePID(drivetrain, -0.5),
+        new RotateArmToScoreHeight(arm),
+        new DriveDistancePID(drivetrain, 0.5),
+        new OpenClaw(claw),
+        new DriveDistancePID(drivetrain, 0.5),
+        new RotateArmToAngleConstant(arm, 0));
 
     addRequirements(drivetrain, arm, claw);
   }
-          
-  
-}
 
+  public ScoreObject(Drivetrain drivetrain, RotatingArm arm, Claw claw) {
+    this(drivetrain, arm, claw, RotateArmToScoreHeight.getScoreHeight());
+  }
+}
