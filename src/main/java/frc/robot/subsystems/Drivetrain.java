@@ -226,9 +226,8 @@ public class Drivetrain extends SubsystemBase {
    * @param right voltage for right wheels
    */
   public void tankDriveVolts(double left, double right) {
-    updateOutputs(MathUtil.clamp(left / 12.0, -1, 1), MathUtil.clamp(right / 12.0, -1, 1)); // Divides by 12 to scale
-                                                                                            // possible inputs between 0
-                                                                                            // and 1 (12 in max volts)
+    // divides by 12 to scale possible inputs between 0 and 1 (12 is max voltage)
+    updateOutputs(MathUtil.clamp(left / 12.0, -1, 1), MathUtil.clamp(right / 12.0, -1, 1));
   }
 
   /**
@@ -260,8 +259,8 @@ public class Drivetrain extends SubsystemBase {
     }
 
     double maxSpeed = 1;
-    left = Math.max(Math.min(maxSpeed, left), -maxSpeed);
-    right = Math.max(Math.min(maxSpeed, right), -maxSpeed);
+    left = MathUtil.clamp(left, -maxSpeed, maxSpeed);
+    right = MathUtil.clamp(right, -maxSpeed, maxSpeed);
 
     leftDrive.set(left * outputFactor);
     rightDrive.set(right * outputFactor);
