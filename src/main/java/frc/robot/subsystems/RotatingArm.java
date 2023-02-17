@@ -8,14 +8,13 @@ import frc.robot.Constants.DrivetrainConfig;
 import frc.robot.Constants.RotatingArmConfig;
 import frc.robot.commands.rotatingArm.DisableBrake;
 import frc.robot.commands.rotatingArm.EnableBrake;
-import frc.robot.commands.rotatingArm.RotateArmManual;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxRelativeEncoder.Type;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -23,7 +22,6 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class RotatingArm extends SubsystemBase {
@@ -114,6 +112,18 @@ public class RotatingArm extends SubsystemBase {
 
     driveMotor.set(output * RotatingArmConfig.speedMultipler);
   }
+
+  /**
+   * Converts the given height to the angle for the arm; i.e., when the arm is rotated to the output angle the claw will be at the input height.
+   * @param height the height of the claw
+   * @return the angle of the arm
+   */
+  public double armHeightToAngle(double height) {
+    height -= RotatingArmConfig.armHeightMeters - RotatingArmConfig.armLengthMeters;
+    double clampedHeight = MathUtil.clamp(height/(RotatingArmConfig.armLengthMeters) - 1, -1.0, 1.0);
+    double armAngle = Math.asin(clampedHeight)*(180/Math.PI) + 90;
+    return armAngle;
+}
 
   private void updateShuffleboard() {
     angleEntry.setDouble(getAngle());

@@ -18,7 +18,6 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -88,7 +87,7 @@ public class Vision extends SubsystemBase {
     tagYEntry.setDouble(recentTagPose.getY());
   }
 
-  /** Returns the current best target or null if no targets are found */
+  /** Returns the current best target or null if no targets are found. */
   public PhotonTrackedTarget getBestTarget() {
     if (camResult == null)
       return null;
@@ -100,7 +99,7 @@ public class Vision extends SubsystemBase {
     return camResult.getBestTarget().getYaw();
   }
 
-  /** Sets the estimated robot pose and recent target pose */
+  /** Sets the estimated robot pose and recent target pose. */
   private void calculateGlobalRobotPosition() {
     if (!camResult.hasTargets())
       return;
@@ -125,9 +124,9 @@ public class Vision extends SubsystemBase {
   }
 
   /**
-   * Returns a transform to bring the current robot position to the best target
+   * Returns a transform to bring the current robot position to the best target.
    */
-  public Translation2d getTransformToTag() {
+  public Translation2d getTranslationToTag() {
     if (!camResult.hasTargets())
       return null;
 
@@ -137,7 +136,7 @@ public class Vision extends SubsystemBase {
     return toTag.getTranslation().toTranslation2d();
   }
 
-  /** Returns the position and rotation of the nearest AprilTag */
+  /** Returns the position and rotation of the nearest AprilTag. */
   public Pose2d getTagPosition() {
     if (!camResult.hasTargets())
       return null;

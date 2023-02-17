@@ -37,156 +37,155 @@ import frc.robot.subsystems.Vision;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
- * Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in
- * the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of
- * the robot (including
- * subsystems, commands, and button mappings) should be declared here.
+ * Command-based is a "declarative" paradigm, very little robot logic should
+ * actually be handled in the {@link Robot} periodic methods (other than the
+ * scheduler calls). Instead, the structure of the robot (including subsystems,
+ * commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  private final Drivetrain drivetrain = new Drivetrain();
-  private final Vision vision = new Vision();
-  private final RotatingArm arm = new RotatingArm();
-  private final Claw claw = new Claw();
+    private final Drivetrain drivetrain = new Drivetrain();
+    // private final Vision vision = new Vision();
+    // private final RotatingArm arm = new RotatingArm();
+    // rivate final Claw claw = new Claw();
 
-  private final XboxController driver = new XboxController(0);
-  private final XboxController operator = new XboxController(1);
-  private final Controls controls = new Controls(driver, operator);
+    private final XboxController driver = new XboxController(0);
+    private final XboxController operator = new XboxController(1);
+    private final Controls controls = new Controls(driver, operator);
 
-  private SendableChooser<Command> autoChooser;
-
-  /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
-   */
-  public RobotContainer() {
-    drivetrain.setDefaultCommand(new ArcadeDrive(drivetrain, controls::getDriveSpeed, controls::getTurnSpeed));
-    arm.setDefaultCommand(new RotateArmManual(arm, controls::getArmRotationSpeed));
-    arm.setDefaultCommand(new RotateArmManual(arm, controls::getArmRotationSpeed));
-
-    configureButtonBindings();
-    configureAutoChooser();
-  }
-
-  private void configureAutoChooser() {
-    List<Command> autoCommands = List.of(
-      new DriveDistanceConstant(drivetrain, 2),
-      new BalanceRoutine(drivetrain),
-      new ScoreAndBalance(drivetrain, arm, claw)
-    );
-
-    autoCommands.get(0).setName("Drive 2 Meters");
-    autoCommands.get(1).setName("Balance");
-    autoCommands.get(2).setName("Score and Balance");
-
-    autoChooser = new SendableChooser<Command>();
-    SmartDashboard.putData("Auto Chooser", autoChooser);
-
-    autoCommands.forEach(command -> {
-      System.out.println(command.getName());
-      autoChooser.addOption(command.getName(), command);
-    });
-
-    autoChooser.addOption("None", new WaitCommand(1));
-  }
-
-  /**
-   * Use this method to define your button->command mappings. Buttons can be
-   * created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
-   * it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
-  private void configureButtonBindings() {
-    // DRIVER
+    private SendableChooser<Command> autoChooser;
 
     /**
-     * [driver] Enable slow mode when Y or RB is pressed, stop slow mode when
-     * released
+     * The container for the robot. Contains subsystems, OI devices, and commands.
      */
-    new JoystickButton(driver, Button.kY.value)
-        .onTrue(new InstantCommand(drivetrain::enableSlow))
-        .onFalse(new InstantCommand(drivetrain::disableSlow));
-    new JoystickButton(driver, Button.kRightBumper.value)
-        .onTrue(new InstantCommand(drivetrain::enableSlow))
-        .onFalse(new InstantCommand(drivetrain::disableSlow));
+    public RobotContainer() {
+        drivetrain.setDefaultCommand(new ArcadeDrive(drivetrain, controls::getDriveSpeed, controls::getTurnSpeed));
+        // arm.setDefaultCommand(new RotateArmManual(arm,
+        // controls::getArmRotationSpeed));
+        // arm.setDefaultCommand(new RotateArmManual(arm,
+        // controls::getArmRotationSpeed));
 
-    /** [driver] Schedule AlignToScore when A is pressed, cancel when released */
-    final AlignToScore alignToScore = new AlignToScore(vision, drivetrain);
-    new JoystickButton(driver, Button.kA.value)
-        .onTrue(alignToScore)
-        .onFalse(new InstantCommand(() -> {
-          alignToScore.cancel();
-        }));
+        configureButtonBindings();
+        // configureAutoChooser();
+    }
 
-    /** [driver] Schedule AlignAndScore when X is pressed, cancel when released */
-    final AlignAndScore alignAndScore = new AlignAndScore(vision, drivetrain, arm, claw);
-    new JoystickButton(driver, Button.kX.value)
-        .onTrue(alignAndScore)
-        .onFalse(new InstantCommand(() -> {
-          alignAndScore.cancel();
-        }));
+    // private void configureAutoChooser() {
+    // List<Command> autoCommands = List.of(
+    // new DriveDistanceConstant(drivetrain, 2),
+    // new BalanceRoutine(drivetrain),
+    // new ScoreAndBalance(drivetrain, arm, claw)
+    // );
+
+    // autoCommands.get(0).setName("Drive 2 Meters");
+    // autoCommands.get(1).setName("Balance");
+    // autoCommands.get(2).setName("Score and Balance");
+
+    // autoChooser = new SendableChooser<Command>();
+    // SmartDashboard.putData("Auto Chooser", autoChooser);
+
+    // autoCommands.forEach(command -> {
+    // System.out.println(command.getName());
+    // autoChooser.addOption(command.getName(), command);
+    // });
+
+    // autoChooser.addOption("None", new WaitCommand(1));
+    // }
 
     /**
-     * [driver] Schedule AutoBalanceWithRoll when B is pressed, cancel when released
+     * Use this method to define your button-command mappings. Buttons can be
+     * created by instantiating a {@link GenericHID} or one of its subclasses
+     * ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then
+     * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
-    final BalanceRoutine autoBalance = new BalanceRoutine(drivetrain);
-    new JoystickButton(driver, Button.kB.value)
-        .onTrue(autoBalance)
-        .onFalse(new InstantCommand(() -> {
-          autoBalance.cancel();
-        }));
+    private void configureButtonBindings() {
+        // DRIVER
 
-    /** [driver] Force reset odometry when Start is pressed */
-    new JoystickButton(driver, Button.kStart.value)
-        .onTrue(new InstantCommand(() -> drivetrain.resetOdometry()));
+        /**
+         * [driver] Enable slow mode when Y or RB is pressed, stop slow mode when
+         * released
+         */
+        new JoystickButton(driver, Button.kY.value)
+                .onTrue(new InstantCommand(drivetrain::enableSlow))
+                .onFalse(new InstantCommand(drivetrain::disableSlow));
+        new JoystickButton(driver, Button.kRightBumper.value)
+                .onTrue(new InstantCommand(drivetrain::enableSlow))
+                .onFalse(new InstantCommand(drivetrain::disableSlow));
 
-    /** [driver] Set the TargetType in RuntimeTrajectoryGenerator with D-pad */
-    new POVButton(driver, 0) // up
-        .onTrue(new InstantCommand(() -> RuntimeTrajectoryGenerator.setTargetType(TargetLocation.Center)));
-    new POVButton(driver, 90) // right
-        .onTrue(new InstantCommand(() -> RuntimeTrajectoryGenerator.setTargetType(TargetLocation.Right)));
-    new POVButton(driver, 270) // left
-        .onTrue(new InstantCommand(() -> RuntimeTrajectoryGenerator.setTargetType(TargetLocation.Left)));
+        /** [driver] Schedule AlignToScore when A is pressed, cancel when released */
+        // final AlignToScore alignToScore = new AlignToScore(vision, drivetrain);
+        // new JoystickButton(driver, Button.kA.value)
+        // .onTrue(alignToScore)
+        // .onFalse(new InstantCommand(() -> {
+        // alignToScore.cancel();
+        // }));
 
+        // /** [driver] Schedule AlignAndScore when X is pressed, cancel when released
+        // */
+        // final AlignAndScore alignAndScore = new AlignAndScore(vision, drivetrain,
+        // arm, claw);
+        // new JoystickButton(driver, Button.kX.value)
+        // .onTrue(alignAndScore)
+        // .onFalse(new InstantCommand(() -> {
+        // alignAndScore.cancel();
+        // }));
 
+        /**
+         * [driver] Schedule AutoBalanceWithRoll when B is pressed, cancel when released
+         */
+        final BalanceRoutine autoBalance = new BalanceRoutine(drivetrain);
+        new JoystickButton(driver, Button.kB.value)
+                .onTrue(autoBalance)
+                .onFalse(new InstantCommand(() -> {
+                    autoBalance.cancel();
+                }));
 
-    // OPERATOR
-    /** [operator] Set the ScoreHeight in ScoreObject with D-pad */
-    new POVButton(operator, 0) // up
-        .onTrue(new InstantCommand(() -> RotateArmToScoreHeight.setScoreHeight(ScoreHeight.High)));
-    new POVButton(operator, 90) // right
-        .onTrue(new InstantCommand(() -> RotateArmToScoreHeight.setScoreHeight(ScoreHeight.Mid)));
-    new POVButton(operator, 270) // left
-        .onTrue(new InstantCommand(() -> RotateArmToScoreHeight.setScoreHeight(ScoreHeight.Mid)));
-    new POVButton(operator, 180) // down
-        .onTrue(new InstantCommand(() -> RotateArmToScoreHeight.setScoreHeight(ScoreHeight.Floor)));
+        /** [driver] Force reset odometry when Start is pressed */
+        new JoystickButton(driver, Button.kStart.value)
+                .onTrue(new InstantCommand(() -> drivetrain.resetOdometry()));
 
-    /** [operator] Open Claw */
-    new JoystickButton(operator, Button.kRightBumper.value)
-        .onTrue(new InstantCommand(claw::openClaw));
+        /** [driver] Set the TargetType in RuntimeTrajectoryGenerator with D-pad */
+        new POVButton(driver, 0) // up
+                .onTrue(new InstantCommand(() -> RuntimeTrajectoryGenerator.setTargetType(TargetLocation.Center)));
+        new POVButton(driver, 90) // right
+                .onTrue(new InstantCommand(() -> RuntimeTrajectoryGenerator.setTargetType(TargetLocation.Right)));
+        new POVButton(driver, 270) // left
+                .onTrue(new InstantCommand(() -> RuntimeTrajectoryGenerator.setTargetType(TargetLocation.Left)));
 
-    /** [operator] Close Claw */
-    new JoystickButton(operator, Button.kLeftBumper.value)
-        .onTrue(new InstantCommand(claw::closeClaw));
+        // OPERATOR
+        /** [operator] Set the ScoreHeight in ScoreObject with D-pad */
+        new POVButton(operator, 0) // up
+                .onTrue(new InstantCommand(() -> RotateArmToScoreHeight.setScoreHeight(ScoreHeight.High)));
+        new POVButton(operator, 90) // right
+                .onTrue(new InstantCommand(() -> RotateArmToScoreHeight.setScoreHeight(ScoreHeight.Mid)));
+        new POVButton(operator, 270) // left
+                .onTrue(new InstantCommand(() -> RotateArmToScoreHeight.setScoreHeight(ScoreHeight.Mid)));
+        new POVButton(operator, 180) // down
+                .onTrue(new InstantCommand(() -> RotateArmToScoreHeight.setScoreHeight(ScoreHeight.Floor)));
 
-    /** [operator] Schedule ScoreObject when Y is pressed, cancel when released */
-    new JoystickButton(operator, Button.kY.value)
-        .whileTrue(new ScoreObject(drivetrain, arm, claw));
+        // /** [operator] Open Claw */
+        // new JoystickButton(operator, Button.kRightBumper.value)
+        // .onTrue(new InstantCommand(claw::openClaw));
 
-    /** [operator] Schedule PickUpObjectFromHuman when A is pressed, cancel when released */
-    new JoystickButton(operator, Button.kA.value)
-        .whileTrue(new PickUpObjectFromHuman(arm, claw, drivetrain));
-  }
-  
+        // /** [operator] Close Claw */
+        // new JoystickButton(operator, Button.kLeftBumper.value)
+        // .onTrue(new InstantCommand(claw::closeClaw));
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    return autoChooser.getSelected();
-  }
+        // /** [operator] Schedule ScoreObject when Y is pressed, cancel when released
+        // */
+        // new JoystickButton(operator, Button.kY.value)
+        // .whileTrue(new ScoreObject(drivetrain, arm, claw));
+
+        // /** [operator] Schedule PickUpObjectFromHuman when A is pressed, cancel when
+        // released */
+        // new JoystickButton(operator, Button.kA.value)
+        // .whileTrue(new PickUpObjectFromHuman(arm, claw, drivetrain));
+    }
+
+    /**
+     * Use this to pass the autonomous command to the main {@link Robot} class.
+     *
+     * @return the command to run in autonomous
+     */
+    public Command getAutonomousCommand() {
+        return autoChooser.getSelected();
+    }
 }

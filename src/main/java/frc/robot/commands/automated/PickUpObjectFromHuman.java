@@ -4,11 +4,9 @@
 
 package frc.robot.commands.automated;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.Constants.RotatingArmConfig;
 import frc.robot.commands.drivetrain.DriveDistanceConstant;
 import frc.robot.commands.rotatingArm.RotateArmToAngleConstant;
 import frc.robot.commands.rotatingArm.RotateArmToAnglePID;
@@ -23,7 +21,7 @@ public class PickUpObjectFromHuman extends SequentialCommandGroup {
    * @param claw the claw subsystem
    */
   public PickUpObjectFromHuman(RotatingArm arm, Claw claw, Drivetrain drivetrain) {
-    double armAngle = RotatingArmConfig.armHeightToAngle(Units.inchesToMeters(40.0));
+    double armAngle = arm.armHeightToAngle(Units.inchesToMeters(40.0));
     addCommands(
       new DriveDistanceConstant(drivetrain, -0.5),
       new RotateArmToAngleConstant(arm, armAngle + 20.0),
