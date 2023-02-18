@@ -4,16 +4,12 @@
 
 package frc.robot.commands.vision;
 
-import java.util.function.Supplier;
-
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.RuntimeTrajectoryGenerator;
-import frc.robot.RuntimeTrajectoryGenerator.TargetLocation;
 import frc.robot.commands.drivetrain.FollowPath;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
@@ -31,9 +27,10 @@ public class AlignToScore extends CommandBase {
 
   @Override
   public void initialize() {
-    var transformToTag = vision.getTransformToTag();
-    Pose2d robotPose = new Pose2d(-transformToTag.getX(), -transformToTag.getY(),
-        new Rotation2d());
+    // var transformToTag = vision.getTransformToTag();
+    // Pose2d robotPose = new Pose2d(-transformToTag.getX(), -transformToTag.getY(),
+    //     new Rotation2d());
+    Pose2d robotPose = vision.getEstimatedRobotPose();
     Pose2d tagPose = vision.getRecentTagPose();
 
     if (robotPose == null || tagPose == null) {
@@ -56,12 +53,18 @@ public class AlignToScore extends CommandBase {
 
   @Override
   public void end(boolean interrupted) {
+    System.out.println("Command done");
+    System.out.println("Command done");
+    System.out.println("Command done");
+    System.out.println("Command done");
     if (pathCommand != null)
       pathCommand.cancel();
   }
 
   @Override
   public boolean isFinished() {
+    if (pathCommand == null)
+      return true;
     return pathCommand.isFinished();
   }
 }

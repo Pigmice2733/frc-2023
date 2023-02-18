@@ -68,7 +68,7 @@ public class AlignWithTag extends CommandBase {
     // System.out.println(currentYaw);
 
     //double forwardSpeed = linearController.calculate(currentDistance);
-    double rotationSpeed = angularController.calculate(-drivetrain.getHeadingRadians().getDegrees());
+    double rotationSpeed = angularController.calculate(-drivetrain.getHeading().getDegrees());
     SmartDashboard.putNumber("RotateSpeed", rotationSpeed);
     drivetrain.arcadeDrive(0, rotationSpeed);
   }

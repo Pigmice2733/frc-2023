@@ -30,4 +30,16 @@ public class FollowPath extends RamseteCommand {
                 drivetrain);
         addRequirements(drivetrain);
     }
+
+    @Override
+    public void end(boolean interrupted) {
+        super.end(interrupted);
+        System.out.println("FollowPath Command End");
+        System.out.println("FollowPath Command End");
+        System.out.println("FollowPath Command End");
+        System.out.println("FollowPath Command End");
+        System.out.println("FollowPath Command End");
+        System.out.println("FollowPath Command End");
+        System.out.println("FollowPath Command End");
+    }
 }

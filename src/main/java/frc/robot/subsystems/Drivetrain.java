@@ -127,18 +127,18 @@ public class Drivetrain extends SubsystemBase {
 
   /** Updates the odometry pose with the heading and position measurements. */
   private void updateOdometry() {
-    pose = odometry.update(getHeadingRadians(), leftDrive.getEncoder().getPosition(),
+    pose = odometry.update(getHeading(), leftDrive.getEncoder().getPosition(),
         rightDrive.getEncoder().getPosition());
 
     if (ShuffleboardConfig.drivetrainPrintsEnabled) {
       xPosEntry.setDouble(pose.getX());
       yPosEntry.setDouble(pose.getY());
-      headingEntry.setDouble(getHeadingRadians().getDegrees());
+      headingEntry.setDouble(getHeading().getDegrees());
     }
   }
 
   /** Returns the robot's current yaw as a Rotation2d object (in radians). */
-  public Rotation2d getHeadingRadians() {
+  public Rotation2d getHeading() {
     return new Rotation2d(-gyro.getAngle() * (Math.PI / 180));
   }
 
@@ -200,7 +200,7 @@ public class Drivetrain extends SubsystemBase {
   /** Sets odometry to a specific Pose2d. */
   public void setOdometryPose(Pose2d newPose) {
     gyro.reset();
-    gyro.setAngleAdjustment(newPose.getRotation().getDegrees());
+    gyro.setAngleAdjustment(-newPose.getRotation().getDegrees());
     odometry.resetPosition(newPose.getRotation(), 0, 0, newPose);
 
     leftDrive.getEncoder().setPosition(0);

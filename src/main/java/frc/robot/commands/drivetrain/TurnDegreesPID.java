@@ -14,35 +14,37 @@ import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import frc.robot.Constants.DrivetrainConfig;
 import frc.robot.subsystems.Drivetrain;
 
-public class DriveDistancePID extends ProfiledPIDCommand {
+public class TurnDegreesPID extends ProfiledPIDCommand {
 
-  private final double distance;
+  private final double rotation;
   private final Drivetrain drivetrain;
   /**
-   * Use profiled PID to drive the specified distance.
+   * Use profiled PID to rotate the specified angle.
    * @param drivetrain a drivetrain subsystem
-   * @param distance The distance to drive in meters. The robot will move forward if this is positive or backward if this is negative.
+   * @param rotation The degrees to rotate
    */
-  public DriveDistancePID(Drivetrain drivetrain, double distance) {
+  public TurnDegreesPID(Drivetrain drivetrain, double rotation) {
     super(
-      new ProfiledPIDController(DrivetrainConfig.driveDistP, DrivetrainConfig.driveDistI, DrivetrainConfig.driveDistD, new Constraints(DrivetrainConfig.driveDistVel, DrivetrainConfig.driveDistAcc)), 
-      drivetrain::getAverageDistance,
+      new ProfiledPIDController(DrivetrainConfig.turnDegP, DrivetrainConfig.turnDegI, DrivetrainConfig.turnDegD, new Constraints(DrivetrainConfig.turnDegVel, DrivetrainConfig.turnDegAcc)), 
+      () -> drivetrain.getHeading().getDegrees(),
       100000, 
-      (output,setpoint) -> { drivetrain.arcadeDrive(output, 0); },
+      (output,setpoint) -> { drivetrain.arcadeDrive(0, -output); },
       drivetrain
     );
-    this.distance = distance;
+    this.rotation = rotation;
     this.drivetrain = drivetrain;
 
-    getController().setTolerance(0.05, 0.1);
+    getController().enableContinuousInput(-180, 180);
+
+    getController().setTolerance(2, 3);
     addRequirements(drivetrain);
   }
 
   @Override
   public void initialize() { 
     super.initialize();
-    double targetDist = distance + drivetrain.getAverageDistance();
-    m_goal = () -> new State(targetDist, 0);
+    double targetRotation = rotation + drivetrain.getHeading().getDegrees();
+    m_goal = () -> new State(targetRotation, 0);
     getController().setGoal(m_goal.get());
     System.out.println("Set Goal: " + getController().getGoal().position);
     System.out.println("Set Goal: " + m_goal.get().position);

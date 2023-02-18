@@ -14,7 +14,7 @@ import frc.robot.Constants.DrivetrainConfig;
 public final class RuntimeTrajectoryGenerator {
     public static double yDistanceFromTagToConeNode = Units.inchesToMeters(22); // TODO: enter exact value
     public static double yDistanceFromTagToPickup = Units.inchesToMeters(0); // TODO: enter exact value
-    public static double xDistanceFromTagToScoreLocation = Units.inchesToMeters(0); // TODO: enter exact value
+    public static double xDistanceFromTagToTarget = Units.inchesToMeters(24); // TODO: enter exact value
     public static double robotLength = Units.inchesToMeters(45); // TODO: enter exact value
 
     public static double tagRotation = 0;
@@ -23,7 +23,7 @@ public final class RuntimeTrajectoryGenerator {
     public static Trajectory generateLineupTrajectory(Pose2d currentRobotPose, Pose2d tagPose) {
         // if we are looking at a flipped tag then we have to invert all of our distances
         double tagRotated = tagPose.getRotation().getDegrees() == 0 ? -1 : 1;
-        double xPos = tagPose.getX() - (robotLength/2 + xDistanceFromTagToScoreLocation) * tagRotated;
+        double xPos = tagPose.getX() - (robotLength/2 + xDistanceFromTagToTarget) * tagRotated;
         double yPos = tagPose.getY();
 
         switch(selectedTargetType) { // TODO: Add support for knowing when picking up or scoring

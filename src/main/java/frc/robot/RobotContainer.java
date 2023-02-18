@@ -23,6 +23,8 @@ import frc.robot.commands.automated.PickUpObjectFromHuman;
 import frc.robot.commands.automated.ScoreObject;
 import frc.robot.commands.drivetrain.ArcadeDrive;
 import frc.robot.commands.drivetrain.DriveDistanceConstant;
+import frc.robot.commands.drivetrain.DriveDistancePID;
+import frc.robot.commands.drivetrain.TurnDegreesPID;
 import frc.robot.commands.rotatingArm.RotateArmManual;
 import frc.robot.commands.rotatingArm.RotateArmToScoreHeight;
 import frc.robot.commands.rotatingArm.RotateArmToScoreHeight.ScoreHeight;
@@ -30,6 +32,7 @@ import frc.robot.commands.routines.BalanceRoutine;
 import frc.robot.commands.routines.ScoreAndBalance;
 import frc.robot.commands.vision.AlignAndScore;
 import frc.robot.commands.vision.AlignToScore;
+import frc.robot.commands.vision.FullyAlign;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.RotatingArm;
@@ -47,8 +50,8 @@ import frc.robot.subsystems.Vision;
 public class RobotContainer {
   private final Drivetrain drivetrain = new Drivetrain();
   private final Vision vision = new Vision();
-  private final RotatingArm arm = new RotatingArm();
-  private final Claw claw = new Claw();
+  //private final RotatingArm arm = new RotatingArm();
+  //private final Claw claw = new Claw();
 
   private final XboxController driver = new XboxController(0);
   private final XboxController operator = new XboxController(1);
@@ -61,33 +64,41 @@ public class RobotContainer {
    */
   public RobotContainer() {
     drivetrain.setDefaultCommand(new ArcadeDrive(drivetrain, controls::getDriveSpeed, controls::getTurnSpeed));
-    arm.setDefaultCommand(new RotateArmManual(arm, controls::getArmRotationSpeed));
-    arm.setDefaultCommand(new RotateArmManual(arm, controls::getArmRotationSpeed));
+    //arm.setDefaultCommand(new RotateArmManual(arm, controls::getArmRotationSpeed));
+    //arm.setDefaultCommand(new RotateArmManual(arm, controls::getArmRotationSpeed));
 
-    configureButtonBindings();
+    configureDefaultCommands();
     configureAutoChooser();
+    configureButtonBindings();
+  }
+
+  private void configureDefaultCommands() {
+
   }
 
   private void configureAutoChooser() {
     List<Command> autoCommands = List.of(
       new DriveDistanceConstant(drivetrain, 2),
+      new DriveDistancePID(drivetrain, 2),
       new BalanceRoutine(drivetrain),
-      new ScoreAndBalance(drivetrain, arm, claw)
+      new TurnDegreesPID(drivetrain, 90)
+      //new ScoreAndBalance(drivetrain, arm, claw)
     );
 
-    autoCommands.get(0).setName("Drive 2 Meters");
-    autoCommands.get(1).setName("Balance");
-    autoCommands.get(2).setName("Score and Balance");
+    autoCommands.get(0).setName("Drive 2 Meters Constant");
+    autoCommands.get(1).setName("Drive 2 Meters PID");
+    autoCommands.get(2).setName("Balance");
+    autoCommands.get(3).setName("Turn 180 Degrees");
+    //autoCommands.get(3).setName("Score and Balance");
 
     autoChooser = new SendableChooser<Command>();
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
     autoCommands.forEach(command -> {
-      System.out.println(command.getName());
       autoChooser.addOption(command.getName(), command);
     });
 
-    autoChooser.addOption("None", new WaitCommand(1));
+    autoChooser.setDefaultOption("None", new WaitCommand(1));
   }
 
   /**
@@ -113,20 +124,20 @@ public class RobotContainer {
         .onFalse(new InstantCommand(drivetrain::disableSlow));
 
     /** [driver] Schedule AlignToScore when A is pressed, cancel when released */
-    final AlignToScore alignToScore = new AlignToScore(vision, drivetrain);
+    final FullyAlign alignCommand = new FullyAlign(drivetrain, vision);
     new JoystickButton(driver, Button.kA.value)
-        .onTrue(alignToScore)
+        .onTrue(alignCommand)
         .onFalse(new InstantCommand(() -> {
-          alignToScore.cancel();
+          alignCommand.cancel();
         }));
 
-    /** [driver] Schedule AlignAndScore when X is pressed, cancel when released */
-    final AlignAndScore alignAndScore = new AlignAndScore(vision, drivetrain, arm, claw);
-    new JoystickButton(driver, Button.kX.value)
-        .onTrue(alignAndScore)
-        .onFalse(new InstantCommand(() -> {
-          alignAndScore.cancel();
-        }));
+    // /** [driver] Schedule AlignAndScore when X is pressed, cancel when released */
+    // final AlignAndScore alignAndScore = new AlignAndScore(vision, drivetrain, arm, claw);
+    // new JoystickButton(driver, Button.kX.value)
+    //     .onTrue(alignAndScore)
+    //     .onFalse(new InstantCommand(() -> {
+    //       alignAndScore.cancel();
+    //     }));
 
     /**
      * [driver] Schedule AutoBalanceWithRoll when B is pressed, cancel when released
@@ -163,21 +174,21 @@ public class RobotContainer {
     new POVButton(operator, 180) // down
         .onTrue(new InstantCommand(() -> RotateArmToScoreHeight.setScoreHeight(ScoreHeight.Floor)));
 
-    /** [operator] Open Claw */
-    new JoystickButton(operator, Button.kRightBumper.value)
-        .onTrue(new InstantCommand(claw::openClaw));
+    // /** [operator] Open Claw */
+    // new JoystickButton(operator, Button.kRightBumper.value)
+    //     .onTrue(new InstantCommand(claw::openClaw));
 
-    /** [operator] Close Claw */
-    new JoystickButton(operator, Button.kLeftBumper.value)
-        .onTrue(new InstantCommand(claw::closeClaw));
+    // /** [operator] Close Claw */
+    // new JoystickButton(operator, Button.kLeftBumper.value)
+    //     .onTrue(new InstantCommand(claw::closeClaw));
 
-    /** [operator] Schedule ScoreObject when Y is pressed, cancel when released */
-    new JoystickButton(operator, Button.kY.value)
-        .whileTrue(new ScoreObject(drivetrain, arm, claw));
+    // /** [operator] Schedule ScoreObject when Y is pressed, cancel when released */
+    // new JoystickButton(operator, Button.kY.value)
+    //     .whileTrue(new ScoreObject(drivetrain, arm, claw));
 
-    /** [operator] Schedule PickUpObjectFromHuman when A is pressed, cancel when released */
-    new JoystickButton(operator, Button.kA.value)
-        .whileTrue(new PickUpObjectFromHuman(arm, claw, drivetrain));
+    // /** [operator] Schedule PickUpObjectFromHuman when A is pressed, cancel when released */
+    // new JoystickButton(operator, Button.kA.value)
+    //     .whileTrue(new PickUpObjectFromHuman(arm, claw, drivetrain));
   }
   
 

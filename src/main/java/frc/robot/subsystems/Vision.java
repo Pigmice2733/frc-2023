@@ -8,13 +8,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import org.photonvision.RobotPoseEstimator;
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -34,13 +35,14 @@ public class Vision extends SubsystemBase {
   private final PhotonCamera camera = new PhotonCamera("OV5647");
 
   private final AprilTagFieldLayout layout = new AprilTagFieldLayout(
-      List.of(new AprilTag(6,
+      List.of(new AprilTag(2,
           new Pose3d(new Translation3d(0, 0, Units.inchesToMeters(26.2)), new Rotation3d(0, 0, Math.toRadians(180))))),
       50, 50);
-  private final RobotPoseEstimator poseEstimator = new RobotPoseEstimator(layout,
-      RobotPoseEstimator.PoseStrategy.AVERAGE_BEST_TARGETS, Arrays.asList(
-          new Pair<PhotonCamera, Transform3d>(camera, new Transform3d(new Translation3d(0, 0, Units.inchesToMeters(9)),
-              new Rotation3d(0, Math.toRadians(23), 0)))));
+  private final PhotonPoseEstimator poseEstimator = new PhotonPoseEstimator(
+    layout,
+    PhotonPoseEstimator.PoseStrategy.AVERAGE_BEST_TARGETS, 
+    camera, 
+    new Transform3d(new Translation3d(0, 0, Units.inchesToMeters(9)),new Rotation3d(0, Math.toRadians(23), 0)));
   private PhotonPipelineResult camResult;
 
   private final GenericEntry robotXEntry, robotYEntry, robotYawEntry, tagXEntry, tagYEntry, tagYawEntry;
@@ -76,8 +78,9 @@ public class Vision extends SubsystemBase {
   }
 
   private void updateShuffleboard() {
-    if (estimatedRobotPose == null || recentTagPose == null || Double.isNaN(estimatedRobotPose.getX()))
+    if (estimatedRobotPose == null || recentTagPose == null || Double.isNaN(estimatedRobotPose.getX())) {
       return;
+    }
 
     robotYawEntry.setDouble(estimatedRobotPose.getRotation().getDegrees());
     robotXEntry.setDouble(estimatedRobotPose.getX());
@@ -102,14 +105,15 @@ public class Vision extends SubsystemBase {
 
   /** Sets the estimated robot pose and recent target pose */
   private void calculateGlobalRobotPosition() {
-    if (!camResult.hasTargets())
+    if (!camResult.hasTargets()) {
       return;
+    }
 
     var poseEstimation = poseEstimator.update();
     if (poseEstimation.isEmpty())
       return;
 
-    Pose2d currentRobotPose = poseEstimation.get().getFirst().toPose2d();
+    Pose2d currentRobotPose = poseEstimation.get().estimatedPose.toPose2d();
     Pose2d tagPosition = getTagPosition();
 
     if (currentRobotPose == null || tagPosition == null) {

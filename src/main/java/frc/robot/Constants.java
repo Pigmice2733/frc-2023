@@ -25,8 +25,8 @@ public final class Constants {
         public static final int leftFollowPort = 2;
         public static final int rightFollowPort = 3;
     
-        public static final double driveSpeed = .5;
-        public static final double turnSpeed = .5;
+        public static final double driveSpeed = .75;
+        public static final double turnSpeed = .4;
     
         // Multiplied by drive speed when in slow mode
         public static final double slowMultiplier = 0.25;
@@ -36,7 +36,7 @@ public final class Constants {
         public static final double rotationToDistanceConversion = (Math.PI * wheelDiameterMeters) * gearRatio; // Encoder rotations to distance moved
         public static final double drivetrainWidthMeters = Units.inchesToMeters(24); // Distance between left and right wheels in meters
     
-        public static final double constantDriveDistSpeed = 0.1;
+        public static final double constantDriveDistSpeed = 0.2;
 
         // Path following PID
         //public static final double pathP = 0.017108; // <- value from SysId
@@ -45,9 +45,19 @@ public final class Constants {
         public static final double pathD = 0;
     
         // Drive distance PID
-        public static final double driveDistP = 0.4;
+        public static final double driveDistP = 0.3;
         public static final double driveDistI = 0;
         public static final double driveDistD = 0;
+
+        public static final double driveDistVel = 1;
+        public static final double driveDistAcc = 1.5;
+
+        public static final double turnDegP = 0.02;
+        public static final double turnDegI = 0;
+        public static final double turnDegD = 0;
+
+        public static final double turnDegVel = 90;
+        public static final double turnDegAcc = 120;
     
         // Auto turn PID
         public static final double turnP = 0.001;
