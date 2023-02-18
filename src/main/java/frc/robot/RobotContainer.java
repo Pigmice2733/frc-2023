@@ -40,12 +40,10 @@ import frc.robot.subsystems.Vision;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
- * Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in
- * the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of
- * the robot (including
- * subsystems, commands, and button mappings) should be declared here.
+ * Command-based is a "declarative" paradigm, very little robot logic should
+ * actually be handled in the {@link Robot} periodic methods (other than the
+ * scheduler calls). Instead, the structure of the robot (including subsystems,
+ * commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
   private final Drivetrain drivetrain = new Drivetrain();
@@ -113,8 +111,10 @@ public class RobotContainer {
     // DRIVER
 
     /**
-     * [driver] Enable slow mode when Y or RB is pressed, stop slow mode when
-     * released
+     * Use this method to define your button-command mappings. Buttons can be
+     * created by instantiating a {@link GenericHID} or one of its subclasses
+     * ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then
+     * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     new JoystickButton(driver, Button.kY.value)
         .onTrue(new InstantCommand(drivetrain::enableSlow))
@@ -140,7 +140,9 @@ public class RobotContainer {
     //     }));
 
     /**
-     * [driver] Schedule AutoBalanceWithRoll when B is pressed, cancel when released
+     * Use this to pass the autonomous command to the main {@link Robot} class.
+     *
+     * @return the command to run in autonomous
      */
     final BalanceRoutine autoBalance = new BalanceRoutine(drivetrain);
     new JoystickButton(driver, Button.kB.value)

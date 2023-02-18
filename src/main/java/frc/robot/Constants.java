@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -107,13 +106,6 @@ public final class Constants {
 
         public static final int topLimitSwitchID = 0;
         public static final int bottomLimitSwitchID = 1;
-
-        public static double armHeightToAngle(double height) {
-            height -= RotatingArmConfig.armHeightMeters - RotatingArmConfig.armLengthMeters;
-            double clampedHeight = MathUtil.clamp(height/(RotatingArmConfig.armLengthMeters*2) - 1, -1.0, 1.0);
-            double armAngle = Math.asin(clampedHeight)*(180/Math.PI) + 90;
-            return armAngle;
-        }
     }
     public static final class ElevatorConfig {
         public static final int leftMotorPort = 7;

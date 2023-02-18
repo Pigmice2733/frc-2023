@@ -4,8 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import org.photonvision.PhotonCamera;
@@ -13,13 +13,11 @@ import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -34,20 +32,30 @@ public class Vision extends SubsystemBase {
 
   private final PhotonCamera camera = new PhotonCamera("OV5647");
 
-  private final AprilTagFieldLayout layout = new AprilTagFieldLayout(
-      List.of(new AprilTag(2,
-          new Pose3d(new Translation3d(0, 0, Units.inchesToMeters(26.2)), new Rotation3d(0, 0, Math.toRadians(180))))),
-      50, 50);
-  private final PhotonPoseEstimator poseEstimator = new PhotonPoseEstimator(
-    layout,
-    PhotonPoseEstimator.PoseStrategy.AVERAGE_BEST_TARGETS, 
-    camera, 
-    new Transform3d(new Translation3d(0, 0, Units.inchesToMeters(9)),new Rotation3d(0, Math.toRadians(23), 0)));
+  private AprilTagFieldLayout layout;
+ 
+  Drivetrain drivetrain;
+
   private PhotonPipelineResult camResult;
+  
+  private final PhotonPoseEstimator poseEstimator;
 
   private final GenericEntry robotXEntry, robotYEntry, robotYawEntry, tagXEntry, tagYEntry, tagYawEntry;
 
   public Vision() {
+    try {
+      this.layout = AprilTagFields.k2023ChargedUp.loadAprilTagLayoutField();
+      System.out.println("LOADED FIELD WITH " + this.layout.getTags().size() + " TAGS.");
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    poseEstimator = new PhotonPoseEstimator(
+      layout,
+      PhotonPoseEstimator.PoseStrategy.AVERAGE_BEST_TARGETS, 
+      camera, 
+      new Transform3d(new Translation3d(0, 0, Units.inchesToMeters(9)),new Rotation3d(0, Math.toRadians(23), 0)));
+
     ShuffleboardTab visionTab = Shuffleboard.getTab("Vision");
     robotXEntry = visionTab.add("Robot X", 0).getEntry();
     robotYEntry = visionTab.add("Robot Y", 0).getEntry();
@@ -91,7 +99,7 @@ public class Vision extends SubsystemBase {
     tagYEntry.setDouble(recentTagPose.getY());
   }
 
-  /** Returns the current best target or null if no targets are found */
+  /** Returns the current best target or null if no targets are found. */
   public PhotonTrackedTarget getBestTarget() {
     if (camResult == null)
       return null;
@@ -103,7 +111,7 @@ public class Vision extends SubsystemBase {
     return camResult.getBestTarget().getYaw();
   }
 
-  /** Sets the estimated robot pose and recent target pose */
+  /** Sets the estimated robot pose and recent target pose. */
   private void calculateGlobalRobotPosition() {
     if (!camResult.hasTargets()) {
       return;
@@ -129,9 +137,9 @@ public class Vision extends SubsystemBase {
   }
 
   /**
-   * Returns a transform to bring the current robot position to the best target
+   * Returns a transform to bring the current robot position to the best target.
    */
-  public Translation2d getTransformToTag() {
+  public Translation2d getTranslationToTag() {
     if (!camResult.hasTargets())
       return null;
 
@@ -141,7 +149,7 @@ public class Vision extends SubsystemBase {
     return toTag.getTranslation().toTranslation2d();
   }
 
-  /** Returns the position and rotation of the nearest AprilTag */
+  /** Returns the position and rotation of the nearest AprilTag. */
   public Pose2d getTagPosition() {
     if (!camResult.hasTargets())
       return null;

@@ -11,7 +11,6 @@ import frc.robot.commands.drivetrain.DriveOverChargeStation;
 import frc.robot.commands.drivetrain.DriveOntoChargeStation;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.RotatingArm;
 
 public class ScoreAndBalance extends SequentialCommandGroup {
