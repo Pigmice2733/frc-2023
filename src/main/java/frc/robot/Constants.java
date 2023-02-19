@@ -24,8 +24,8 @@ public final class Constants {
         public static final int leftFollowPort = 2;
         public static final int rightFollowPort = 3;
     
-        public static final double driveSpeed = .75;
-        public static final double turnSpeed = .4;
+        public static final double driveSpeed = .6;
+        public static final double turnSpeed = .3;
     
         // Multiplied by drive speed when in slow mode
         public static final double slowMultiplier = 0.25;
@@ -44,7 +44,7 @@ public final class Constants {
         public static final double pathD = 0;
     
         // Drive distance PID
-        public static final double driveDistP = 0.3;
+        public static final double driveDistP = 0.43;
         public static final double driveDistI = 0;
         public static final double driveDistD = 0;
 
@@ -78,7 +78,7 @@ public final class Constants {
 
         public static final double autoBalanceAngleThreshold = 5;
         public static final double autoBalanceSpeed = 0.3;
-        public static final double autoBalanceProportional = 0.25;
+        public static final double autoBalanceProportional = 0.4;
 
         public static final double maxTrajectoryVel = 2;
         public static final double maxTrajectoryAcc = 1;

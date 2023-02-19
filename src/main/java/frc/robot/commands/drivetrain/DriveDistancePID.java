@@ -44,21 +44,15 @@ public class DriveDistancePID extends ProfiledPIDCommand {
     double targetDist = distance + drivetrain.getAverageDistance();
     m_goal = () -> new State(targetDist, 0);
     getController().setGoal(m_goal.get());
-    System.out.println("Set Goal: " + getController().getGoal().position);
-    System.out.println("Set Goal: " + m_goal.get().position);
     SmartDashboard.putData(getController());
   }
 
   @Override
   public void end(boolean interrupted) {
-    System.out.println("END");
-    System.out.println("END");
-    System.out.println("END");
   }
 
   @Override
   public boolean isFinished() {
-    System.out.println(getController().getGoal().position);
     return getController().atGoal();
   }
 }

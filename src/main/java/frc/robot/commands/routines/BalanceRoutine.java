@@ -12,8 +12,11 @@ import frc.robot.subsystems.Drivetrain;
 public class BalanceRoutine extends SequentialCommandGroup {
   /** Drives the robot onto the Charge Station and balances. */
   public BalanceRoutine(Drivetrain drivetrain) {
+    this(drivetrain, false);
+  }
+  public BalanceRoutine(Drivetrain drivetrain, boolean backwards) {
     addCommands(
-        new DriveOntoChargeStation(drivetrain, true),
-        new AutoBalanceWithRoll(drivetrain, true));
+        new DriveOntoChargeStation(drivetrain, backwards),
+        new AutoBalanceWithRoll(drivetrain, backwards));
   }
 }

@@ -47,7 +47,7 @@ import frc.robot.subsystems.Vision;
  */
 public class RobotContainer {
   private final Drivetrain drivetrain = new Drivetrain();
-  private final Vision vision = new Vision();
+  //private final Vision vision = new Vision();
   //private final RotatingArm arm = new RotatingArm();
   //private final Claw claw = new Claw();
 
@@ -79,15 +79,19 @@ public class RobotContainer {
       new DriveDistanceConstant(drivetrain, 2),
       new DriveDistancePID(drivetrain, 2),
       new BalanceRoutine(drivetrain),
-      new TurnDegreesPID(drivetrain, 90)
-      //new ScoreAndBalance(drivetrain, arm, claw)
+      new TurnDegreesPID(drivetrain, 90),
+      new ScoreAndBalance(drivetrain, null, null),
+      new ScoreAndBalance(drivetrain, null, null, TargetLocation.Right),
+      new ScoreAndBalance(drivetrain, null, null, TargetLocation.Left)
     );
 
     autoCommands.get(0).setName("Drive 2 Meters Constant");
     autoCommands.get(1).setName("Drive 2 Meters PID");
     autoCommands.get(2).setName("Balance");
     autoCommands.get(3).setName("Turn 180 Degrees");
-    //autoCommands.get(3).setName("Score and Balance");
+    autoCommands.get(4).setName("Score and Balance");
+    autoCommands.get(5).setName("Score and Balance [Right]");
+    autoCommands.get(6).setName("Score and Balance [Left]");
 
     autoChooser = new SendableChooser<Command>();
     SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -123,13 +127,13 @@ public class RobotContainer {
         .onTrue(new InstantCommand(drivetrain::enableSlow))
         .onFalse(new InstantCommand(drivetrain::disableSlow));
 
-    /** [driver] Schedule AlignToScore when A is pressed, cancel when released */
-    final FullyAlign alignCommand = new FullyAlign(drivetrain, vision);
-    new JoystickButton(driver, Button.kA.value)
-        .onTrue(alignCommand)
-        .onFalse(new InstantCommand(() -> {
-          alignCommand.cancel();
-        }));
+    // /** [driver] Schedule AlignToScore when A is pressed, cancel when released */
+    // final FullyAlign alignCommand = new FullyAlign(drivetrain, vision);
+    // new JoystickButton(driver, Button.kA.value)
+    //     .onTrue(alignCommand)
+    //     .onFalse(new InstantCommand(() -> {
+    //       alignCommand.cancel();
+    //     }));
 
     // /** [driver] Schedule AlignAndScore when X is pressed, cancel when released */
     // final AlignAndScore alignAndScore = new AlignAndScore(vision, drivetrain, arm, claw);

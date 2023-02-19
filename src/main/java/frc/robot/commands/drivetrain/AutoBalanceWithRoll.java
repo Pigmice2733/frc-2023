@@ -33,7 +33,7 @@ public class AutoBalanceWithRoll extends CommandBase {
   public void execute() {
     double pitch = MathUtil.applyDeadband(drivetrain.getPitch(), 5);
     double proportionalPitch = pitch / 15.0;
-    double speedPitch = proportionalPitch * DrivetrainConfig.autoBalanceProportional + 0.035 * Math.signum(pitch); // was
+    double speedPitch = proportionalPitch * DrivetrainConfig.autoBalanceProportional + 0.042 * Math.signum(pitch); // was
                                                                                                                    // 0.1,
                                                                                                                    // 0.07
     speedPitch = MathUtil.clamp(speedPitch, -0.5, 0.5);
@@ -58,7 +58,7 @@ public class AutoBalanceWithRoll extends CommandBase {
     double speedRoll = proportionalRoll * DrivetrainConfig.autoBalanceProportional + 0.03 * Math.signum(roll);
     speedRoll = MathUtil.clamp(speedRoll, -0.1, 0.1);
 
-    drivetrain.arcadeDrive(speedPitch, (backwards ? -1 : 1) * speedRoll);
+    drivetrain.arcadeDrive(speedPitch, (backwards ? 1 : -1) * speedRoll);
   }
 
   @Override

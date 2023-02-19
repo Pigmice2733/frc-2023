@@ -20,14 +20,28 @@ public class ScoreObject extends SequentialCommandGroup {
    * location. Does not auto align.
    */
   public ScoreObject(Drivetrain drivetrain, RotatingArm arm, Claw claw, ScoreHeight height) {
+    this(drivetrain, arm, claw, height, false);
+  }
+  public ScoreObject(Drivetrain drivetrain, RotatingArm arm, Claw claw, ScoreHeight height, boolean skipDriveBackwards) {
 
-    addCommands(
+    if (skipDriveBackwards) {
+      addCommands(
+        new RotateArmToScoreHeight(arm),
+        new DriveDistancePID(drivetrain, 0.5),
+        new OpenClaw(claw),
+        new DriveDistancePID(drivetrain, 0.5),
+        new RotateArmToAngleConstant(arm, 0));
+    }
+    else {
+      addCommands(
         new DriveDistancePID(drivetrain, -0.5),
         new RotateArmToScoreHeight(arm),
         new DriveDistancePID(drivetrain, 0.5),
         new OpenClaw(claw),
         new DriveDistancePID(drivetrain, 0.5),
         new RotateArmToAngleConstant(arm, 0));
+    }
+    
 
     addRequirements(drivetrain, arm, claw);
   }
