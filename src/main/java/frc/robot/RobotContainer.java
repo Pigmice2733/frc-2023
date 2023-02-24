@@ -47,9 +47,9 @@ import frc.robot.subsystems.Vision;
  */
 public class RobotContainer {
   private final Drivetrain drivetrain = new Drivetrain();
-  //private final Vision vision = new Vision();
-  //private final RotatingArm arm = new RotatingArm();
-  //private final Claw claw = new Claw();
+  private final Vision vision = new Vision();
+  private final RotatingArm arm = new RotatingArm();
+  private final Claw claw = new Claw();
 
   private final XboxController driver = new XboxController(0);
   private final XboxController operator = new XboxController(1);
@@ -62,8 +62,7 @@ public class RobotContainer {
    */
   public RobotContainer() {
     drivetrain.setDefaultCommand(new ArcadeDrive(drivetrain, controls::getDriveSpeed, controls::getTurnSpeed));
-    //arm.setDefaultCommand(new RotateArmManual(arm, controls::getArmRotationSpeed));
-    //arm.setDefaultCommand(new RotateArmManual(arm, controls::getArmRotationSpeed));
+    arm.setDefaultCommand(new RotateArmManual(arm, controls::getArmRotationSpeed));
 
     configureDefaultCommands();
     configureAutoChooser();
@@ -114,12 +113,6 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // DRIVER
 
-    /**
-     * Use this method to define your button-command mappings. Buttons can be
-     * created by instantiating a {@link GenericHID} or one of its subclasses
-     * ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then
-     * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-     */
     new JoystickButton(driver, Button.kY.value)
         .onTrue(new InstantCommand(drivetrain::enableSlow))
         .onFalse(new InstantCommand(drivetrain::disableSlow));
@@ -127,27 +120,22 @@ public class RobotContainer {
         .onTrue(new InstantCommand(drivetrain::enableSlow))
         .onFalse(new InstantCommand(drivetrain::disableSlow));
 
-    // /** [driver] Schedule AlignToScore when A is pressed, cancel when released */
-    // final FullyAlign alignCommand = new FullyAlign(drivetrain, vision);
-    // new JoystickButton(driver, Button.kA.value)
-    //     .onTrue(alignCommand)
-    //     .onFalse(new InstantCommand(() -> {
-    //       alignCommand.cancel();
-    //     }));
+    /** [driver] Schedule AlignToScore when A is pressed, cancel when released */
+    final FullyAlign alignCommand = new FullyAlign(drivetrain, vision);
+    new JoystickButton(driver, Button.kA.value)
+        .onTrue(alignCommand)
+        .onFalse(new InstantCommand(() -> {
+          alignCommand.cancel();
+        }));
 
-    // /** [driver] Schedule AlignAndScore when X is pressed, cancel when released */
-    // final AlignAndScore alignAndScore = new AlignAndScore(vision, drivetrain, arm, claw);
-    // new JoystickButton(driver, Button.kX.value)
-    //     .onTrue(alignAndScore)
-    //     .onFalse(new InstantCommand(() -> {
-    //       alignAndScore.cancel();
-    //     }));
+    /** [driver] Schedule AlignAndScore when X is pressed, cancel when released */
+    final AlignAndScore alignAndScore = new AlignAndScore(vision, drivetrain, arm, claw);
+    new JoystickButton(driver, Button.kX.value)
+        .onTrue(alignAndScore)
+        .onFalse(new InstantCommand(() -> {
+          alignAndScore.cancel();
+        }));
 
-    /**
-     * Use this to pass the autonomous command to the main {@link Robot} class.
-     *
-     * @return the command to run in autonomous
-     */
     final BalanceRoutine autoBalance = new BalanceRoutine(drivetrain);
     new JoystickButton(driver, Button.kB.value)
         .onTrue(autoBalance)
@@ -180,21 +168,21 @@ public class RobotContainer {
     new POVButton(operator, 180) // down
         .onTrue(new InstantCommand(() -> RotateArmToScoreHeight.setScoreHeight(ScoreHeight.Floor)));
 
-    // /** [operator] Open Claw */
-    // new JoystickButton(operator, Button.kRightBumper.value)
-    //     .onTrue(new InstantCommand(claw::openClaw));
+    /** [operator] Open Claw */
+    new JoystickButton(operator, Button.kRightBumper.value)
+        .onTrue(new InstantCommand(claw::openClaw));
 
-    // /** [operator] Close Claw */
-    // new JoystickButton(operator, Button.kLeftBumper.value)
-    //     .onTrue(new InstantCommand(claw::closeClaw));
+    /** [operator] Close Claw */
+    new JoystickButton(operator, Button.kLeftBumper.value)
+        .onTrue(new InstantCommand(claw::closeClaw));
 
-    // /** [operator] Schedule ScoreObject when Y is pressed, cancel when released */
-    // new JoystickButton(operator, Button.kY.value)
-    //     .whileTrue(new ScoreObject(drivetrain, arm, claw));
+    /** [operator] Schedule ScoreObject when Y is pressed, cancel when released */
+    new JoystickButton(operator, Button.kY.value)
+        .whileTrue(new ScoreObject(drivetrain, arm, claw));
 
-    // /** [operator] Schedule PickUpObjectFromHuman when A is pressed, cancel when released */
-    // new JoystickButton(operator, Button.kA.value)
-    //     .whileTrue(new PickUpObjectFromHuman(arm, claw, drivetrain));
+    /** [operator] Schedule PickUpObjectFromHuman when A is pressed, cancel when released */
+    new JoystickButton(operator, Button.kA.value)
+        .whileTrue(new PickUpObjectFromHuman(arm, claw, drivetrain));
   }
   
 
