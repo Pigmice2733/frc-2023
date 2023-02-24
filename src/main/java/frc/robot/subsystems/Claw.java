@@ -5,7 +5,7 @@
 package frc.robot.subsystems;
 
 import frc.robot.Constants.ClawConfig;
-
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -19,7 +19,7 @@ public class Claw extends SubsystemBase {
   public Claw() {
     leftPiston.set(Value.kReverse);
     rightPiston.set(Value.kReverse);
-
+    new Compressor(PneumaticsModuleType.CTREPCM);
   }
 
   @Override
