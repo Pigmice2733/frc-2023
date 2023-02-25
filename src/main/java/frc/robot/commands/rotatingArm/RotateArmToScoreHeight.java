@@ -5,8 +5,10 @@
 package frc.robot.commands.rotatingArm;
 
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.RobotContainer;
 import frc.robot.RuntimeTrajectoryGenerator;
 import frc.robot.RuntimeTrajectoryGenerator.TargetLocation;
 import frc.robot.subsystems.RotatingArm;
@@ -67,10 +69,11 @@ public class RotateArmToScoreHeight extends CommandBase {
   }
 
   private static ScoreHeight selectedScoreHeight = ScoreHeight.Floor;
+  private static GenericEntry targetHeightEntry = RobotContainer.addToDriverTab("Target Height", selectedScoreHeight.toString());
 
   public static void setScoreHeight(ScoreHeight scoreHeight) {
     selectedScoreHeight = scoreHeight;
-    SmartDashboard.putString("Score Height", scoreHeight.toString());
+    targetHeightEntry.setString(scoreHeight.toString());
   }
 
   public RotateArmToScoreHeight withHeight(ScoreHeight scoreHeight) {

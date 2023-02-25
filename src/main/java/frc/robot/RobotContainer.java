@@ -6,9 +6,12 @@ package frc.robot;
 
 import java.util.List;
 
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -55,18 +58,26 @@ public class RobotContainer {
   private final XboxController operator = new XboxController(1);
   private final Controls controls = new Controls(driver, operator);
 
+  private static final ShuffleboardTab driverTab = Shuffleboard.getTab("Drive Info");
+  public static GenericEntry addToDriverTab(String name, Object defaultValue) {
+    return driverTab.add(name, defaultValue).getEntry();
+  }
+
   private SendableChooser<Command> autoChooser;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+    new RuntimeTrajectoryGenerator();
     drivetrain.setDefaultCommand(new ArcadeDrive(drivetrain, controls::getDriveSpeed, controls::getTurnSpeed));
     arm.setDefaultCommand(new RotateArmManual(arm, controls::getArmRotationSpeed));
 
     configureDefaultCommands();
     configureAutoChooser();
     configureButtonBindings();
+
+    RuntimeTrajectoryGenerator.setTargetType(TargetLocation.Left);
   }
 
   private void configureDefaultCommands() {

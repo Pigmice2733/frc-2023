@@ -18,10 +18,13 @@
     "Retained Values": {
       "open": false
     },
-    "Transitory Values": {
-      "open": false
-    },
     "transitory": {
+      "Shuffleboard": {
+        "Drive Info": {
+          "open": true
+        },
+        "open": true
+      },
       "SmartDashboard": {
         "Auto Chooser": {
           "open": true

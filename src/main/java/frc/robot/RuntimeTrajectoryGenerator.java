@@ -8,10 +8,12 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DrivetrainConfig;
 
-public final class RuntimeTrajectoryGenerator {
+public class RuntimeTrajectoryGenerator {
     public static double yDistanceFromTagToConeNode = Units.inchesToMeters(22); // TODO: enter exact value
     public static double yDistanceFromTagToPickup = Units.inchesToMeters(0); // TODO: enter exact value
     public static double xDistanceFromTagToTarget = Units.inchesToMeters(24); // TODO: enter exact value
@@ -26,7 +28,7 @@ public final class RuntimeTrajectoryGenerator {
         double xPos = tagPose.getX() - (robotLength/2 + xDistanceFromTagToTarget) * tagRotated;
         double yPos = tagPose.getY();
 
-        switch(selectedTargetType) { // TODO: Add support for knowing when picking up or scoring
+        switch(selectedTargetLocation) { // TODO: Add support for knowing when picking up or scoring
             case Left:
                 yPos += yDistanceFromTagToConeNode * tagRotated;
                 break;
@@ -54,9 +56,11 @@ public final class RuntimeTrajectoryGenerator {
         Right
     }
 
-    private static TargetLocation selectedTargetType = TargetLocation.Center;
+    private static TargetLocation selectedTargetLocation = TargetLocation.Center;
+    private static GenericEntry targetLocationEntry = RobotContainer.addToDriverTab("Target Location", selectedTargetLocation.toString());
 
-    public static void setTargetType(TargetLocation targetType) { selectedTargetType = targetType; 
-        SmartDashboard.putString("Target Type", targetType.toString()); }
-    public static TargetLocation getTargetType() { return selectedTargetType; }
+    public static void setTargetType(TargetLocation targetLocation) { selectedTargetLocation = targetLocation; 
+        targetLocationEntry.setString(targetLocation.toString()); }
+
+    public static TargetLocation getTargetType() { return selectedTargetLocation; }
 }

@@ -14,16 +14,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Claw extends SubsystemBase {
   private final DoubleSolenoid leftPiston = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, ClawConfig.leftPistonPorts[0],ClawConfig.leftPistonPorts[1]);
   private final DoubleSolenoid rightPiston = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, ClawConfig.rightPistonPorts[0], ClawConfig.rightPistonPorts[1]);
-  
-  /** Creates a new Claw. */
+  private final Compressor compressor = new Compressor(PneumaticsModuleType.CTREPCM);
+
   public Claw() {
     leftPiston.set(Value.kReverse);
     rightPiston.set(Value.kReverse);
-    new Compressor(PneumaticsModuleType.CTREPCM);
   }
-
-  @Override
-  public void periodic() {}
 
   public void closeClaw() {
     leftPiston.set(Value.kForward);
