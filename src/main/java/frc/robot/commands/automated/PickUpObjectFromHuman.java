@@ -24,14 +24,11 @@ public class PickUpObjectFromHuman extends SequentialCommandGroup {
     double armAngle = arm.armHeightToAngle(Units.inchesToMeters(40.0));
     addCommands(
       new DriveDistanceConstant(drivetrain, -0.5),
-      new RotateArmToAngleConstant(arm, armAngle + 20.0),
-      new DriveDistanceConstant(drivetrain, 0.5),
-      new InstantCommand(claw::openClaw),
       new RotateArmToAngleConstant(arm, armAngle),
+      new InstantCommand(claw::openClaw),
+      new DriveDistanceConstant(drivetrain, 0.5),
       new InstantCommand(claw::closeClaw),
-      new RotateArmToAngleConstant(arm, armAngle + 20.0),
-      new DriveDistanceConstant(drivetrain, -0.5),
-      new RotateArmToAnglePID(0, arm)
+      new DriveDistanceConstant(drivetrain, -0.5)
     );
     addRequirements(arm, claw);
   }

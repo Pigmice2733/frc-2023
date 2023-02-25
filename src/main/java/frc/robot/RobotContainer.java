@@ -69,10 +69,6 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    new RuntimeTrajectoryGenerator();
-    drivetrain.setDefaultCommand(new ArcadeDrive(drivetrain, controls::getDriveSpeed, controls::getTurnSpeed));
-    arm.setDefaultCommand(new RotateArmManual(arm, controls::getArmRotationSpeed));
-
     configureDefaultCommands();
     configureAutoChooser();
     configureButtonBindings();
@@ -81,7 +77,8 @@ public class RobotContainer {
   }
 
   private void configureDefaultCommands() {
-
+    drivetrain.setDefaultCommand(new ArcadeDrive(drivetrain, controls::getDriveSpeed, controls::getTurnSpeed));
+    arm.setDefaultCommand(new RotateArmManual(arm, controls::getArmRotationSpeed));
   }
 
   private void configureAutoChooser() {
@@ -194,9 +191,12 @@ public class RobotContainer {
     /** [operator] Schedule PickUpObjectFromHuman when A is pressed, cancel when released */
     new JoystickButton(operator, Button.kA.value)
         .whileTrue(new PickUpObjectFromHuman(arm, claw, drivetrain));
+
+    /** [operator] Schedule RotateArmToScoreHeight when B is pressed, cancel when released */
+    new JoystickButton(operator, Button.kB.value)
+        .whileTrue(new RotateArmToScoreHeight(arm));
   }
   
-
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
