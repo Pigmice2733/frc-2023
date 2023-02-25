@@ -38,6 +38,7 @@ import frc.robot.commands.vision.AlignToScore;
 import frc.robot.commands.vision.FullyAlign;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Lights;
 import frc.robot.subsystems.RotatingArm;
 import frc.robot.subsystems.Vision;
 
@@ -53,6 +54,7 @@ public class RobotContainer {
   private final Vision vision = new Vision();
   private final RotatingArm arm = new RotatingArm();
   private final Claw claw = new Claw();
+  private final Lights lights = new Lights();
 
   private final XboxController driver = new XboxController(0);
   private final XboxController operator = new XboxController(1);
@@ -195,6 +197,14 @@ public class RobotContainer {
     /** [operator] Schedule RotateArmToScoreHeight when B is pressed, cancel when released */
     new JoystickButton(operator, Button.kB.value)
         .whileTrue(new RotateArmToScoreHeight(arm));
+
+    /** [operator] Signal lights for cube */
+    new JoystickButton(driver, Button.kBack.value)
+        .onTrue(new InstantCommand(() -> lights.signalForCube()));
+
+    /** [operator] Signal lights for cone */
+    new JoystickButton(driver, Button.kStart.value)
+        .onTrue(new InstantCommand(() -> lights.signalForCone()));
   }
   
   /**

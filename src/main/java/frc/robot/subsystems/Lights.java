@@ -9,9 +9,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import frc.robot.lights.Animation;
 import frc.robot.lights.Image;
 import frc.robot.lights.Text;
@@ -187,4 +189,28 @@ public class Lights extends SubsystemBase {
     public boolean isAnimationFinished() {
         return this.animationIsFinished;
     }
+
+    public void signalForCube() {
+        setSignaledObject(SignaledObject.Cone);
+    }
+
+    public void signalForCone() {
+        setSignaledObject(SignaledObject.Cube);
+    }
+
+    private enum SignaledObject {
+        Cone,
+        Cube
+    }
+
+    private static SignaledObject selectedSignaledObject = SignaledObject.Cube;
+    private static GenericEntry signaledObjectEntry = RobotContainer.addToDriverTab("Signaled Object", selectedSignaledObject.toString());
+
+    private static void setSignaledObject(SignaledObject signaledObject) 
+    { 
+        selectedSignaledObject = signaledObject; 
+        signaledObjectEntry.setString(signaledObject.toString()); 
+    }
+
+    public static SignaledObject getSignaledObject() { return selectedSignaledObject; }
 }
