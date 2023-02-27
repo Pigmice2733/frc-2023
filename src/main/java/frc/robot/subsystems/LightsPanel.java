@@ -8,19 +8,19 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.TreeMap;
 
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotContainer;
 import frc.robot.lights.Animation;
 import frc.robot.lights.Image;
+import frc.robot.lights.RGB;
 import frc.robot.lights.Text;
 import frc.robot.lights.Text.TextScrollDirection;
 import frc.robot.lights.Text.TextSequence;
 
-public class Lights extends SubsystemBase {
+public class LightsPanel extends SubsystemBase {
     private AddressableLED led;
     private AddressableLEDBuffer led_buffer;
     private final int LED_PORT = 9;
@@ -30,7 +30,9 @@ public class Lights extends SubsystemBase {
     private final Queue<Animation> animationQueue = new LinkedList<>();
     private boolean animationIsFinished = true;
 
-    public Lights() {
+    public static final TreeMap<Integer, RGB> RGB_CACHE = new TreeMap<>();
+
+    public LightsPanel() {
         led = new AddressableLED(LED_PORT);
         led_buffer = new AddressableLEDBuffer(LED_GRID_LEN);
         led.setLength(led_buffer.getLength());
@@ -45,6 +47,7 @@ public class Lights extends SubsystemBase {
                 this.endAnimation();
             }
         }
+
     }
 
     private int mapCoordinatesToIndex(int x, int y) {
@@ -60,12 +63,19 @@ public class Lights extends SubsystemBase {
         return coord;
     }
 
-    private int[] hexToRGB(int color) {
-        int r = (color & 0xff0000) >> 16;
-        int g = (color & 0x00ff00) >> 8;
-        int b = (color & 0x0000ff);
+    public static RGB hexToRGB(int hex) {
+        if (RGB_CACHE.containsKey(hex)) {
+            return RGB_CACHE.get(hex);
+        }
 
-        return new int[] { r, g, b };
+        int r = (hex >> 16) & 0xFF;
+        int g = (hex >> 8) & 0xFF;
+        int b = (hex >> 0) & 0xFF;
+        RGB rgb = new RGB(r, g, b);
+
+        RGB_CACHE.put(hex, rgb);
+
+        return rgb;
     }
 
     public void displayImage(Image image) {
@@ -83,8 +93,8 @@ public class Lights extends SubsystemBase {
             for (int x = 0; x < image[0].length; x++) {
                 int coord = mapCoordinatesToIndex(x, y);
                 if (image[y][x] > 0) {
-                    int[] color = hexToRGB(image[y][x]);
-                    led_buffer.setRGB(coord, color[0], color[1], color[2]);
+                    RGB color = hexToRGB(image[y][x]);
+                    led_buffer.setRGB(coord, color.getR(), color.getG(), color.getB());
                 } else
                     led_buffer.setRGB(coord, 0, 0, 0);
             }
@@ -126,8 +136,8 @@ public class Lights extends SubsystemBase {
                     if (coord < 0 || coord >= LED_GRID_LEN)
                         continue;
                     if (image[y_2][x_2] > 0) {
-                        int[] rgb = hexToRGB(color);
-                        led_buffer.setRGB(coord, rgb[0], rgb[1], rgb[2]);
+                        RGB rgb = hexToRGB(color);
+                        led_buffer.setRGB(coord, rgb.getR(), rgb.getG(), rgb.getB());
                     }
                 }
             }
@@ -189,28 +199,4 @@ public class Lights extends SubsystemBase {
     public boolean isAnimationFinished() {
         return this.animationIsFinished;
     }
-
-    public void signalForCube() {
-        setSignaledObject(SignaledObject.Cone);
-    }
-
-    public void signalForCone() {
-        setSignaledObject(SignaledObject.Cube);
-    }
-
-    private enum SignaledObject {
-        Cone,
-        Cube
-    }
-
-    private static SignaledObject selectedSignaledObject = SignaledObject.Cube;
-    private static GenericEntry signaledObjectEntry = RobotContainer.addToDriverTab("Signaled Object", selectedSignaledObject.toString());
-
-    private static void setSignaledObject(SignaledObject signaledObject) 
-    { 
-        selectedSignaledObject = signaledObject; 
-        signaledObjectEntry.setString(signaledObject.toString()); 
-    }
-
-    public static SignaledObject getSignaledObject() { return selectedSignaledObject; }
 }

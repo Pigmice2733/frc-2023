@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.subsystems.Lights;
+import frc.robot.subsystems.LightsPanel;
 
 public class Animation {
     private List<Image> images = new ArrayList<Image>();
@@ -70,7 +70,7 @@ public class Animation {
         }
     }
 
-    public void display(Lights lights) {
+    public void display(LightsPanel lights) {
         lights.displayImage(getCurrentImage());
         update();
     }

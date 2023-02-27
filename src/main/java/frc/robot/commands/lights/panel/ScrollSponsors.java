@@ -1,4 +1,4 @@
-package frc.robot.commands.lights;
+package frc.robot.commands.lights.panel;
 
 import java.util.List;
 
@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.lights.Image;
 import frc.robot.lights.Images;
 import frc.robot.lights.Text.TextScrollDirection;
-import frc.robot.subsystems.Lights;
+import frc.robot.subsystems.LightsPanel;
 
 public class ScrollSponsors extends CommandBase {
     private static final List<String> SPONSORS = List.of("Daimler", "Terrazign", "Boeing", "Comcast", "Clackamas Steel",
@@ -14,7 +14,7 @@ public class ScrollSponsors extends CommandBase {
             "Lam Research");
 
     private static int lastIndex = 0;
-    private Lights lights;
+    private LightsPanel lights;
     private static Image background = new Image();
 
     static {
@@ -22,7 +22,7 @@ public class ScrollSponsors extends CommandBase {
         background.imposeImage(Images.SMALL_HEART, 11, 1);
     }
 
-    public ScrollSponsors(Lights lights) {
+    public ScrollSponsors(LightsPanel lights) {
         this.lights = lights;
 
         addRequirements(lights);

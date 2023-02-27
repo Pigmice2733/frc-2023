@@ -1,24 +1,24 @@
-package frc.robot.commands.lights;
+package frc.robot.commands.lights.panel;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.lights.Images;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Lights;
+import frc.robot.subsystems.LightsPanel;
 
 public class LightsLevel extends CommandBase {
     private Drivetrain drivetrain;
-    private Lights lights;
+    private LightsPanel lights;
 
     private double lastFrameTimestamp;
     private double fps;
 
-    public LightsLevel(Drivetrain drivetrain, Lights lights) {
+    public LightsLevel(Drivetrain drivetrain, LightsPanel lights) {
         this(drivetrain, lights, 4);
     }
 
-    public LightsLevel(Drivetrain drivetrain, Lights lights, double fps) {
+    public LightsLevel(Drivetrain drivetrain, LightsPanel lights, double fps) {
         this.drivetrain = drivetrain;
         this.lights = lights;
         this.fps = fps;
