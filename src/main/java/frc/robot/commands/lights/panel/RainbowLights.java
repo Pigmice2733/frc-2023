@@ -1,15 +1,15 @@
-package frc.robot.commands.lights;
+package frc.robot.commands.lights.panel;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Lights;
+import frc.robot.subsystems.LightsPanel;
 
 public class RainbowLights extends CommandBase {
     private int HUE_OFFSET = 0;
     private int HUE_STEP = 3;
 
-    private Lights lights;
+    private LightsPanel lights;
 
-    public RainbowLights(Lights lights) {
+    public RainbowLights(LightsPanel lights) {
         this.lights = lights;
 
         addRequirements(lights);

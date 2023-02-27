@@ -1,8 +1,8 @@
-package frc.robot.commands.lights;
+package frc.robot.commands.lights.panel;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Lights;
+import frc.robot.subsystems.LightsPanel;
 
 public class CGOLLights extends CommandBase {
     private int[][] board = {
@@ -24,10 +24,10 @@ public class CGOLLights extends CommandBase {
             { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
     };
 
-    private Lights lights;
+    private LightsPanel lights;
     private double lastFrameTimestamp = 0;
 
-    public CGOLLights(Lights lights) {
+    public CGOLLights(LightsPanel lights) {
         this.lights = lights;
 
         for (int y = 0; y < board.length; y++) {
