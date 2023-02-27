@@ -31,14 +31,17 @@ public class Claw extends SubsystemBase {
     leftMotor.restoreFactoryDefaults();
     rightMotor.restoreFactoryDefaults();
 
+    leftMotor.setInverted(false);
+    leftMotor.setInverted(true);
+
   }
 
-  public void closeClaw(boolean disableMotors) {
+  public void closeClaw(boolean stopMotors) {
     leftPiston.set(Value.kForward);
     rightPiston.set(Value.kForward);
 
-    if (disableMotors)
-      outputToMotors(0);
+    if (stopMotors)
+      stopMotors();
   }
 
   public void openClaw(boolean startMotors) {
@@ -46,7 +49,7 @@ public class Claw extends SubsystemBase {
     rightPiston.set(Value.kReverse);
 
     if (startMotors)
-      outputToMotors(0);
+      startMotors(false);
   }
 
   private void outputToMotors(double output) {
@@ -54,8 +57,8 @@ public class Claw extends SubsystemBase {
     rightMotor.set(output);
   }
 
-  public void startMotors() {
-    outputToMotors(ClawConfig.motorSpeed);
+  public void startMotors(boolean intakeDirection) {
+    outputToMotors(ClawConfig.motorSpeed * (intakeDirection ? -1.0 : 1.0));
   }
 
   public void stopMotors() {

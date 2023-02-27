@@ -20,32 +20,28 @@ import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.RotatingArm;
 
-public class ScoreAndBalance extends SequentialCommandGroup {
+public class ScoreAndLeaveAndBalance extends SequentialCommandGroup {
   /**
    * A routine to be run in auto. Scores the object the robot starts with then
    * balances. Robot needs to start in line with charge station.
    */
-  public ScoreAndBalance(Drivetrain drivetrain, RotatingArm arm, Claw claw) {
+  public ScoreAndLeaveAndBalance(Drivetrain drivetrain, RotatingArm arm, Claw claw) {
     this(drivetrain, arm, claw, TargetLocation.Center);
   }
 
-  public ScoreAndBalance(Drivetrain drivetrain, RotatingArm arm, Claw claw, TargetLocation startLocation) {
+  public ScoreAndLeaveAndBalance(Drivetrain drivetrain, RotatingArm arm, Claw claw, TargetLocation startLocation) {
     if (startLocation == TargetLocation.Center) {
     addCommands(
-        //new ScoreObject(drivetrain, arm, claw, true),
         new WaitCommand(2),
         new DriveDistancePID(drivetrain, Units.feetToMeters(1)),
-
         new DriveOntoChargeStation(drivetrain, true),
         new DriveOverChargeStation(drivetrain, true),
         new BalanceRoutine(drivetrain));
     }
     else {
       addCommands(
-          //new ScoreObject(drivetrain, arm, claw),
           new WaitCommand(2),
           new DriveDistancePID(drivetrain, Units.feetToMeters(1)),
-
           new DriveDistancePID(drivetrain, -5.6).withTimeout(5),
           new TurnDegreesPID(drivetrain, 40 * ((startLocation == TargetLocation.Left) ? -1.0 : 1.0)).withTimeout(2),
           new BalanceRoutine(drivetrain));
