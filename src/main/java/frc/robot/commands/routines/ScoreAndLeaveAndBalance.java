@@ -4,14 +4,9 @@
 
 package frc.robot.commands.routines;
 
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.RuntimeTrajectoryGenerator;
 import frc.robot.RuntimeTrajectoryGenerator.TargetLocation;
 import frc.robot.commands.automated.ScoreObject;
-import frc.robot.commands.drivetrain.AutoBalanceWithRoll;
-import frc.robot.commands.drivetrain.DriveDistanceConstant;
 import frc.robot.commands.drivetrain.DriveDistancePID;
 import frc.robot.commands.drivetrain.DriveOverChargeStation;
 import frc.robot.commands.drivetrain.TurnDegreesPID;
@@ -22,8 +17,8 @@ import frc.robot.subsystems.RotatingArm;
 
 public class ScoreAndLeaveAndBalance extends SequentialCommandGroup {
   /**
-   * A routine to be run in auto. Scores the object the robot starts with then
-   * balances. Robot needs to start in line with charge station.
+   * A routine to be run in auto. Scores the object the robot starts with, leaves the community, then
+   * balances. Robot needs to start in line with cube scoring zone specified with startLocation, which will default to Center.
    */
   public ScoreAndLeaveAndBalance(Drivetrain drivetrain, RotatingArm arm, Claw claw) {
     this(drivetrain, arm, claw, TargetLocation.Center);
@@ -32,20 +27,18 @@ public class ScoreAndLeaveAndBalance extends SequentialCommandGroup {
   public ScoreAndLeaveAndBalance(Drivetrain drivetrain, RotatingArm arm, Claw claw, TargetLocation startLocation) {
     if (startLocation == TargetLocation.Center) {
     addCommands(
-        new WaitCommand(2),
-        new DriveDistancePID(drivetrain, Units.feetToMeters(1)),
+        new ScoreObject(drivetrain, arm, claw),
         new DriveOntoChargeStation(drivetrain, true),
         new DriveOverChargeStation(drivetrain, true),
         new BalanceRoutine(drivetrain));
     }
     else {
       addCommands(
-          new WaitCommand(2),
-          new DriveDistancePID(drivetrain, Units.feetToMeters(1)),
+          new ScoreObject(drivetrain, arm, claw),
           new DriveDistancePID(drivetrain, -5.6).withTimeout(5),
           new TurnDegreesPID(drivetrain, 40 * ((startLocation == TargetLocation.Left) ? -1.0 : 1.0)).withTimeout(2),
           new BalanceRoutine(drivetrain));
       }
+      addRequirements(drivetrain, arm, claw);
   }
-
 }

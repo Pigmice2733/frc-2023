@@ -30,6 +30,7 @@ import frc.robot.commands.rotatingArm.RotateArmManual;
 import frc.robot.commands.rotatingArm.RotateArmToScoreHeight;
 import frc.robot.commands.rotatingArm.RotateArmToScoreHeight.ScoreHeight;
 import frc.robot.commands.routines.BalanceRoutine;
+import frc.robot.commands.routines.ScoreAndBalance;
 import frc.robot.commands.routines.ScoreAndLeaveAndBalance;
 import frc.robot.commands.vision.AlignAndScore;
 import frc.robot.commands.vision.FullyAlign;
@@ -86,12 +87,12 @@ public class RobotContainer {
 
   private void configureAutoChooser() {
     List<Command> autoCommands = List.of(
-      new DriveDistanceConstant(drivetrain, 2).withName("Drive 2 Meters Constant"),
       new DriveDistancePID(drivetrain, 2).withName("Drive 2 Meters PID"),
       new BalanceRoutine(drivetrain).withName("Only Balance [Center]"),
+      new ScoreAndBalance(drivetrain, arm, claw).withName("Score and Balance [Center]"),
       new ScoreAndLeaveAndBalance(drivetrain, arm, claw).withName("Score, Leave, and Balance [Center]"),
-      new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Right).withName("Score, Leave, and Balance [Driver Right]"),
-      new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Left).withName("Score, Leave, and Balance [Driver Left]")
+      new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Right).withName("Score, Leave, and Balance [Driver Left]"),
+      new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Left).withName("Score, Leave, and Balance [Driver Right]")
     );
 
     autoChooser = new SendableChooser<Command>();

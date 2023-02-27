@@ -27,21 +27,20 @@ public class ScoreObject extends SequentialCommandGroup {
     if (skipDriveBackwards) {
       addCommands(
         new RotateArmToScoreHeight(arm),
-        new DriveDistancePID(drivetrain, 0.5),
+        new DriveDistancePID(drivetrain, 1),
         new InstantCommand(() -> claw.openClaw(true)),
-        new DriveDistancePID(drivetrain, 0.5),
+        new DriveDistancePID(drivetrain, -1),
         new RotateArmToAngleConstant(arm, 0));
     }
     else {
       addCommands(
-        new DriveDistancePID(drivetrain, -0.5),
+        new DriveDistancePID(drivetrain, -1),
         new RotateArmToScoreHeight(arm),
-        new DriveDistancePID(drivetrain, 0.5),
+        new DriveDistancePID(drivetrain, 1),
         new InstantCommand(() -> claw.openClaw(true)),
-        new DriveDistancePID(drivetrain, 0.5),
+        new DriveDistancePID(drivetrain, -1),
         new RotateArmToAngleConstant(arm, 0));
     }
-    
 
     addRequirements(drivetrain, arm, claw);
   }
