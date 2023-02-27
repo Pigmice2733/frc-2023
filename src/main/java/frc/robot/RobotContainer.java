@@ -114,6 +114,7 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // DRIVER
 
+    /** [driver] Enable slow mode when Y or RightBumper pressed, disable when released */
     new JoystickButton(driver, Button.kY.value)
         .onTrue(new InstantCommand(drivetrain::enableSlow))
         .onFalse(new InstantCommand(drivetrain::disableSlow));
