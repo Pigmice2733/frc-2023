@@ -125,5 +125,11 @@ public final class Constants {
     public static final class ClawConfig {
         public static final int leftPistonPorts[] = {0, 1};
         public static final int rightPistonPorts[] = {2, 3};
+
+        public static final int leftMotorPort = 10;
+        public static final int rightMotorPort = 11;
+
+        public static final double motorSpeed = 0.1;
+
     }
 }

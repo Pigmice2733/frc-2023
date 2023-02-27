@@ -25,8 +25,8 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class RotatingArm extends SubsystemBase {
-  private final CANSparkMax driveMotor = new CANSparkMax(RotatingArmConfig.driveMotorPort, MotorType.kBrushed);
-  private final CANSparkMax followMotor = new CANSparkMax(RotatingArmConfig.followMotorPort, MotorType.kBrushed);
+  private final CANSparkMax driveMotor = new CANSparkMax(RotatingArmConfig.driveMotorPort, MotorType.kBrushless);
+  private final CANSparkMax followMotor = new CANSparkMax(RotatingArmConfig.followMotorPort, MotorType.kBrushless);
 
   private final ShuffleboardTab armTab;
   private final GenericEntry topSwitchEntry, bottomSwitchEntry, angleEntry;
@@ -58,7 +58,7 @@ public class RotatingArm extends SubsystemBase {
     driveMotor.setInverted(false);
     followMotor.setInverted(false);
 
-    driveMotor.getEncoder(Type.kQuadrature, 8192).setPositionConversionFactor(RotatingArmConfig.rotationConversion);
+    //driveMotor.getEncoder(Type.kQuadrature, 8192).setPositionConversionFactor(RotatingArmConfig.rotationConversion);
 
     armTab = Shuffleboard.getTab("armTab");
     topSwitchEntry = armTab.add("Top Switch", false).getEntry();
@@ -139,7 +139,7 @@ public class RotatingArm extends SubsystemBase {
    * Reset the encoder to be at zero rotation. This means the arm is pointed straight down.
    */
   public void resetEncoder(){
-    driveMotor.getEncoder(Type.kQuadrature, 8192).setPosition(0);
+    //driveMotor.getEncoder(Type.kQuadrature, 8192).setPosition(0);
   }
 
   public void enableBrake() {

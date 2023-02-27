@@ -23,9 +23,9 @@ public class PickUpObjectFromGround extends SequentialCommandGroup {
     addRequirements(arm, claw);
 
     addCommands(
-      new InstantCommand(claw::openClaw),
+      new InstantCommand(() -> claw.openClaw(true)),
       new RotateArmToAnglePID(arm.armHeightToAngle(Units.inchesToMeters(90.0)), arm), // TODO distance depends on robot specs and what we want
-      new InstantCommand(claw::closeClaw),
+      new InstantCommand(() -> claw.closeClaw(true)),
       new RotateArmToAnglePID(90, arm)
     );
   }
