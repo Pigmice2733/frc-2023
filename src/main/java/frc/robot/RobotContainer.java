@@ -25,13 +25,13 @@ import frc.robot.commands.automated.ScoreObject;
 import frc.robot.commands.drivetrain.ArcadeDrive;
 import frc.robot.commands.drivetrain.DriveDistanceConstant;
 import frc.robot.commands.drivetrain.DriveDistancePID;
-import frc.robot.commands.drivetrain.TurnDegreesPID;
 import frc.robot.commands.lights.strip.RunningColor;
 import frc.robot.commands.rotatingArm.RotateArmManual;
 import frc.robot.commands.rotatingArm.RotateArmToScoreHeight;
 import frc.robot.commands.rotatingArm.RotateArmToScoreHeight.ScoreHeight;
 import frc.robot.commands.routines.BalanceRoutine;
 import frc.robot.commands.routines.ScoreAndBalance;
+import frc.robot.commands.routines.ScoreAndLeaveAndBalance;
 import frc.robot.commands.vision.AlignAndScore;
 import frc.robot.commands.vision.FullyAlign;
 import frc.robot.subsystems.Claw;
@@ -87,21 +87,13 @@ public class RobotContainer {
 
   private void configureAutoChooser() {
     List<Command> autoCommands = List.of(
-        new DriveDistanceConstant(drivetrain, 2),
-        new DriveDistancePID(drivetrain, 2),
-        new BalanceRoutine(drivetrain),
-        new TurnDegreesPID(drivetrain, 90),
-        new ScoreAndBalance(drivetrain, null, null),
-        new ScoreAndBalance(drivetrain, null, null, TargetLocation.Right),
-        new ScoreAndBalance(drivetrain, null, null, TargetLocation.Left));
-
-    autoCommands.get(0).setName("Drive 2 Meters Constant");
-    autoCommands.get(1).setName("Drive 2 Meters PID");
-    autoCommands.get(2).setName("Balance");
-    autoCommands.get(3).setName("Turn 180 Degrees");
-    autoCommands.get(4).setName("Score and Balance");
-    autoCommands.get(5).setName("Score and Balance [Right]");
-    autoCommands.get(6).setName("Score and Balance [Left]");
+      new DriveDistancePID(drivetrain, 2).withName("Drive 2 Meters PID"),
+      new BalanceRoutine(drivetrain).withName("Only Balance [Center]"),
+      new ScoreAndBalance(drivetrain, arm, claw).withName("Score and Balance [Center]"),
+      new ScoreAndLeaveAndBalance(drivetrain, arm, claw).withName("Score, Leave, and Balance [Center]"),
+      new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Right).withName("Score, Leave, and Balance [Driver Left]"),
+      new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Left).withName("Score, Leave, and Balance [Driver Right]")
+    );
 
     autoChooser = new SendableChooser<Command>();
     SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -124,6 +116,7 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // DRIVER
 
+    /** [driver] Enable slow mode when Y or RightBumper pressed, disable when released */
     new JoystickButton(driver, Button.kY.value)
         .onTrue(new InstantCommand(drivetrain::enableSlow))
         .onFalse(new InstantCommand(drivetrain::disableSlow));
@@ -180,11 +173,11 @@ public class RobotContainer {
 
     /** [operator] Open Claw */
     new JoystickButton(operator, Button.kRightBumper.value)
-        .onTrue(new InstantCommand(claw::openClaw));
+        .onTrue(new InstantCommand(() -> claw.openClaw(true)));
 
     /** [operator] Close Claw */
     new JoystickButton(operator, Button.kLeftBumper.value)
-        .onTrue(new InstantCommand(claw::closeClaw));
+        .onTrue(new InstantCommand(() -> claw.openClaw(true)));
 
     /**
      * [operator] Schedule ScoreObject when Y is pressed, cancel when released

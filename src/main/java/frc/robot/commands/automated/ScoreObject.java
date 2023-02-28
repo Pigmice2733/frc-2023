@@ -4,8 +4,8 @@
 
 package frc.robot.commands.automated;
 
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.claw.OpenClaw;
 import frc.robot.commands.drivetrain.DriveDistancePID;
 import frc.robot.commands.rotatingArm.RotateArmToAngleConstant;
 import frc.robot.commands.rotatingArm.RotateArmToScoreHeight;
@@ -27,21 +27,20 @@ public class ScoreObject extends SequentialCommandGroup {
     if (skipDriveBackwards) {
       addCommands(
         new RotateArmToScoreHeight(arm),
-        new DriveDistancePID(drivetrain, 0.5),
-        new OpenClaw(claw),
-        new DriveDistancePID(drivetrain, 0.5),
+        new DriveDistancePID(drivetrain, 1),
+        new InstantCommand(() -> claw.openClaw(true)),
+        new DriveDistancePID(drivetrain, -1),
         new RotateArmToAngleConstant(arm, 0));
     }
     else {
       addCommands(
-        new DriveDistancePID(drivetrain, -0.5),
+        new DriveDistancePID(drivetrain, -1),
         new RotateArmToScoreHeight(arm),
-        new DriveDistancePID(drivetrain, 0.5),
-        new OpenClaw(claw),
-        new DriveDistancePID(drivetrain, 0.5),
+        new DriveDistancePID(drivetrain, 1),
+        new InstantCommand(() -> claw.openClaw(true)),
+        new DriveDistancePID(drivetrain, -1),
         new RotateArmToAngleConstant(arm, 0));
     }
-    
 
     addRequirements(drivetrain, arm, claw);
   }

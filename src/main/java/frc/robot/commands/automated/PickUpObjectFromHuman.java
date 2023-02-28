@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.drivetrain.DriveDistanceConstant;
 import frc.robot.commands.rotatingArm.RotateArmToAngleConstant;
-import frc.robot.commands.rotatingArm.RotateArmToAnglePID;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.RotatingArm;
@@ -25,9 +24,9 @@ public class PickUpObjectFromHuman extends SequentialCommandGroup {
     addCommands(
       new DriveDistanceConstant(drivetrain, -0.5),
       new RotateArmToAngleConstant(arm, armAngle),
-      new InstantCommand(claw::openClaw),
+      new InstantCommand(() -> claw.openClaw(true)),
       new DriveDistanceConstant(drivetrain, 0.5),
-      new InstantCommand(claw::closeClaw),
+      new InstantCommand(() -> claw.closeClaw(true)),
       new DriveDistanceConstant(drivetrain, -0.5)
     );
     addRequirements(arm, claw);

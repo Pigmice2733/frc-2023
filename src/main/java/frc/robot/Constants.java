@@ -90,7 +90,7 @@ public final class Constants {
         public static final int driveMotorPort = 5;
         public static final int followMotorPort = 6;
         public static final int[] brakePort = {4, 5};
-        public static final double speedMultipler = .1;
+        public static final double speedMultipler = 0.02;
         public static final double rotationConversion = 1; // ratio of encoder-measured rotations to arm rotations
 
         public static final double armLengthMeters = Units.inchesToMeters(1.0);
@@ -125,5 +125,11 @@ public final class Constants {
     public static final class ClawConfig {
         public static final int leftPistonPorts[] = {0, 1};
         public static final int rightPistonPorts[] = {2, 3};
+
+        public static final int leftMotorPort = 10;
+        public static final int rightMotorPort = 11;
+
+        public static final double motorSpeed = 0.1;
+
     }
 }
