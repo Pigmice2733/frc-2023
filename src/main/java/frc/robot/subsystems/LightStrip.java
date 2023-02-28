@@ -1,28 +1,19 @@
 package frc.robot.subsystems;
 
-import static frc.robot.subsystems.LightsPanel.hexToRGB;
-
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.AddressableLED;
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
-import frc.robot.lights.RGB;
 
 public class LightStrip extends SubsystemBase {
-    private AddressableLED led;
-    private AddressableLEDBuffer led_buffer;
-    private final int LED_PORT = 1;
-    private final int LED_LEN = 20; // TODO change this later when on robot
-
-    public static int LED_COLOR = 0x000000;
-    public static RGB LED_COLOR_RGB = new RGB(0, 0, 0);
+    private Spark blinkinController;
+    // make sure color 1 is purple (cube) and color 2 is yellow (cone) on blinkin
+    // (physically with screwdriver)
+    private double coneProgram = 0.99;
+    private double cubeProgram = 0.99;
 
     public LightStrip() {
-        led = new AddressableLED(LED_PORT);
-        led_buffer = new AddressableLEDBuffer(LED_LEN);
-        led.setLength(led_buffer.getLength());
-        led.start();
+        this.blinkinController = new Spark(0);
     }
 
     @Override
@@ -35,58 +26,20 @@ public class LightStrip extends SubsystemBase {
         // This method will be called once per scheduler run during simulation
     }
 
-    public int getLedLength() {
-        return this.led_buffer.getLength();
-    }
-
-    public void setLED(int index, int r, int g, int b) {
-        led_buffer.setRGB(index, r, g, b);
-        led.setData(led_buffer);
-    }
-
-    public void setLED(int index, int[] rgb) {
-        led_buffer.setRGB(index, rgb[0], rgb[1], rgb[2]);
-        led.setData(led_buffer);
-    }
-
-    public void setLED(int index, int color) {
-        RGB rgb = hexToRGB(color);
-        led_buffer.setRGB(index, rgb.getR(), rgb.getG(), rgb.getB());
-        led.setData(led_buffer);
-    }
-
-    public void setPixelIntensity(int index, double intensity) {
-        // might have to convert color to hue and adjust value based on intensity
-
-        led_buffer.setRGB(index,
-                (int) (LED_COLOR_RGB.getR() * intensity / 255d),
-                (int) (LED_COLOR_RGB.getG() * intensity / 255d),
-                (int) (LED_COLOR_RGB.getB() * intensity / 255d));
-        led.setData(led_buffer);
-    }
-
-    public void setSolidColor() {
-        for (int i = 0; i < LED_LEN; i++) {
-            led_buffer.setRGB(i, LED_COLOR_RGB.getR(), LED_COLOR_RGB.getG(), LED_COLOR_RGB.getB());
-        }
-        led.setData(led_buffer);
-    }
-
-    private void displayGameObject(SignaledObject object) {
-        switch (object) {
-            case Cube:
-                LED_COLOR = 0x6a00aa;
-                break;
-            case Cone:
-                LED_COLOR = 0xFFFF00;
-                break;
-        }
-        LED_COLOR_RGB = hexToRGB(LED_COLOR);
+    public void setBlinkinProgram(double program) {
+        this.blinkinController.set(program);
     }
 
     private void signalForObject(SignaledObject object) {
         setSignaledObject(object);
-        displayGameObject(object);
+        switch (object) {
+            case Cone:
+                setBlinkinProgram(coneProgram);
+                break;
+            case Cube:
+                setBlinkinProgram(cubeProgram);
+                break;
+        }
     }
 
     public void signalForCube() {
@@ -97,7 +50,7 @@ public class LightStrip extends SubsystemBase {
         signalForObject(SignaledObject.Cone);
     }
 
-    private enum SignaledObject {
+    public enum SignaledObject {
         Cone,
         Cube
     }
@@ -107,7 +60,6 @@ public class LightStrip extends SubsystemBase {
             selectedSignaledObject.toString());
 
     private static void setSignaledObject(SignaledObject signaledObject) {
-        System.out.println("SETTING SIGNALED OBJECT TO " + signaledObject);
         selectedSignaledObject = signaledObject;
         signaledObjectEntry.setString(signaledObject.toString());
 
@@ -115,5 +67,13 @@ public class LightStrip extends SubsystemBase {
 
     public static SignaledObject getSignaledObject() {
         return selectedSignaledObject;
+    }
+
+    public void setCubeProgram(double cubeProgram) {
+        this.cubeProgram = cubeProgram;
+    }
+
+    public void setConeProgram(double coneProgram) {
+        this.coneProgram = coneProgram;
     }
 }

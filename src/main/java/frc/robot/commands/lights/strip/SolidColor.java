@@ -5,7 +5,6 @@ import frc.robot.subsystems.LightStrip;
 
 public class SolidColor extends CommandBase {
     private final LightStrip lightStrip;
-    private int LAST_LED_COLOR = 0x000000;
 
     /**
      * Creates a new ExampleCommand.
@@ -21,17 +20,13 @@ public class SolidColor extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        lightStrip.setSolidColor();
-        LAST_LED_COLOR = LightStrip.LED_COLOR;
+        lightStrip.setCubeProgram(0.89);
+        lightStrip.setConeProgram(0.69);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        if (LAST_LED_COLOR != LightStrip.LED_COLOR) {
-            lightStrip.setSolidColor();
-            LAST_LED_COLOR = LightStrip.LED_COLOR;
-        }
     }
 
     // Called once the command ends or is interrupted.
