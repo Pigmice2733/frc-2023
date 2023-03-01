@@ -15,20 +15,20 @@ import frc.robot.subsystems.RotatingArm;
 
 public class PickUpObjectFromHuman extends SequentialCommandGroup {
   /**
-   * Automatically pick up an object from the DoubleSubstation shelf, assuming the robot is already aligned.
-   * @param arm the arm subsystem
+   * Automatically pick up an object from the DoubleSubstation shelf, assuming the
+   * robot is already aligned.
+   * 
+   * @param arm  the arm subsystem
    * @param claw the claw subsystem
    */
   public PickUpObjectFromHuman(RotatingArm arm, Claw claw, Drivetrain drivetrain) {
     double armAngle = arm.armHeightToAngle(Units.inchesToMeters(40.0));
     addCommands(
-      new DriveDistanceConstant(drivetrain, -0.5),
-      new RotateArmToAngleConstant(arm, armAngle),
-      new InstantCommand(() -> claw.openClaw(true)),
-      new DriveDistanceConstant(drivetrain, 0.5),
-      new InstantCommand(() -> claw.closeClaw(true)),
-      new DriveDistanceConstant(drivetrain, -0.5)
-    );
+        new DriveDistanceConstant(drivetrain, -0.5),
+        new RotateArmToAngleConstant(arm, armAngle),
+        new InstantCommand(() -> claw.openClaw(true)),
+        new DriveDistanceConstant(drivetrain, 0.5),
+        new InstantCommand(() -> claw.closeClaw(true)));
     addRequirements(arm, claw);
   }
 }

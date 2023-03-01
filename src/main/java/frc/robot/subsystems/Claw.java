@@ -16,24 +16,25 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Claw extends SubsystemBase {
-  private final DoubleSolenoid leftPiston = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, ClawConfig.leftPistonPorts[0],ClawConfig.leftPistonPorts[1]);
-  private final DoubleSolenoid rightPiston = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, ClawConfig.rightPistonPorts[0], ClawConfig.rightPistonPorts[1]);
-  
+  private final DoubleSolenoid leftPiston = new DoubleSolenoid(PneumaticsModuleType.CTREPCM,
+      ClawConfig.leftPistonPorts[0], ClawConfig.leftPistonPorts[1]);
+  private final DoubleSolenoid rightPiston = new DoubleSolenoid(PneumaticsModuleType.CTREPCM,
+      ClawConfig.rightPistonPorts[0], ClawConfig.rightPistonPorts[1]);
+
   private final Compressor compressor = new Compressor(PneumaticsModuleType.CTREPCM);
 
   private final CANSparkMax leftMotor = new CANSparkMax(ClawConfig.leftMotorPort, MotorType.kBrushless);
   private final CANSparkMax rightMotor = new CANSparkMax(ClawConfig.rightMotorPort, MotorType.kBrushless);
 
   public Claw() {
-    leftPiston.set(Value.kReverse);
-    rightPiston.set(Value.kReverse);
+    leftPiston.set(Value.kForward);
+    rightPiston.set(Value.kForward);
 
     leftMotor.restoreFactoryDefaults();
     rightMotor.restoreFactoryDefaults();
 
     leftMotor.setInverted(false);
-    leftMotor.setInverted(true);
-
+    rightMotor.setInverted(true);
   }
 
   public void closeClaw(boolean stopMotors) {

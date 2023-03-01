@@ -6,8 +6,6 @@ package frc.robot.subsystems;
 
 import frc.robot.Constants.DrivetrainConfig;
 import frc.robot.Constants.RotatingArmConfig;
-import frc.robot.commands.rotatingArm.DisableBrake;
-import frc.robot.commands.rotatingArm.EnableBrake;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -31,21 +29,23 @@ public class RotatingArm extends SubsystemBase {
   private final ShuffleboardTab armTab;
   private final GenericEntry topSwitchEntry, bottomSwitchEntry, angleEntry;
 
-
-  private final DoubleSolenoid brake = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, RotatingArmConfig.brakePort[0], RotatingArmConfig.brakePort[1]);
+  private final DoubleSolenoid brake = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, RotatingArmConfig.brakePort[0],
+      RotatingArmConfig.brakePort[1]);
 
   private boolean brakeEnabled = false;
 
   private double targetMotorOutput = 0;
 
-  private EnableBrake enableBrakeCommand = new EnableBrake(this);
-  private DisableBrake disableBrakeCommand = new DisableBrake(this);
-
   private final DigitalInput topLimitSwitch;
   private final DigitalInput bottomLimitSwitch;
 
-  public boolean getTopSwitch() { return !topLimitSwitch.get(); }
-  public boolean getBottomSwitch() { return !bottomLimitSwitch.get(); } 
+  public boolean getTopSwitch() {
+    return !topLimitSwitch.get();
+  }
+
+  public boolean getBottomSwitch() {
+    return !bottomLimitSwitch.get();
+  }
 
   public RotatingArm() {
     topLimitSwitch = new DigitalInput(RotatingArmConfig.topLimitSwitchID);
@@ -75,13 +75,13 @@ public class RotatingArm extends SubsystemBase {
 
   private void applyClawOutput() {
     if (!brakeEnabled && Math.abs(targetMotorOutput) < DrivetrainConfig.axisThreshold) {
-      enableBrakeCommand.schedule();
+      enableBrake();
       outputToMotor(0);
       return;
     }
 
     if (brakeEnabled && Math.abs(targetMotorOutput) > DrivetrainConfig.axisThreshold) {
-      disableBrakeCommand.schedule();
+      disableBrake();
       outputToMotor(0);
       return;
     }
@@ -92,21 +92,23 @@ public class RotatingArm extends SubsystemBase {
     outputToMotor(targetMotorOutput);
   }
 
-  /** Rotate the arm.
+  /**
+   * Rotate the arm.
+   * 
    * @param speed the speed to rotate at
    */
-  public void setTargetOutput(double speed){
+  public void setTargetOutput(double speed) {
     targetMotorOutput = speed;
   }
 
   private void outputToMotor(double output) {
     if (brakeEnabled)
       return;
-      
-    if (getTopSwitch()){
+
+    if (getTopSwitch()) {
       output = Math.min(0, output);
     }
-    if (getBottomSwitch()){
+    if (getBottomSwitch()) {
       output = Math.max(0, output);
     }
 
@@ -114,32 +116,35 @@ public class RotatingArm extends SubsystemBase {
   }
 
   /**
-   * Converts the given height to the angle for the arm; i.e., when the arm is rotated to the output angle the claw will be at the input height.
+   * Converts the given height to the angle for the arm; i.e., when the arm is
+   * rotated to the output angle the claw will be at the input height.
+   * 
    * @param height the height of the claw
    * @return the angle of the arm
    */
   public double armHeightToAngle(double height) {
     height -= RotatingArmConfig.armHeightMeters - RotatingArmConfig.armLengthMeters;
-    double clampedHeight = MathUtil.clamp(height/(RotatingArmConfig.armLengthMeters) - 1, -1.0, 1.0);
-    double armAngle = Math.asin(clampedHeight)*(180/Math.PI) + 90;
+    double clampedHeight = MathUtil.clamp(height / (RotatingArmConfig.armLengthMeters) - 1, -1.0, 1.0);
+    double armAngle = Math.asin(clampedHeight) * (180 / Math.PI) + 90;
     return armAngle;
-}
+  }
 
   private void updateShuffleboard() {
     angleEntry.setDouble(getAngle());
     topSwitchEntry.setBoolean(topLimitSwitch.get());
-    bottomSwitchEntry.setBoolean(bottomLimitSwitch.get());    
+    bottomSwitchEntry.setBoolean(bottomLimitSwitch.get());
   }
 
   /** Get the current angle of the arm. */
-  public double getAngle(){
+  public double getAngle() {
     return encoderController.getEncoder(Type.kQuadrature, 8192).getPosition();
   }
 
   /**
-   * Reset the encoder to be at zero rotation. This means the arm is pointed straight down.
+   * Reset the encoder to be at zero rotation. This means the arm is pointed
+   * straight down.
    */
-  public void resetEncoder(){
+  public void resetEncoder() {
     encoderController.getEncoder(Type.kQuadrature, 8192).setPosition(0);
   }
 

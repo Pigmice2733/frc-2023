@@ -23,8 +23,8 @@ import frc.robot.RuntimeTrajectoryGenerator.TargetLocation;
 import frc.robot.commands.automated.PickUpObjectFromHuman;
 import frc.robot.commands.automated.ScoreObject;
 import frc.robot.commands.drivetrain.ArcadeDrive;
-import frc.robot.commands.drivetrain.DriveDistanceConstant;
 import frc.robot.commands.drivetrain.DriveDistancePID;
+import frc.robot.commands.lights.panel.ScrollSponsors;
 import frc.robot.commands.lights.strip.RunningColor;
 import frc.robot.commands.rotatingArm.RotateArmManual;
 import frc.robot.commands.rotatingArm.RotateArmToScoreHeight;
@@ -37,6 +37,7 @@ import frc.robot.commands.vision.FullyAlign;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.LightStrip;
+import frc.robot.subsystems.LightsPanel;
 import frc.robot.subsystems.RotatingArm;
 import frc.robot.subsystems.Vision;
 
@@ -52,7 +53,7 @@ public class RobotContainer {
   private final Vision vision = new Vision();
   private final RotatingArm arm = new RotatingArm();
   private final Claw claw = new Claw();
-  // private final LightsPanel lightPanel = new LightsPanel();
+  private final LightsPanel lightPanel = new LightsPanel();
   private final LightStrip lightStrip = new LightStrip();
 
   private final XboxController driver = new XboxController(0);
@@ -83,17 +84,19 @@ public class RobotContainer {
     arm.setDefaultCommand(new RotateArmManual(arm,
         controls::getArmRotationSpeed));
     lightStrip.setDefaultCommand(new RunningColor(lightStrip));
+    lightPanel.setDefaultCommand(new ScrollSponsors(lightPanel));
   }
 
   private void configureAutoChooser() {
     List<Command> autoCommands = List.of(
-      new DriveDistancePID(drivetrain, 2).withName("Drive 2 Meters PID"),
-      new BalanceRoutine(drivetrain).withName("Only Balance [Center]"),
-      new ScoreAndBalance(drivetrain, arm, claw).withName("Score and Balance [Center]"),
-      new ScoreAndLeaveAndBalance(drivetrain, arm, claw).withName("Score, Leave, and Balance [Center]"),
-      new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Right).withName("Score, Leave, and Balance [Driver Left]"),
-      new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Left).withName("Score, Leave, and Balance [Driver Right]")
-    );
+        new DriveDistancePID(drivetrain, 2).withName("Drive 2 Meters PID"),
+        new BalanceRoutine(drivetrain).withName("Only Balance [Center]"),
+        new ScoreAndBalance(drivetrain, arm, claw).withName("Score and Balance [Center]"),
+        new ScoreAndLeaveAndBalance(drivetrain, arm, claw).withName("Score, Leave, and Balance [Center]"),
+        new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Right)
+            .withName("Score, Leave, and Balance [Driver Left]"),
+        new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Left)
+            .withName("Score, Leave, and Balance [Driver Right]"));
 
     autoChooser = new SendableChooser<Command>();
     SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -116,7 +119,10 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // DRIVER
 
-    /** [driver] Enable slow mode when Y or RightBumper pressed, disable when released */
+    /**
+     * [driver] Enable slow mode when Y or RightBumper pressed, disable when
+     * released
+     */
     new JoystickButton(driver, Button.kY.value)
         .onTrue(new InstantCommand(drivetrain::enableSlow))
         .onFalse(new InstantCommand(drivetrain::disableSlow));
@@ -149,8 +155,8 @@ public class RobotContainer {
         }));
 
     /** [driver] Force reset odometry when Start is pressed */
-    new JoystickButton(driver, Button.kStart.value)
-        .onTrue(new InstantCommand(() -> drivetrain.resetOdometry()));
+    // new JoystickButton(driver, Button.kStart.value)
+    // .onTrue(new InstantCommand(() -> drivetrain.resetOdometry()));
 
     /** [driver] Set the TargetType in RuntimeTrajectoryGenerator with D-pad */
     new POVButton(driver, 0) // up
@@ -177,7 +183,7 @@ public class RobotContainer {
 
     /** [operator] Close Claw */
     new JoystickButton(operator, Button.kLeftBumper.value)
-        .onTrue(new InstantCommand(() -> claw.openClaw(true)));
+        .onTrue(new InstantCommand(() -> claw.closeClaw(true)));
 
     /**
      * [operator] Schedule ScoreObject when Y is pressed, cancel when released
