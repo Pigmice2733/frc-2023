@@ -91,9 +91,10 @@ public final class Constants {
         public static final int followMotorPort = 6;
         public static final int encoderControllerPort = 7;
 
+        public static final double maxArmAngleDegrees = 100;
+
         public static final int[] brakePort = {4, 5};
         public static final double speedMultipler = 0.02;
-        public static final double rotationConversion = 1; // ratio of encoder-measured rotations to arm rotations
 
         public static final double armLengthMeters = Units.inchesToMeters(1.0);
         public static final double armHeightMeters = Units.inchesToMeters(1.0); // height of arm mount on robot from ground

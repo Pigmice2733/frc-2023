@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-import frc.robot.Constants.DrivetrainConfig;
 import frc.robot.Constants.RotatingArmConfig;
 
 import com.revrobotics.CANSparkMax;
@@ -27,7 +26,7 @@ public class RotatingArm extends SubsystemBase {
   private final CANSparkMax encoderController = new CANSparkMax(RotatingArmConfig.encoderControllerPort, MotorType.kBrushed);
 
   private final ShuffleboardTab armTab;
-  private final GenericEntry topSwitchEntry, bottomSwitchEntry, angleEntry;
+  private final GenericEntry topSwitchEntry, bottomSwitchEntry, angleEntry, motorOutputEntry;
 
   private final DoubleSolenoid brake = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, RotatingArmConfig.brakePort[0],
       RotatingArmConfig.brakePort[1]);
@@ -58,13 +57,14 @@ public class RotatingArm extends SubsystemBase {
     driveMotor.setInverted(false);
     followMotor.setInverted(false);
 
-    encoderController.getEncoder(Type.kQuadrature, 8192).setPositionConversionFactor(RotatingArmConfig.rotationConversion);
+    encoderController.getEncoder(Type.kQuadrature, 8192).setPositionConversionFactor(360); // Converts rotatings to degrees
     resetEncoder();
 
     armTab = Shuffleboard.getTab("armTab");
     topSwitchEntry = armTab.add("Top Switch", false).getEntry();
     bottomSwitchEntry = armTab.add("Bottom Switch", false).getEntry();
     angleEntry = armTab.add("Arm Angle", 0).getEntry();
+    motorOutputEntry = armTab.add("Motor Output", 0).getEntry();
   }
 
   @Override
@@ -74,22 +74,34 @@ public class RotatingArm extends SubsystemBase {
   }
 
   private void applyClawOutput() {
-    if (!brakeEnabled && Math.abs(targetMotorOutput) < DrivetrainConfig.axisThreshold) {
+    double motorOutput = targetMotorOutput;
+
+    if (getTopSwitch())
+      motorOutput = Math.min(0, motorOutput);
+    if (getBottomSwitch())
+      motorOutput = Math.max(0, motorOutput);
+
+    if (getAngle() > RotatingArmConfig.maxArmAngleDegrees)
+      motorOutput = 0;
+
+    if (!brakeEnabled && Math.abs(motorOutput) < 0.01) {
       enableBrake();
       outputToMotor(0);
       return;
     }
 
-    if (brakeEnabled && Math.abs(targetMotorOutput) > DrivetrainConfig.axisThreshold) {
+    if (brakeEnabled && Math.abs(motorOutput) > 0.01) {
       disableBrake();
       outputToMotor(0);
       return;
     }
 
-    if (brakeEnabled)
+    if (brakeEnabled) {
+      outputToMotor(0);
       return;
+    }
 
-    outputToMotor(targetMotorOutput);
+    outputToMotor(motorOutput);
   }
 
   /**
@@ -102,16 +114,9 @@ public class RotatingArm extends SubsystemBase {
   }
 
   private void outputToMotor(double output) {
-    if (brakeEnabled)
-      return;
-
-    if (getTopSwitch()) {
-      output = Math.min(0, output);
-    }
-    if (getBottomSwitch()) {
-      output = Math.max(0, output);
-    }
-
+    // TODO: Remove clamp after initial testing
+    output = MathUtil.clamp(output, -0.1, 0.1);
+    motorOutputEntry.setDouble(output);
     driveMotor.set(output * RotatingArmConfig.speedMultipler);
   }
 
@@ -149,13 +154,13 @@ public class RotatingArm extends SubsystemBase {
   }
 
   public void enableBrake() {
-    brake.set(Value.kForward);
+    brake.set(Value.kReverse);
     outputToMotor(0);
     brakeEnabled = true;
   }
 
   public void disableBrake() {
-    brake.set(Value.kReverse);
+    brake.set(Value.kForward);
     brakeEnabled = false;
   }
 
