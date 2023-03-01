@@ -29,7 +29,7 @@ public class AlignToScore extends CommandBase {
   public void initialize() {
     // var transformToTag = vision.getTransformToTag();
     // Pose2d robotPose = new Pose2d(-transformToTag.getX(), -transformToTag.getY(),
-    //     new Rotation2d());
+    // new Rotation2d());
     Pose2d robotPose = vision.getEstimatedRobotPose();
     Pose2d tagPose = vision.getRecentTagPose();
 
@@ -53,10 +53,6 @@ public class AlignToScore extends CommandBase {
 
   @Override
   public void end(boolean interrupted) {
-    System.out.println("Command done");
-    System.out.println("Command done");
-    System.out.println("Command done");
-    System.out.println("Command done");
     if (pathCommand != null)
       pathCommand.cancel();
   }

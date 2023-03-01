@@ -16,16 +16,6 @@ public class LightStrip extends SubsystemBase {
         this.blinkinController = new Spark(0);
     }
 
-    @Override
-    public void periodic() {
-
-    }
-
-    @Override
-    public void simulationPeriodic() {
-        // This method will be called once per scheduler run during simulation
-    }
-
     public void setBlinkinProgram(double program) {
         this.blinkinController.set(program);
     }

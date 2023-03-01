@@ -4,12 +4,8 @@
 
 package frc.robot.commands.drivetrain;
 
-
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 
 import frc.robot.Constants.DrivetrainConfig;
@@ -19,19 +15,23 @@ public class TurnToAnglePID extends ProfiledPIDCommand {
 
   private final double rotation;
   private final Drivetrain drivetrain;
+
   /**
    * Use profiled PID to rotate the specified angle.
+   * 
    * @param drivetrain a drivetrain subsystem
-   * @param rotation The degrees to rotate
+   * @param rotation   The degrees to rotate
    */
   public TurnToAnglePID(Drivetrain drivetrain, double rotation) {
     super(
-      new ProfiledPIDController(DrivetrainConfig.turnDegP, DrivetrainConfig.turnDegI, DrivetrainConfig.turnDegD, new Constraints(DrivetrainConfig.turnDegVel, DrivetrainConfig.turnDegAcc)), 
-      () -> drivetrain.getHeading().getDegrees(),
-      rotation, 
-      (output,setpoint) -> { drivetrain.arcadeDrive(0, -output); },
-      drivetrain
-    );
+        new ProfiledPIDController(DrivetrainConfig.turnDegP, DrivetrainConfig.turnDegI, DrivetrainConfig.turnDegD,
+            new Constraints(DrivetrainConfig.turnDegVel, DrivetrainConfig.turnDegAcc)),
+        () -> drivetrain.getHeading().getDegrees(),
+        rotation,
+        (output, setpoint) -> {
+          drivetrain.arcadeDrive(0, -output);
+        },
+        drivetrain);
     this.rotation = rotation;
     this.drivetrain = drivetrain;
 

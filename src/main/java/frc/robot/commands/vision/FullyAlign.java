@@ -4,8 +4,6 @@
 
 package frc.robot.commands.vision;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.drivetrain.DriveDistancePID;
@@ -17,10 +15,10 @@ public class FullyAlign extends SequentialCommandGroup {
   /** Creates a new FullyAlign. */
   public FullyAlign(Drivetrain drivetrain, Vision vision) {
     addCommands(
-      new AlignToScore(vision, drivetrain),
-      new TurnToAnglePID(drivetrain, 0),
-      new DriveDistancePID(drivetrain, 1),
-      new InstantCommand(() -> System.out.println("COMMAND ENDED")));
-      addRequirements(drivetrain, vision);
+        new AlignToScore(vision, drivetrain),
+        new TurnToAnglePID(drivetrain, 0),
+        new DriveDistancePID(drivetrain, 1),
+        new InstantCommand(() -> System.out.println("COMMAND ENDED")));
+    addRequirements(drivetrain, vision);
   }
 }

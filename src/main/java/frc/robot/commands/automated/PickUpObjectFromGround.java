@@ -14,19 +14,19 @@ import frc.robot.commands.rotatingArm.RotateArmToAnglePID;
 
 public class PickUpObjectFromGround extends SequentialCommandGroup {
   /**
-   * Picks up a cone or cube, assuming the robot is already lined up, then lifts the arm to horizontal.
+   * Picks up a cone or cube, assuming the robot is already lined up, then lifts
+   * the arm to horizontal.
    * 
-   * @param arm the rotating-arm subsystem
+   * @param arm  the rotating-arm subsystem
    * @param claw the claw subsystem
    */
   public PickUpObjectFromGround(RotatingArm arm, Claw claw) {
     addRequirements(arm, claw);
 
     addCommands(
-      new InstantCommand(() -> claw.openClaw(true)),
-      new RotateArmToAnglePID(arm.armHeightToAngle(Units.inchesToMeters(90.0)), arm), // TODO distance depends on robot specs and what we want
-      new InstantCommand(() -> claw.closeClaw(true)),
-      new RotateArmToAnglePID(90, arm)
-    );
+        new InstantCommand(() -> claw.openClaw(true)),
+        new RotateArmToAnglePID(arm.armHeightToAngle(Units.inchesToMeters(0.0)), arm),
+        new InstantCommand(() -> claw.closeClaw(true)),
+        new RotateArmToAnglePID(90, arm));
   }
 }
