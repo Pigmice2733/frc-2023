@@ -43,9 +43,9 @@ public class RuntimeTrajectoryGenerator {
         TrajectoryConfig config = new TrajectoryConfig(DrivetrainConfig.maxTrajectoryVel, DrivetrainConfig.maxTrajectoryAcc);
         Trajectory trajectory = TrajectoryGenerator.generateTrajectory(List.of(currentRobotPose, targetPose), config);
         
-        System.out.println("Current Pose "+ currentRobotPose);
-        System.out.println("Target Pose "+ targetPose);
-        System.out.println(trajectory);
+        // System.out.println("Current Pose "+ currentRobotPose);
+        // System.out.println("Target Pose "+ targetPose);
+        // System.out.println(trajectory);
 
         return trajectory;
     }

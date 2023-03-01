@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-import frc.robot.RobotContainer;
 import frc.robot.Constants.DrivetrainConfig;
 import frc.robot.Constants.RotatingArmConfig;
 import frc.robot.commands.rotatingArm.DisableBrake;
@@ -27,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class RotatingArm extends SubsystemBase {
   private final CANSparkMax driveMotor = new CANSparkMax(RotatingArmConfig.driveMotorPort, MotorType.kBrushless);
   private final CANSparkMax followMotor = new CANSparkMax(RotatingArmConfig.followMotorPort, MotorType.kBrushless);
+  private final CANSparkMax encoderController = new CANSparkMax(RotatingArmConfig.encoderControllerPort, MotorType.kBrushed);
 
   private final ShuffleboardTab armTab;
   private final GenericEntry topSwitchEntry, bottomSwitchEntry, angleEntry;
@@ -58,7 +58,8 @@ public class RotatingArm extends SubsystemBase {
     driveMotor.setInverted(false);
     followMotor.setInverted(false);
 
-    //driveMotor.getEncoder(Type.kQuadrature, 8192).setPositionConversionFactor(RotatingArmConfig.rotationConversion);
+    encoderController.getEncoder(Type.kQuadrature, 8192).setPositionConversionFactor(RotatingArmConfig.rotationConversion);
+    resetEncoder();
 
     armTab = Shuffleboard.getTab("armTab");
     topSwitchEntry = armTab.add("Top Switch", false).getEntry();
@@ -132,14 +133,14 @@ public class RotatingArm extends SubsystemBase {
 
   /** Get the current angle of the arm. */
   public double getAngle(){
-    return followMotor.getEncoder(Type.kQuadrature, 8192).getPosition();
+    return encoderController.getEncoder(Type.kQuadrature, 8192).getPosition();
   }
 
   /**
    * Reset the encoder to be at zero rotation. This means the arm is pointed straight down.
    */
   public void resetEncoder(){
-    //driveMotor.getEncoder(Type.kQuadrature, 8192).setPosition(0);
+    encoderController.getEncoder(Type.kQuadrature, 8192).setPosition(0);
   }
 
   public void enableBrake() {

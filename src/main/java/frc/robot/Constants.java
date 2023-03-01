@@ -89,6 +89,8 @@ public final class Constants {
     public final static class RotatingArmConfig{
         public static final int driveMotorPort = 5;
         public static final int followMotorPort = 6;
+        public static final int encoderControllerPort = 7;
+
         public static final int[] brakePort = {4, 5};
         public static final double speedMultipler = 0.02;
         public static final double rotationConversion = 1; // ratio of encoder-measured rotations to arm rotations
