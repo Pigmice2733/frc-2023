@@ -12,7 +12,7 @@ import edu.wpi.first.networktables.GenericEntry;
 import frc.robot.Constants.DrivetrainConfig;
 
 public class RuntimeTrajectoryGenerator {
-    public static double yDistanceFromTagToConeNode = Units.inchesToMeters(22); // TODO: enter exact value
+    public static double yDistanceFromTagToConeNode = Units.inchesToMeters(22.75);
     public static double yDistanceFromTagToPickup = Units.inchesToMeters(0); // TODO: enter exact value
     public static double xDistanceFromTagToTarget = Units.inchesToMeters(24); // TODO: enter exact value
     public static double robotLength = Units.inchesToMeters(45); // TODO: enter exact value
