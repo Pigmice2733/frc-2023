@@ -81,8 +81,7 @@ public class RobotContainer {
 
   private void configureDefaultCommands() {
     drivetrain.setDefaultCommand(new ArcadeDrive(drivetrain, controls::getDriveSpeed, controls::getTurnSpeed));
-    arm.setDefaultCommand(new RotateArmManual(arm,
-        controls::getArmRotationSpeed));
+    arm.setDefaultCommand(new RotateArmManual(arm, controls::getArmRotationSpeed));
     lightStrip.setDefaultCommand(new RunningColor(lightStrip));
     lightPanel.setDefaultCommand(new ScrollSponsors(lightPanel));
   }

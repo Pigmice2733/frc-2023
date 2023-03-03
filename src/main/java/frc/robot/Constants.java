@@ -94,7 +94,11 @@ public final class Constants {
         public static final double maxArmAngleDegrees = 100;
 
         public static final int[] brakePort = {4, 5};
-        public static final double speedMultipler = 0.02;
+        public static final double manualUpSpeed = 0.05;
+        public static final double manualDownSpeed = 0.02;
+
+        public static final double constantUpSpeed = 0.05;
+        public static final double constantDownSpeed = 0.02;
 
         public static final double armLengthMeters = Units.inchesToMeters(1.0);
         public static final double armHeightMeters = Units.inchesToMeters(1.0); // height of arm mount on robot from ground
@@ -104,8 +108,6 @@ public final class Constants {
         public static final double kD = 0.0;
         public static final double maxVelocity = 0.0;
         public static final double maxAcceleration = 0.0;
-
-        public static final double constantTurnSpeed = 0.15;
 
         public static final int topLimitSwitchID = 0;
         public static final int bottomLimitSwitchID = 1;

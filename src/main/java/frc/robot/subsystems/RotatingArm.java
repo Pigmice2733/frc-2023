@@ -117,7 +117,7 @@ public class RotatingArm extends SubsystemBase {
     // TODO: Remove clamp after initial testing
     output = MathUtil.clamp(output, -0.1, 0.1);
     motorOutputEntry.setDouble(output);
-    driveMotor.set(output * RotatingArmConfig.speedMultipler);
+    driveMotor.set(output);
   }
 
   /**

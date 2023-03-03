@@ -35,7 +35,7 @@ public class RotateArmToAngleConstant extends CommandBase {
 
   @Override
   public void execute() {
-    arm.setTargetOutput(RotatingArmConfig.constantTurnSpeed * (reverse ? -1 : 1));
+    arm.setTargetOutput(reverse ? -RotatingArmConfig.constantDownSpeed : RotatingArmConfig.constantUpSpeed);
   }
 
   @Override
