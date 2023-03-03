@@ -99,7 +99,7 @@ public class RobotContainer {
             .withName("Score, Leave, and Balance [Driver Right]"));
 
     autoChooser = new SendableChooser<Command>();
-    SmartDashboard.putData("Auto Chooser", autoChooser);
+    driverTab.add("Auto Chooser", autoChooser);
 
     autoCommands.forEach(command -> {
       autoChooser.addOption(command.getName(), command);
