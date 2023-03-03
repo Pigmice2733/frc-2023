@@ -13,7 +13,7 @@ import frc.robot.subsystems.RotatingArm;
 public class ScoreAndBalance extends SequentialCommandGroup {
   public ScoreAndBalance(Drivetrain drivetrain, RotatingArm arm, Claw claw) {
     addCommands(
-        new ScoreObject(drivetrain, arm, claw),
+        new ScoreObject(drivetrain, arm, claw, true),
         new BalanceRoutine(drivetrain, true));
     
     addRequirements(drivetrain, arm, claw);

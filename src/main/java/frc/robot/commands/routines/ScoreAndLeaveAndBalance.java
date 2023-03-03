@@ -27,14 +27,14 @@ public class ScoreAndLeaveAndBalance extends SequentialCommandGroup {
   public ScoreAndLeaveAndBalance(Drivetrain drivetrain, RotatingArm arm, Claw claw, TargetLocation startLocation) {
     if (startLocation == TargetLocation.Center) {
     addCommands(
-        new ScoreObject(drivetrain, arm, claw),
+        new ScoreObject(drivetrain, arm, claw, true),
         new DriveOntoChargeStation(drivetrain, true),
         new DriveOverChargeStation(drivetrain, true),
         new BalanceRoutine(drivetrain));
     }
     else {
       addCommands(
-          new ScoreObject(drivetrain, arm, claw),
+          new ScoreObject(drivetrain, arm, claw, true),
           new DriveDistancePID(drivetrain, -5.6).withTimeout(5),
           new TurnDegreesPID(drivetrain, 40 * ((startLocation == TargetLocation.Left) ? -1.0 : 1.0)).withTimeout(2),
           new BalanceRoutine(drivetrain));

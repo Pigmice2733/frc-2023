@@ -32,6 +32,7 @@ import frc.robot.commands.rotatingArm.RotateArmToScoreHeight;
 import frc.robot.commands.rotatingArm.RotateArmToScoreHeight.ScoreHeight;
 import frc.robot.commands.routines.BalanceRoutine;
 import frc.robot.commands.routines.ScoreAndBalance;
+import frc.robot.commands.routines.ScoreAndLeave;
 import frc.robot.commands.routines.ScoreAndLeaveAndBalance;
 import frc.robot.commands.vision.AlignAndScore;
 import frc.robot.commands.vision.FullyAlign;
@@ -89,8 +90,9 @@ public class RobotContainer {
 
   private void configureAutoChooser() {
     List<Command> autoCommands = List.of(
-        new DriveDistancePID(drivetrain, 2).withName("Drive 2 Meters PID"),
+        new DriveDistancePID(drivetrain, -3).withName("Only Leave Community [Driver Left or Right]"),
         new BalanceRoutine(drivetrain).withName("Only Balance [Center]"),
+        new ScoreAndLeave(drivetrain, arm, claw).withName("Score and Leave [Driver Left or Right]"),
         new ScoreAndBalance(drivetrain, arm, claw).withName("Score and Balance [Center]"),
         new ScoreAndLeaveAndBalance(drivetrain, arm, claw).withName("Score, Leave, and Balance [Center]"),
         new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Right)
@@ -173,7 +175,7 @@ public class RobotContainer {
     new POVButton(operator, 90) // right
         .onTrue(new InstantCommand(() -> RotateArmToScoreHeight.setScoreHeight(ScoreHeight.Mid)));
     new POVButton(operator, 270) // left
-        .onTrue(new InstantCommand(() -> RotateArmToScoreHeight.setScoreHeight(ScoreHeight.Mid)));
+        .onTrue(new InstantCommand(() -> RotateArmToScoreHeight.setScoreHeight(ScoreHeight.HumanPlayer)));
     new POVButton(operator, 180) // down
         .onTrue(new InstantCommand(() -> RotateArmToScoreHeight.setScoreHeight(ScoreHeight.Floor)));
 

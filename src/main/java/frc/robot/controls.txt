@@ -32,6 +32,7 @@ X - Dispense by spinning intake wheels
 Back - Signal lights for cube
 Start - Signal lights for cone
 
-D-pad up - Select high dispense
-D-pad left or right - Select mid dispense
-D-pad down - Select low dispense
+D-pad up - Select high height
+D-pad right - Select mid height
+D-pad right - Select humanPlayer height
+D-pad down - Select low height
