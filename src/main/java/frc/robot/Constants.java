@@ -24,10 +24,10 @@ public final class Constants {
     public final static class DrivetrainConfig {
         public static final double axisThreshold = 0.25;
 
-        public static final int leftDrivePort = 1;
-        public static final int rightDrivePort = 3;
-        public static final int leftFollowPort = 2;
-        public static final int rightFollowPort = 4;
+        public static final int leftDrivePort = 3;
+        public static final int rightDrivePort = 1;
+        public static final int leftFollowPort = 4;
+        public static final int rightFollowPort = 2;
 
         public static final double driveSpeed = .6;
         public static final double turnSpeed = .3;
@@ -106,7 +106,7 @@ public final class Constants {
         public static final double maxArmAngleDegrees = 120;
         public static final double minArmAngleDegrees = 3;
 
-        public static final int brakePort = 1;
+        public static final int brakePort = 0;
         public static final double manualUpSpeed = 0.05;
         public static final double manualDownSpeed = 0.02;
 
@@ -145,8 +145,8 @@ public final class Constants {
     }
 
     public static final class ClawConfig { // BRAKE 0
-        public static final int leftPistonPorts[] = { 2, 3 };
-        public static final int rightPistonPorts[] = { 4, 5 };
+        public static final int leftPistonPorts[] = { 1, 2 };
+        public static final int rightPistonPorts[] = { 3, 4 };
 
         public static final int leftMotorPort = 10;
         public static final int rightMotorPort = 11;

@@ -33,7 +33,8 @@ public class RotatingArm extends SubsystemBase {
   private final ShuffleboardTab armTab;
   private final GenericEntry /* topSwitchEntry, bottomSwitchEntry, */ angleEntry, motorOutputEntry;
 
-  private final Solenoid brake = new Solenoid(PneumaticsModuleType.REVPH, RotatingArmConfig.brakePort);
+  private final Solenoid brake = new Solenoid(20, PneumaticsModuleType.REVPH,
+      RotatingArmConfig.brakePort);
   private final RelativeEncoder encoder;
 
   private boolean brakeEnabled = false;
@@ -91,21 +92,22 @@ public class RotatingArm extends SubsystemBase {
     // motorOutput = Math.min(0, motorOutput);
     // if (getBottomSwitch())
     // motorOutput = Math.max(0, motorOutput);
+    System.out.println(motorOutput);
 
-    if (getAngle() > RotatingArmConfig.maxArmAngleDegrees || getAngle() < RotatingArmConfig.minArmAngleDegrees)
+    if (getAngle() > RotatingArmConfig.maxArmAngleDegrees || getAngle())
       motorOutput = 0;
 
-    if (!brakeEnabled && Math.abs(motorOutput) < 0.01) {
-      enableBrake();
-      outputToMotor(0);
-      return;
-    }
+    // if (!brakeEnabled && Math.abs(motorOutput) < 0.01) {
+    // enableBrake();
+    // outputToMotor(0);
+    // return;
+    // }
 
-    if (brakeEnabled && Math.abs(motorOutput) > 0.01) {
-      disableBrake();
-      outputToMotor(0);
-      return;
-    }
+    // if (brakeEnabled && Math.abs(motorOutput) > 0.01) {
+    // disableBrake();
+    // outputToMotor(0);
+    // return;
+    // }
 
     if (brakeEnabled) {
       outputToMotor(0);
@@ -165,13 +167,13 @@ public class RotatingArm extends SubsystemBase {
   }
 
   public void enableBrake() {
-    brake.set(true);
+    // brake.set(true);
     outputToMotor(0);
     brakeEnabled = true;
   }
 
   public void disableBrake() {
-    brake.set(false);
+    // brake.set(false);
     brakeEnabled = false;
   }
 

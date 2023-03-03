@@ -16,18 +16,19 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Claw extends SubsystemBase {
-  private final Compressor compressor = new Compressor(PneumaticsModuleType.REVPH);
+  private final Compressor compressor = new Compressor(20, PneumaticsModuleType.REVPH);
 
-  private final DoubleSolenoid leftPiston = new DoubleSolenoid(PneumaticsModuleType.REVPH,
+  private final DoubleSolenoid leftPiston = new DoubleSolenoid(20, PneumaticsModuleType.REVPH,
       ClawConfig.leftPistonPorts[0], ClawConfig.leftPistonPorts[1]);
-  private final DoubleSolenoid rightPiston = new DoubleSolenoid(PneumaticsModuleType.REVPH,
+  private final DoubleSolenoid rightPiston = new DoubleSolenoid(20, PneumaticsModuleType.REVPH,
       ClawConfig.rightPistonPorts[0], ClawConfig.rightPistonPorts[1]);
 
   private final CANSparkMax leftMotor = new CANSparkMax(ClawConfig.leftMotorPort, MotorType.kBrushless);
   private final CANSparkMax rightMotor = new CANSparkMax(ClawConfig.rightMotorPort, MotorType.kBrushless);
 
   public Claw() {
-    leftPiston.set(Value.kForward);
+    compressor.enableDigital();
+    leftPiston.set(Value.kReverse);
     rightPiston.set(Value.kForward);
 
     leftMotor.restoreFactoryDefaults();
@@ -38,7 +39,7 @@ public class Claw extends SubsystemBase {
   }
 
   public void closeClaw(boolean stopMotors) {
-    leftPiston.set(Value.kForward);
+    leftPiston.set(Value.kReverse);
     rightPiston.set(Value.kForward);
 
     if (stopMotors)
@@ -46,7 +47,7 @@ public class Claw extends SubsystemBase {
   }
 
   public void openClaw(boolean startMotors) {
-    leftPiston.set(Value.kReverse);
+    leftPiston.set(Value.kForward);
     rightPiston.set(Value.kReverse);
 
     if (startMotors)
