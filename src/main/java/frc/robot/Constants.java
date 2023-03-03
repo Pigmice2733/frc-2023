@@ -128,8 +128,8 @@ public final class Constants {
     }
 
     public static final class ElevatorConfig {
-        public static final int leftMotorPort = 8;
-        public static final int rightMotorPort = 9;
+        // public static final int leftMotorPort = 8;
+        // public static final int rightMotorPort = 9;
 
         public static final double speedMultipler = 0.1;
 

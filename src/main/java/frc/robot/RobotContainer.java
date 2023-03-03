@@ -57,7 +57,7 @@ public class RobotContainer {
     // private final Vision vision = new Vision();
     private final RotatingArm arm = new RotatingArm();
     private final Claw claw = new Claw();
-    private final LightsPanel lightPanel = new LightsPanel();
+    // private final LightsPanel lightPanel = new LightsPanel();
     private final LightStrip lightStrip = new LightStrip();
 
     private final XboxController driver = new XboxController(0);
@@ -87,7 +87,7 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(new ArcadeDrive(drivetrain, controls::getDriveSpeed, controls::getTurnSpeed));
         arm.setDefaultCommand(new RotateArmManual(arm, controls::getArmRotationSpeed));
         lightStrip.setDefaultCommand(new RunningColor(lightStrip));
-        lightPanel.setDefaultCommand(new ScrollSponsors(lightPanel));
+        // lightPanel.setDefaultCommand(new ScrollSponsors(lightPanel));
     }
 
     private void configureAutoChooser() {

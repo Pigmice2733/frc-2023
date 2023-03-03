@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import frc.robot.Constants.RotatingArmConfig;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxRelativeEncoder.Type;
@@ -32,7 +33,8 @@ public class RotatingArm extends SubsystemBase {
   private final ShuffleboardTab armTab;
   private final GenericEntry /* topSwitchEntry, bottomSwitchEntry, */ angleEntry, motorOutputEntry;
 
-  private final Solenoid brake = new Solenoid(PneumaticsModuleType.CTREPCM, RotatingArmConfig.brakePort);
+  private final Solenoid brake = new Solenoid(PneumaticsModuleType.REVPH, RotatingArmConfig.brakePort);
+  private final RelativeEncoder encoder;
 
   private boolean brakeEnabled = false;
 
@@ -60,8 +62,8 @@ public class RotatingArm extends SubsystemBase {
     driveMotor.setInverted(false);
     followMotor.setInverted(false);
 
-    encoderController.getEncoder(Type.kQuadrature, 8192).setPositionConversionFactor(360); // Converts rotatings to
-                                                                                           // degrees
+    encoder = encoderController.getEncoder(Type.kQuadrature, 8192); // Converts rotatings to
+    encoder.setPositionConversionFactor(360); // degrees
     resetEncoder();
 
     armTab = Shuffleboard.getTab("armTab");
@@ -151,7 +153,7 @@ public class RotatingArm extends SubsystemBase {
 
   /** Get the current angle of the arm. */
   public double getAngle() {
-    return encoderController.getEncoder(Type.kQuadrature, 8192).getPosition();
+    return encoder.getPosition();
   }
 
   /**
@@ -159,7 +161,7 @@ public class RotatingArm extends SubsystemBase {
    * straight down.
    */
   public void resetEncoder() {
-    encoderController.getEncoder(Type.kQuadrature, 8192).setPosition(0);
+    encoder.setPosition(0);
   }
 
   public void enableBrake() {

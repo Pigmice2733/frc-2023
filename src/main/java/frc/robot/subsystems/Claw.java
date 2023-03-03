@@ -16,12 +16,12 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Claw extends SubsystemBase {
-  private final DoubleSolenoid leftPiston = new DoubleSolenoid(PneumaticsModuleType.CTREPCM,
-      ClawConfig.leftPistonPorts[0], ClawConfig.leftPistonPorts[1]);
-  private final DoubleSolenoid rightPiston = new DoubleSolenoid(PneumaticsModuleType.CTREPCM,
-      ClawConfig.rightPistonPorts[0], ClawConfig.rightPistonPorts[1]);
+  private final Compressor compressor = new Compressor(PneumaticsModuleType.REVPH);
 
-  private final Compressor compressor = new Compressor(PneumaticsModuleType.CTREPCM);
+  private final DoubleSolenoid leftPiston = new DoubleSolenoid(PneumaticsModuleType.REVPH,
+      ClawConfig.leftPistonPorts[0], ClawConfig.leftPistonPorts[1]);
+  private final DoubleSolenoid rightPiston = new DoubleSolenoid(PneumaticsModuleType.REVPH,
+      ClawConfig.rightPistonPorts[0], ClawConfig.rightPistonPorts[1]);
 
   private final CANSparkMax leftMotor = new CANSparkMax(ClawConfig.leftMotorPort, MotorType.kBrushless);
   private final CANSparkMax rightMotor = new CANSparkMax(ClawConfig.rightMotorPort, MotorType.kBrushless);
