@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Claw extends SubsystemBase {
@@ -60,10 +61,12 @@ public class Claw extends SubsystemBase {
   }
 
   public void startMotors(boolean intakeDirection) {
+    SmartDashboard.putBoolean("Claw Motors", true);
     outputToMotors(ClawConfig.motorSpeed * (intakeDirection ? -1.0 : 1.0));
   }
 
   public void stopMotors() {
+    SmartDashboard.putBoolean("Claw Motors", false);
     outputToMotors(0.0);
   }
 }

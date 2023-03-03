@@ -32,10 +32,10 @@ public class RotatingArm extends SubsystemBase {
       MotorType.kBrushed);
 
   private final ShuffleboardTab armTab;
-  private final GenericEntry /* topSwitchEntry, bottomSwitchEntry, */ angleEntry, motorOutputEntry, attemptedOutputEntry, brakeEntry;
+  private final GenericEntry /* topSwitchEntry, bottomSwitchEntry, */ angleEntry, motorOutputEntry, attemptedOutputEntry, brakeEntry, speedMultiplierEntry;
 
-  private final Solenoid brake = new Solenoid(20, PneumaticsModuleType.REVPH,
-      RotatingArmConfig.brakePort);
+  private final DoubleSolenoid brake = new DoubleSolenoid(20, PneumaticsModuleType.REVPH,
+      RotatingArmConfig.brakePort[0], RotatingArmConfig.brakePort[1]);
   private final RelativeEncoder encoder;
 
   private boolean brakeEnabled = false;
@@ -74,7 +74,8 @@ public class RotatingArm extends SubsystemBase {
     angleEntry = armTab.add("Arm Angle", 0).getEntry();
     motorOutputEntry = armTab.add("Motor Output", 0).getEntry();
     attemptedOutputEntry = armTab.add("Attempted Output", 0).getEntry();
-    brakeEntry = armTab.add("Brake Enables", false).getEntry();
+    brakeEntry = armTab.add("Brake Enabled", false).getEntry();
+    speedMultiplierEntry = armTab.add("Speed Multiplier", 1).getEntry();
 
     armTab.add(new InstantCommand(() -> setMotorIdleMode(IdleMode.kBrake)).withName("BRAKE MODE"));
     armTab.add(new InstantCommand(() -> setMotorIdleMode(IdleMode.kCoast)).withName("COAST MODE"));
@@ -138,7 +139,7 @@ public class RotatingArm extends SubsystemBase {
     // TODO: Remove clamp after initial testing
     output = MathUtil.clamp(output, -0.1, 0.1);
     motorOutputEntry.setDouble(output);
-    driveMotor.set(output);
+    driveMotor.set(output * speedMultiplierEntry.getDouble(1));
   }
 
   /**
@@ -175,14 +176,14 @@ public class RotatingArm extends SubsystemBase {
   }
 
   public void enableBrake() {
-    brake.set(true);
+    brake.set(Value.kForward);
     outputToMotor(0);
     brakeEnabled = true;
     brakeEntry.setBoolean(true);
   }
 
   public void disableBrake() {
-    brake.set(false);
+    brake.set(Value.kReverse);
     brakeEntry.setBoolean(false);
     brakeEnabled = false;
   }
