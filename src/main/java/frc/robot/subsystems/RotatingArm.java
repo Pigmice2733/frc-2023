@@ -26,7 +26,7 @@ public class RotatingArm extends SubsystemBase {
   private final CANSparkMax encoderController = new CANSparkMax(RotatingArmConfig.encoderControllerPort, MotorType.kBrushed);
 
   private final ShuffleboardTab armTab;
-  private final GenericEntry topSwitchEntry, bottomSwitchEntry, angleEntry, motorOutputEntry;
+  private final GenericEntry /*topSwitchEntry, bottomSwitchEntry,*/ angleEntry, motorOutputEntry;
 
   private final DoubleSolenoid brake = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, RotatingArmConfig.brakePort[0],
       RotatingArmConfig.brakePort[1]);
@@ -35,20 +35,20 @@ public class RotatingArm extends SubsystemBase {
 
   private double targetMotorOutput = 0;
 
-  private final DigitalInput topLimitSwitch;
-  private final DigitalInput bottomLimitSwitch;
+  //private final DigitalInput topLimitSwitch;
+  //private final DigitalInput bottomLimitSwitch;
 
-  public boolean getTopSwitch() {
-    return !topLimitSwitch.get();
-  }
+  // public boolean getTopSwitch() {
+  //   return !topLimitSwitch.get();
+  // }
 
-  public boolean getBottomSwitch() {
-    return !bottomLimitSwitch.get();
-  }
+  // public boolean getBottomSwitch() {
+  //   return !bottomLimitSwitch.get();
+  // }
 
   public RotatingArm() {
-    topLimitSwitch = new DigitalInput(RotatingArmConfig.topLimitSwitchID);
-    bottomLimitSwitch = new DigitalInput(RotatingArmConfig.bottomLimitSwitchID);
+    // topLimitSwitch = new DigitalInput(RotatingArmConfig.topLimitSwitchID);
+    // bottomLimitSwitch = new DigitalInput(RotatingArmConfig.bottomLimitSwitchID);
 
     driveMotor.restoreFactoryDefaults();
     followMotor.restoreFactoryDefaults();
@@ -61,8 +61,8 @@ public class RotatingArm extends SubsystemBase {
     resetEncoder();
 
     armTab = Shuffleboard.getTab("armTab");
-    topSwitchEntry = armTab.add("Top Switch", false).getEntry();
-    bottomSwitchEntry = armTab.add("Bottom Switch", false).getEntry();
+    // topSwitchEntry = armTab.add("Top Switch", false).getEntry();
+    // bottomSwitchEntry = armTab.add("Bottom Switch", false).getEntry();
     angleEntry = armTab.add("Arm Angle", 0).getEntry();
     motorOutputEntry = armTab.add("Motor Output", 0).getEntry();
   }
@@ -76,10 +76,10 @@ public class RotatingArm extends SubsystemBase {
   private void applyClawOutput() {
     double motorOutput = targetMotorOutput;
 
-    if (getTopSwitch())
-      motorOutput = Math.min(0, motorOutput);
-    if (getBottomSwitch())
-      motorOutput = Math.max(0, motorOutput);
+    // if (getTopSwitch())
+    //   motorOutput = Math.min(0, motorOutput);
+    // if (getBottomSwitch())
+    //   motorOutput = Math.max(0, motorOutput);
 
     if (getAngle() > RotatingArmConfig.maxArmAngleDegrees)
       motorOutput = 0;
@@ -136,8 +136,8 @@ public class RotatingArm extends SubsystemBase {
 
   private void updateShuffleboard() {
     angleEntry.setDouble(getAngle());
-    topSwitchEntry.setBoolean(topLimitSwitch.get());
-    bottomSwitchEntry.setBoolean(bottomLimitSwitch.get());
+    // topSwitchEntry.setBoolean(topLimitSwitch.get());
+    // bottomSwitchEntry.setBoolean(bottomLimitSwitch.get());
   }
 
   /** Get the current angle of the arm. */
