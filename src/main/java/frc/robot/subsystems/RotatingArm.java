@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -31,7 +32,7 @@ public class RotatingArm extends SubsystemBase {
       MotorType.kBrushed);
 
   private final ShuffleboardTab armTab;
-  private final GenericEntry /* topSwitchEntry, bottomSwitchEntry, */ angleEntry, motorOutputEntry;
+  private final GenericEntry /* topSwitchEntry, bottomSwitchEntry, */ angleEntry, motorOutputEntry, attemptedOutputEntry, brakeEntry;
 
   private final Solenoid brake = new Solenoid(20, PneumaticsModuleType.REVPH,
       RotatingArmConfig.brakePort);
@@ -72,9 +73,14 @@ public class RotatingArm extends SubsystemBase {
     // bottomSwitchEntry = armTab.add("Bottom Switch", false).getEntry();
     angleEntry = armTab.add("Arm Angle", 0).getEntry();
     motorOutputEntry = armTab.add("Motor Output", 0).getEntry();
+    attemptedOutputEntry = armTab.add("Attempted Output", 0).getEntry();
+    brakeEntry = armTab.add("Brake Enables", false).getEntry();
 
     armTab.add(new InstantCommand(() -> setMotorIdleMode(IdleMode.kBrake)).withName("BRAKE MODE"));
     armTab.add(new InstantCommand(() -> setMotorIdleMode(IdleMode.kCoast)).withName("COAST MODE"));
+
+    armTab.add(new InstantCommand(() -> enableBrake()).withName("Enable Brake"));
+    armTab.add(new InstantCommand(() -> disableBrake()).withName("Disable Brake"));
 
     setMotorIdleMode(IdleMode.kCoast);
   }
@@ -92,22 +98,24 @@ public class RotatingArm extends SubsystemBase {
     // motorOutput = Math.min(0, motorOutput);
     // if (getBottomSwitch())
     // motorOutput = Math.max(0, motorOutput);
-    System.out.println(motorOutput);
+    attemptedOutputEntry.setDouble(targetMotorOutput);
 
-    if (getAngle() > RotatingArmConfig.maxArmAngleDegrees || getAngle())
-      motorOutput = 0;
+    // if (getAngle() > RotatingArmConfig.maxArmAngleDegrees)
+    //   motorOutput = Math.min(0, motorOutput);
 
-    // if (!brakeEnabled && Math.abs(motorOutput) < 0.01) {
-    // enableBrake();
-    // outputToMotor(0);
-    // return;
-    // }
+    // if (getAngle() < RotatingArmConfig.minArmAngleDegrees)
+    //   motorOutput = Math.max(0, motorOutput);
 
-    // if (brakeEnabled && Math.abs(motorOutput) > 0.01) {
-    // disableBrake();
-    // outputToMotor(0);
-    // return;
-    // }
+    if (!brakeEnabled && Math.abs(motorOutput) < 0.01) {
+    enableBrake();
+    outputToMotor(0);
+    return;
+    }
+
+    if (brakeEnabled && Math.abs(motorOutput) > 0.01) {
+    disableBrake();
+    return;
+    }
 
     if (brakeEnabled) {
       outputToMotor(0);
@@ -167,13 +175,15 @@ public class RotatingArm extends SubsystemBase {
   }
 
   public void enableBrake() {
-    // brake.set(true);
+    brake.set(true);
     outputToMotor(0);
     brakeEnabled = true;
+    brakeEntry.setBoolean(true);
   }
 
   public void disableBrake() {
-    // brake.set(false);
+    brake.set(false);
+    brakeEntry.setBoolean(false);
     brakeEnabled = false;
   }
 

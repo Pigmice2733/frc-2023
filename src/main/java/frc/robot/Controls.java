@@ -18,7 +18,7 @@ public class Controls {
         this.operator = operator;
     }
 
-    LinearFilter driveSpeedFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
+    LinearFilter driveSpeedFilter = LinearFilter.singlePoleIIR(0.15, 0.02);
     /** Return the left joystick's Y as long as it's over the threshold. */
     public double getDriveSpeed() {
         double joystickValue = driver.getLeftY();
