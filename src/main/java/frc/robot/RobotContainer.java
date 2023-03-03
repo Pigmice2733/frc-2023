@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.RuntimeTrajectoryGenerator.TargetLocation;
 import frc.robot.commands.automated.PickUpObjectFromHuman;
 import frc.robot.commands.automated.ScoreObject;
+import frc.robot.commands.claw.SpinIntakeWheels;
 import frc.robot.commands.drivetrain.ArcadeDrive;
 import frc.robot.commands.drivetrain.DriveDistancePID;
 import frc.robot.commands.lights.panel.ScrollSponsors;
@@ -50,7 +51,7 @@ import frc.robot.subsystems.Vision;
  */
 public class RobotContainer {
   private final Drivetrain drivetrain = new Drivetrain();
-  private final Vision vision = new Vision();
+  //private final Vision vision = new Vision();
   private final RotatingArm arm = new RotatingArm();
   private final Claw claw = new Claw();
   private final LightsPanel lightPanel = new LightsPanel();
@@ -129,22 +130,22 @@ public class RobotContainer {
         .onTrue(new InstantCommand(drivetrain::enableSlow))
         .onFalse(new InstantCommand(drivetrain::disableSlow));
 
-    /** [driver] Schedule AlignToScore when A is pressed, cancel when released */
-    final FullyAlign alignCommand = new FullyAlign(drivetrain, vision);
-    new JoystickButton(driver, Button.kA.value)
-        .onTrue(alignCommand)
-        .onFalse(new InstantCommand(() -> {
-          alignCommand.cancel();
-        }));
+    // /** [driver] Schedule AlignToScore when A is pressed, cancel when released */
+    // final FullyAlign alignCommand = new FullyAlign(drivetrain, vision);
+    // new JoystickButton(driver, Button.kA.value)
+    //     .onTrue(alignCommand)
+    //     .onFalse(new InstantCommand(() -> {
+    //       alignCommand.cancel();
+    //     }));
 
-    /** [driver] Schedule AlignAndScore when X is pressed, cancel when released */
-    final AlignAndScore alignAndScore = new AlignAndScore(vision, drivetrain,
-        arm, claw);
-    new JoystickButton(driver, Button.kX.value)
-        .onTrue(alignAndScore)
-        .onFalse(new InstantCommand(() -> {
-          alignAndScore.cancel();
-        }));
+    // /** [driver] Schedule AlignAndScore when X is pressed, cancel when released */
+    // final AlignAndScore alignAndScore = new AlignAndScore(vision, drivetrain,
+    //     arm, claw);
+    // new JoystickButton(driver, Button.kX.value)
+    //     .onTrue(alignAndScore)
+    //     .onFalse(new InstantCommand(() -> {
+    //       alignAndScore.cancel();
+    //     }));
 
     final BalanceRoutine autoBalance = new BalanceRoutine(drivetrain);
     new JoystickButton(driver, Button.kB.value)
@@ -203,6 +204,13 @@ public class RobotContainer {
      */
     new JoystickButton(operator, Button.kB.value)
         .whileTrue(new RotateArmToScoreHeight(arm));
+
+    /**
+     * [operator] Schedule SpinIntakeWheels when X is pressed, cancel when
+     * released. This is for dispensing using intake wheels
+     */
+    new JoystickButton(operator, Button.kX.value)
+    .whileTrue(new SpinIntakeWheels(claw, false, 3));
 
     /** [operator] Signal lights for cube */
     new JoystickButton(driver, Button.kBack.value)

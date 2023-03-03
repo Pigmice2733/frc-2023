@@ -26,31 +26,36 @@ public class RotateArmToScoreHeight extends CommandBase {
 
     TargetLocation targetLocation = RuntimeTrajectoryGenerator.getTargetType();
 
-    if (selectedScoreHeight == ScoreHeight.Mid && targetLocation == TargetLocation.Center) {
+    // if (selectedScoreHeight == ScoreHeight.Mid && targetLocation == TargetLocation.Center) {
+    //   height = Units.inchesToMeters(24.0);
+    // } // mid cube
+    // else if (selectedScoreHeight == ScoreHeight.Mid && targetLocation != TargetLocation.Center) {
+    //   height = Units.inchesToMeters(36.0);
+    // } // mid cone
+    // else if (selectedScoreHeight == ScoreHeight.High && targetLocation == TargetLocation.Center) {
+    //   height = Units.inchesToMeters(36.0);
+    // } // high cube
+    // else if (selectedScoreHeight == ScoreHeight.High && targetLocation != TargetLocation.Center) {
+    //   height = Units.inchesToMeters(44.0);
+    // } // high cone
+    // else {
+    //   height = 0;
+    // } // floor
+
+    if (selectedScoreHeight == ScoreHeight.Floor) {
+      height = Units.inchesToMeters(0.0);
+    } // mid cube
+    if (selectedScoreHeight == ScoreHeight.Mid) {
       height = Units.inchesToMeters(24.0);
     } // mid cube
-    else if (selectedScoreHeight == ScoreHeight.Mid && targetLocation != TargetLocation.Center) {
+    else if (selectedScoreHeight == ScoreHeight.High) {
       height = Units.inchesToMeters(36.0);
     } // mid cone
-    else if (selectedScoreHeight == ScoreHeight.High && targetLocation == TargetLocation.Center) {
+    else if (selectedScoreHeight == ScoreHeight.HumanPlayer && targetLocation == TargetLocation.Center) {
       height = Units.inchesToMeters(36.0);
     } // high cube
-    else if (selectedScoreHeight == ScoreHeight.High && targetLocation != TargetLocation.Center) {
-      height = Units.inchesToMeters(44.0);
-    } // high cone
-    else {
-      height = 0;
-    } // floor
 
     rotateCommand = new RotateArmToAngleConstant(arm, arm.armHeightToAngle(height));
-  }
-
-  @Override
-  public void execute() {
-  }
-
-  @Override
-  public void end(boolean interrupted) {
   }
 
   @Override
@@ -64,7 +69,8 @@ public class RotateArmToScoreHeight extends CommandBase {
   public enum ScoreHeight {
     Floor,
     Mid,
-    High
+    High,
+    HumanPlayer
   }
 
   private static ScoreHeight selectedScoreHeight = ScoreHeight.Floor;

@@ -81,7 +81,7 @@ public class RotatingArm extends SubsystemBase {
     // if (getBottomSwitch())
     //   motorOutput = Math.max(0, motorOutput);
 
-    if (getAngle() > RotatingArmConfig.maxArmAngleDegrees)
+    if (getAngle() > RotatingArmConfig.maxArmAngleDegrees || getAngle() < RotatingArmConfig.minArmAngleDegrees)
       motorOutput = 0;
 
     if (!brakeEnabled && Math.abs(motorOutput) < 0.01) {

@@ -20,9 +20,9 @@ public final class Constants {
         public static final double axisThreshold = 0.25;
 
         public static final int leftDrivePort = 1;
-        public static final int rightDrivePort = 4;
+        public static final int rightDrivePort = 3;
         public static final int leftFollowPort = 2;
-        public static final int rightFollowPort = 3;
+        public static final int rightFollowPort = 4;
     
         public static final double driveSpeed = .6;
         public static final double turnSpeed = .3;
@@ -92,8 +92,9 @@ public final class Constants {
         public static final int encoderControllerPort = 7;
 
         public static final double maxArmAngleDegrees = 120;
+        public static final double minArmAngleDegrees = 3;
 
-        public static final int[] brakePort = {4, 5};
+        public static final int[] brakePort = {0, 1};
         public static final double manualUpSpeed = 0.05;
         public static final double manualDownSpeed = 0.02;
 
@@ -113,8 +114,8 @@ public final class Constants {
         public static final int bottomLimitSwitchID = 1;
     }
     public static final class ElevatorConfig {
-        public static final int leftMotorPort = 7;
-        public static final int rightMotorPort = 8;
+        public static final int leftMotorPort = 8;
+        public static final int rightMotorPort = 9;
 
         public static final double speedMultipler = 0.1;
 
@@ -128,8 +129,8 @@ public final class Constants {
         public static final double maxAcceleration = 0.0;
     }
     public static final class ClawConfig {
-        public static final int leftPistonPorts[] = {0, 1};
-        public static final int rightPistonPorts[] = {2, 3};
+        public static final int leftPistonPorts[] = {2, 3};
+        public static final int rightPistonPorts[] = {4, 5};
 
         public static final int leftMotorPort = 10;
         public static final int rightMotorPort = 11;

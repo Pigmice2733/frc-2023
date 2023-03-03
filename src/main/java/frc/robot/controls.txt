@@ -27,6 +27,7 @@ Left bumper - Close claw
 Y - Auto dispense if already aligned (hold, release to cancel)
 A - Auto pick up from human player if already aligned (hold, release to calcel)
 B - Rotate arm to selected score height (hold, release to calcel)
+X - Dispense by spinning intake wheels
 
 Back - Signal lights for cube
 Start - Signal lights for cone
