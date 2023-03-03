@@ -4,10 +4,10 @@
 
 package frc.robot.subsystems;
 
-import frc.robot.Constants.DrivetrainConfig;
 import frc.robot.Constants.RotatingArmConfig;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxRelativeEncoder.Type;
 
@@ -19,14 +19,16 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class RotatingArm extends SubsystemBase {
   private final CANSparkMax driveMotor = new CANSparkMax(RotatingArmConfig.driveMotorPort, MotorType.kBrushless);
   private final CANSparkMax followMotor = new CANSparkMax(RotatingArmConfig.followMotorPort, MotorType.kBrushless);
+  private final CANSparkMax encoderController = new CANSparkMax(RotatingArmConfig.encoderControllerPort, MotorType.kBrushed);
 
   private final ShuffleboardTab armTab;
-  private final GenericEntry topSwitchEntry, bottomSwitchEntry, angleEntry;
+  private final GenericEntry /*topSwitchEntry, bottomSwitchEntry,*/ angleEntry, motorOutputEntry;
 
   private final DoubleSolenoid brake = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, RotatingArmConfig.brakePort[0],
       RotatingArmConfig.brakePort[1]);
@@ -35,20 +37,20 @@ public class RotatingArm extends SubsystemBase {
 
   private double targetMotorOutput = 0;
 
-  private final DigitalInput topLimitSwitch;
-  private final DigitalInput bottomLimitSwitch;
+  //private final DigitalInput topLimitSwitch;
+  //private final DigitalInput bottomLimitSwitch;
 
-  public boolean getTopSwitch() {
-    return !topLimitSwitch.get();
-  }
+  // public boolean getTopSwitch() {
+  //   return !topLimitSwitch.get();
+  // }
 
-  public boolean getBottomSwitch() {
-    return !bottomLimitSwitch.get();
-  }
+  // public boolean getBottomSwitch() {
+  //   return !bottomLimitSwitch.get();
+  // }
 
   public RotatingArm() {
-    topLimitSwitch = new DigitalInput(RotatingArmConfig.topLimitSwitchID);
-    bottomLimitSwitch = new DigitalInput(RotatingArmConfig.bottomLimitSwitchID);
+    // topLimitSwitch = new DigitalInput(RotatingArmConfig.topLimitSwitchID);
+    // bottomLimitSwitch = new DigitalInput(RotatingArmConfig.bottomLimitSwitchID);
 
     driveMotor.restoreFactoryDefaults();
     followMotor.restoreFactoryDefaults();
@@ -57,13 +59,19 @@ public class RotatingArm extends SubsystemBase {
     driveMotor.setInverted(false);
     followMotor.setInverted(false);
 
-    // driveMotor.getEncoder(Type.kQuadrature,
-    // 8192).setPositionConversionFactor(RotatingArmConfig.rotationConversion);
+    encoderController.getEncoder(Type.kQuadrature, 8192).setPositionConversionFactor(360); // Converts rotatings to degrees
+    resetEncoder();
 
     armTab = Shuffleboard.getTab("armTab");
-    topSwitchEntry = armTab.add("Top Switch", false).getEntry();
-    bottomSwitchEntry = armTab.add("Bottom Switch", false).getEntry();
+    // topSwitchEntry = armTab.add("Top Switch", false).getEntry();
+    // bottomSwitchEntry = armTab.add("Bottom Switch", false).getEntry();
     angleEntry = armTab.add("Arm Angle", 0).getEntry();
+    motorOutputEntry = armTab.add("Motor Output", 0).getEntry();
+
+    armTab.add(new InstantCommand(() -> setMotorIdleMode(IdleMode.kBrake)).withName("BRAKE MODE"));
+    armTab.add(new InstantCommand(() -> setMotorIdleMode(IdleMode.kCoast)).withName("COAST MODE"));
+
+    setMotorIdleMode(IdleMode.kCoast);
   }
 
   @Override
@@ -73,22 +81,34 @@ public class RotatingArm extends SubsystemBase {
   }
 
   private void applyClawOutput() {
-    if (!brakeEnabled && Math.abs(targetMotorOutput) < DrivetrainConfig.axisThreshold) {
+    double motorOutput = targetMotorOutput;
+
+    // if (getTopSwitch())
+    //   motorOutput = Math.min(0, motorOutput);
+    // if (getBottomSwitch())
+    //   motorOutput = Math.max(0, motorOutput);
+
+    if (getAngle() > RotatingArmConfig.maxArmAngleDegrees || getAngle() < RotatingArmConfig.minArmAngleDegrees)
+      motorOutput = 0;
+
+    if (!brakeEnabled && Math.abs(motorOutput) < 0.01) {
       enableBrake();
       outputToMotor(0);
       return;
     }
 
-    if (brakeEnabled && Math.abs(targetMotorOutput) > DrivetrainConfig.axisThreshold) {
+    if (brakeEnabled && Math.abs(motorOutput) > 0.01) {
       disableBrake();
       outputToMotor(0);
       return;
     }
 
-    if (brakeEnabled)
+    if (brakeEnabled) {
+      outputToMotor(0);
       return;
+    }
 
-    outputToMotor(targetMotorOutput);
+    outputToMotor(motorOutput);
   }
 
   /**
@@ -101,17 +121,10 @@ public class RotatingArm extends SubsystemBase {
   }
 
   private void outputToMotor(double output) {
-    if (brakeEnabled)
-      return;
-
-    if (getTopSwitch()) {
-      output = Math.min(0, output);
-    }
-    if (getBottomSwitch()) {
-      output = Math.max(0, output);
-    }
-
-    driveMotor.set(output * RotatingArmConfig.speedMultipler);
+    // TODO: Remove clamp after initial testing
+    output = MathUtil.clamp(output, -0.1, 0.1);
+    motorOutputEntry.setDouble(output);
+    driveMotor.set(output);
   }
 
   /**
@@ -130,13 +143,13 @@ public class RotatingArm extends SubsystemBase {
 
   private void updateShuffleboard() {
     angleEntry.setDouble(getAngle());
-    topSwitchEntry.setBoolean(topLimitSwitch.get());
-    bottomSwitchEntry.setBoolean(bottomLimitSwitch.get());
+    // topSwitchEntry.setBoolean(topLimitSwitch.get());
+    // bottomSwitchEntry.setBoolean(bottomLimitSwitch.get());
   }
 
   /** Get the current angle of the arm. */
   public double getAngle() {
-    return followMotor.getEncoder(Type.kQuadrature, 8192).getPosition();
+    return encoderController.getEncoder(Type.kQuadrature, 8192).getPosition();
   }
 
   /**
@@ -144,21 +157,26 @@ public class RotatingArm extends SubsystemBase {
    * straight down.
    */
   public void resetEncoder() {
-    // driveMotor.getEncoder(Type.kQuadrature, 8192).setPosition(0);
+    encoderController.getEncoder(Type.kQuadrature, 8192).setPosition(0);
   }
 
   public void enableBrake() {
-    brake.set(Value.kForward);
+    brake.set(Value.kReverse);
     outputToMotor(0);
     brakeEnabled = true;
   }
 
   public void disableBrake() {
-    brake.set(Value.kReverse);
+    brake.set(Value.kForward);
     brakeEnabled = false;
   }
 
   public boolean getBrakeEnabled() {
     return brakeEnabled;
+  }
+
+  public void setMotorIdleMode(IdleMode mode) {
+    driveMotor.setIdleMode(mode);
+    followMotor.setIdleMode(mode);
   }
 }

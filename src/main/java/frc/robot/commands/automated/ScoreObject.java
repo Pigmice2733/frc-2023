@@ -48,4 +48,8 @@ public class ScoreObject extends SequentialCommandGroup {
   public ScoreObject(Drivetrain drivetrain, RotatingArm arm, Claw claw) {
     this(drivetrain, arm, claw, RotateArmToScoreHeight.getScoreHeight());
   }
+
+  public ScoreObject(Drivetrain drivetrain, RotatingArm arm, Claw claw, boolean skipDriveBackwards) {
+    this(drivetrain, arm, claw, RotateArmToScoreHeight.getScoreHeight(), skipDriveBackwards);
+  }
 }
