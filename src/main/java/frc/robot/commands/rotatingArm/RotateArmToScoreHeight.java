@@ -26,6 +26,7 @@ public class RotateArmToScoreHeight extends CommandBase {
 
     TargetLocation targetLocation = RuntimeTrajectoryGenerator.getTargetType();
 
+    // Old
     // if (selectedScoreHeight == ScoreHeight.Mid && targetLocation == TargetLocation.Center) {
     //   height = Units.inchesToMeters(24.0);
     // } // mid cube
@@ -36,7 +37,7 @@ public class RotateArmToScoreHeight extends CommandBase {
     //   height = Units.inchesToMeters(36.0);
     // } // high cube
     // else if (selectedScoreHeight == ScoreHeight.High && targetLocation != TargetLocation.Center) {
-    //   height = Units.inchesToMeters(44.0);
+    //   height = Units.inchesToMeters(38.0);
     // } // high cone
     // else {
     //   height = 0;
@@ -46,13 +47,13 @@ public class RotateArmToScoreHeight extends CommandBase {
     //   height = Units.inchesToMeters(0.0);
     // } // mid cube
     // if (selectedScoreHeight == ScoreHeight.Mid) {
-    //   height = Units.inchesToMeters(46 + );
+    //   height = Units.inchesToMeters(34);
     // } // mid cube
     // else if (selectedScoreHeight == ScoreHeight.High) {
-    //   height = Units.inchesToMeters(46.0 + );
+    //   height = Units.inchesToMeters(46.0);
     // } // mid cone
     // else if (selectedScoreHeight == ScoreHeight.HumanPlayer) {
-    //   height = Units.inchesToMeters(36.0 + );
+    //   height = Units.inchesToMeters(38.0);
     // } // high cube
 
     double targetAngle = 3;

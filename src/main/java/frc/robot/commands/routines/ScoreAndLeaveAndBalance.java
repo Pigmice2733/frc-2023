@@ -10,6 +10,7 @@ import frc.robot.commands.automated.ScoreObject;
 import frc.robot.commands.drivetrain.DriveDistancePID;
 import frc.robot.commands.drivetrain.DriveOverChargeStation;
 import frc.robot.commands.drivetrain.TurnDegreesPID;
+import frc.robot.commands.rotatingArm.RotateArmToScoreHeight.ScoreHeight;
 import frc.robot.commands.drivetrain.DriveOntoChargeStation;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Drivetrain;
@@ -27,14 +28,14 @@ public class ScoreAndLeaveAndBalance extends SequentialCommandGroup {
   public ScoreAndLeaveAndBalance(Drivetrain drivetrain, RotatingArm arm, Claw claw, TargetLocation startLocation) {
     if (startLocation == TargetLocation.Center) {
     addCommands(
-        new ScoreObject(drivetrain, arm, claw, true),
+       new ScoreObject(drivetrain, arm, claw, ScoreHeight.High, true),
         new DriveOntoChargeStation(drivetrain, true),
         new DriveOverChargeStation(drivetrain, true),
         new BalanceRoutine(drivetrain));
     }
     else {
       addCommands(
-          new ScoreObject(drivetrain, arm, claw, true),
+          new ScoreObject(drivetrain, arm, claw, ScoreHeight.High, true),
           new DriveDistancePID(drivetrain, -5.6).withTimeout(5),
           new TurnDegreesPID(drivetrain, 40 * ((startLocation == TargetLocation.Left) ? -1.0 : 1.0)).withTimeout(2),
           new BalanceRoutine(drivetrain));

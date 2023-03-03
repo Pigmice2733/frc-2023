@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -25,6 +26,7 @@ import frc.robot.commands.automated.ScoreObject;
 import frc.robot.commands.claw.SpinIntakeWheels;
 import frc.robot.commands.drivetrain.ArcadeDrive;
 import frc.robot.commands.drivetrain.DriveDistancePID;
+import frc.robot.commands.drivetrain.DriveOntoChargeStation;
 import frc.robot.commands.lights.panel.ScrollSponsors;
 import frc.robot.commands.lights.strip.RunningColor;
 import frc.robot.commands.rotatingArm.RotateArmManual;
@@ -89,16 +91,19 @@ public class RobotContainer {
   }
 
   private void configureAutoChooser() {
+      driverTab.addString("FACE TOWARDS GRID", () -> "(do it)");
     List<Command> autoCommands = List.of(
         new DriveDistancePID(drivetrain, -3).withName("Only Leave Community [Driver Left or Right]"),
-        new BalanceRoutine(drivetrain).withName("Only Balance [Center]"),
-        new ScoreAndLeave(drivetrain, arm, claw).withName("Score and Leave [Driver Left or Right]"),
-        new ScoreAndBalance(drivetrain, arm, claw).withName("Score and Balance [Center]"),
-        new ScoreAndLeaveAndBalance(drivetrain, arm, claw).withName("Score, Leave, and Balance [Center]"),
-        new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Right)
-            .withName("Score, Leave, and Balance [Driver Left]"),
-        new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Left)
-            .withName("Score, Leave, and Balance [Driver Right]"));
+        new BalanceRoutine(drivetrain, true).withName("Only Balance [Center]"),
+        new SequentialCommandGroup(new DriveOntoChargeStation(drivetrain, true), new DriveOntoChargeStation(drivetrain, true)).withName("Only Leave Community [Center]")
+        // new ScoreAndLeave(drivetrain, arm, claw).withName("Score and Leave [Driver Left or Right]"),
+        // new ScoreAndBalance(drivetrain, arm, claw).withName("Score and Balance [Center]"),
+        // new ScoreAndLeaveAndBalance(drivetrain, arm, claw).withName("Score, Leave, and Balance [Center]"),
+        // new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Right)
+        //     .withName("Score, Leave, and Balance [Driver Left]"),
+        // new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Left)
+        //     .withName("Score, Leave, and Balance [Driver Right]")
+        );
 
     autoChooser = new SendableChooser<Command>();
     driverTab.add("Auto Chooser", autoChooser);

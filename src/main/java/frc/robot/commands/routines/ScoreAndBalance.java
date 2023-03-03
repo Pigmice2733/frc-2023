@@ -6,6 +6,7 @@ package frc.robot.commands.routines;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.automated.ScoreObject;
+import frc.robot.commands.rotatingArm.RotateArmToScoreHeight.ScoreHeight;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.RotatingArm;
@@ -13,8 +14,8 @@ import frc.robot.subsystems.RotatingArm;
 public class ScoreAndBalance extends SequentialCommandGroup {
   public ScoreAndBalance(Drivetrain drivetrain, RotatingArm arm, Claw claw) {
     addCommands(
-        new ScoreObject(drivetrain, arm, claw, true),
-        new BalanceRoutine(drivetrain, true));
+      new ScoreObject(drivetrain, arm, claw, ScoreHeight.High, true),
+      new BalanceRoutine(drivetrain, true));
     
     addRequirements(drivetrain, arm, claw);
   }
