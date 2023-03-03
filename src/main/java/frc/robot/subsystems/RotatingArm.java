@@ -16,6 +16,7 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -25,27 +26,27 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class RotatingArm extends SubsystemBase {
   private final CANSparkMax driveMotor = new CANSparkMax(RotatingArmConfig.driveMotorPort, MotorType.kBrushless);
   private final CANSparkMax followMotor = new CANSparkMax(RotatingArmConfig.followMotorPort, MotorType.kBrushless);
-  private final CANSparkMax encoderController = new CANSparkMax(RotatingArmConfig.encoderControllerPort, MotorType.kBrushed);
+  private final CANSparkMax encoderController = new CANSparkMax(RotatingArmConfig.encoderControllerPort,
+      MotorType.kBrushed);
 
   private final ShuffleboardTab armTab;
-  private final GenericEntry /*topSwitchEntry, bottomSwitchEntry,*/ angleEntry, motorOutputEntry;
+  private final GenericEntry /* topSwitchEntry, bottomSwitchEntry, */ angleEntry, motorOutputEntry;
 
-  private final DoubleSolenoid brake = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, RotatingArmConfig.brakePort[0],
-      RotatingArmConfig.brakePort[1]);
+  private final Solenoid brake = new Solenoid(PneumaticsModuleType.CTREPCM, RotatingArmConfig.brakePort);
 
   private boolean brakeEnabled = false;
 
   private double targetMotorOutput = 0;
 
-  //private final DigitalInput topLimitSwitch;
-  //private final DigitalInput bottomLimitSwitch;
+  // private final DigitalInput topLimitSwitch;
+  // private final DigitalInput bottomLimitSwitch;
 
   // public boolean getTopSwitch() {
-  //   return !topLimitSwitch.get();
+  // return !topLimitSwitch.get();
   // }
 
   // public boolean getBottomSwitch() {
-  //   return !bottomLimitSwitch.get();
+  // return !bottomLimitSwitch.get();
   // }
 
   public RotatingArm() {
@@ -59,7 +60,8 @@ public class RotatingArm extends SubsystemBase {
     driveMotor.setInverted(false);
     followMotor.setInverted(false);
 
-    encoderController.getEncoder(Type.kQuadrature, 8192).setPositionConversionFactor(360); // Converts rotatings to degrees
+    encoderController.getEncoder(Type.kQuadrature, 8192).setPositionConversionFactor(360); // Converts rotatings to
+                                                                                           // degrees
     resetEncoder();
 
     armTab = Shuffleboard.getTab("armTab");
@@ -84,9 +86,9 @@ public class RotatingArm extends SubsystemBase {
     double motorOutput = targetMotorOutput;
 
     // if (getTopSwitch())
-    //   motorOutput = Math.min(0, motorOutput);
+    // motorOutput = Math.min(0, motorOutput);
     // if (getBottomSwitch())
-    //   motorOutput = Math.max(0, motorOutput);
+    // motorOutput = Math.max(0, motorOutput);
 
     if (getAngle() > RotatingArmConfig.maxArmAngleDegrees || getAngle() < RotatingArmConfig.minArmAngleDegrees)
       motorOutput = 0;
@@ -161,13 +163,13 @@ public class RotatingArm extends SubsystemBase {
   }
 
   public void enableBrake() {
-    brake.set(Value.kReverse);
+    brake.set(true);
     outputToMotor(0);
     brakeEnabled = true;
   }
 
   public void disableBrake() {
-    brake.set(Value.kForward);
+    brake.set(false);
     brakeEnabled = false;
   }
 
