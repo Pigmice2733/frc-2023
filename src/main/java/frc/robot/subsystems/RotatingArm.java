@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import frc.robot.Constants.RotatingArmConfig;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxRelativeEncoder.Type;
 
@@ -18,6 +19,7 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class RotatingArm extends SubsystemBase {
@@ -65,6 +67,11 @@ public class RotatingArm extends SubsystemBase {
     // bottomSwitchEntry = armTab.add("Bottom Switch", false).getEntry();
     angleEntry = armTab.add("Arm Angle", 0).getEntry();
     motorOutputEntry = armTab.add("Motor Output", 0).getEntry();
+
+    armTab.add(new InstantCommand(() -> setMotorIdleMode(IdleMode.kBrake)).withName("BRAKE MODE"));
+    armTab.add(new InstantCommand(() -> setMotorIdleMode(IdleMode.kCoast)).withName("COAST MODE"));
+
+    setMotorIdleMode(IdleMode.kCoast);
   }
 
   @Override
@@ -166,5 +173,10 @@ public class RotatingArm extends SubsystemBase {
 
   public boolean getBrakeEnabled() {
     return brakeEnabled;
+  }
+
+  public void setMotorIdleMode(IdleMode mode) {
+    driveMotor.setIdleMode(mode);
+    followMotor.setIdleMode(mode);
   }
 }
