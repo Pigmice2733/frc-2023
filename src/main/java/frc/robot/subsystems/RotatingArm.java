@@ -118,7 +118,7 @@ public class RotatingArm extends SubsystemBase {
       return;
     }
 
-    if (brakeEnabled && Math.abs(motorOutput) > 0.01) {
+    if (brakeEnabled && Math.abs(motorOutput) > 0.001) {
       disableBrake();
       outputToMotor(0);
       return;
@@ -140,7 +140,7 @@ public class RotatingArm extends SubsystemBase {
     targetMotorOutput = speed;
   }
 
-  private final LinearFilter outputFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
+  private final LinearFilter outputFilter = LinearFilter.singlePoleIIR(0.3, 0.02);
 
   private void outputToMotor(double output) {
     // TODO: Remove clamp after initial testing
@@ -175,7 +175,7 @@ public class RotatingArm extends SubsystemBase {
 
   /** Get the current angle of the arm. */
   public double getAngle() {
-    return encoder.getPosition();
+    return -encoder.getPosition();
   }
 
   /**
