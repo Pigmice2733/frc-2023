@@ -106,9 +106,9 @@ public final class Constants {
         public static final double maxArmAngleDegrees = 120;
         public static final double minArmAngleDegrees = 3;
 
-        public static final int[] brakePort = {1, 5};
-        public static final double manualUpSpeed = 0.05;
-        public static final double manualDownSpeed = 0.02;
+        public static final int[] brakePort = { 0, 5 };
+        public static final double manualUpSpeed = 0.045;
+        public static final double manualDownSpeed = 0.007;
 
         public static final double manualChangeSetpointSpeed = 0.01;
 

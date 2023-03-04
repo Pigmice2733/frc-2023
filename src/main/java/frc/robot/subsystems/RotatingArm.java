@@ -66,9 +66,8 @@ public class RotatingArm extends SubsystemBase {
 
     driveMotor.restoreFactoryDefaults();
     followMotor.restoreFactoryDefaults();
-    followMotor.follow(driveMotor);
 
-    driveMotor.setInverted(false);
+    driveMotor.setInverted(true);
     followMotor.setInverted(false);
 
     encoder = encoderController.getEncoder(Type.kQuadrature, 8192); // Converts rotatings to
@@ -120,7 +119,10 @@ public class RotatingArm extends SubsystemBase {
     else if (!armController.atSetpoint() && brakeEnabled) disableBrake();
   }
 
-  /** Must always call outputToMotor ONCE and be called periodicly for the linear filter to work correctly*/
+  /**
+   * Must always call outputToMotor ONCE and be called periodicly for the linear
+   * filter to work correctly
+   */
   private void applyClawOutput() {
     double motorOutput = targetMotorOutput;
 
@@ -130,21 +132,21 @@ public class RotatingArm extends SubsystemBase {
     // motorOutput = Math.max(0, motorOutput);
 
     // if (getAngle() > RotatingArmConfig.maxArmAngleDegrees)
-    //   motorOutput = Math.min(0, motorOutput);
+    // motorOutput = Math.min(0, motorOutput);
 
     // if (getAngle() < RotatingArmConfig.minArmAngleDegrees)
-    //   motorOutput = Math.max(0, motorOutput);
+    // motorOutput = Math.max(0, motorOutput);
 
-    if (!brakeEnabled && Math.abs(motorOutput) < 0.01) {
-    enableBrake();
-    outputToMotor(0);
-    return;
+    if (!brakeEnabled && Math.abs(motorOutput) < 0.001) {
+      enableBrake();
+      outputToMotor(0);
+      return;
     }
 
-    if (brakeEnabled && Math.abs(motorOutput) > 0.01) {
-    disableBrake();
-    outputToMotor(0);
-    return;
+    if (brakeEnabled && Math.abs(motorOutput) > 0.001) {
+      disableBrake();
+      outputToMotor(0);
+      return;
     }
 
     if (brakeEnabled) {
@@ -163,7 +165,8 @@ public class RotatingArm extends SubsystemBase {
     targetMotorOutput = speed;
   }
 
-  private final LinearFilter outputFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
+  private final LinearFilter outputFilter = LinearFilter.singlePoleIIR(0.3, 0.02);
+
   private void outputToMotor(double output) {
     // TODO: Remove clamp after initial testing. Clamps to 
     output = MathUtil.clamp(output, -0.1, 0.1);
@@ -171,8 +174,8 @@ public class RotatingArm extends SubsystemBase {
     outputFilter.calculate(output);
     motorOutputEntry.setDouble(output);
 
-    
     driveMotor.set(output * speedMultiplierEntry.getDouble(1));
+    followMotor.set(output * speedMultiplierEntry.getDouble(1));
   }
 
   /**
@@ -197,7 +200,7 @@ public class RotatingArm extends SubsystemBase {
 
   /** Get the current angle of the arm. */
   public double getAngle() {
-    return encoder.getPosition();
+    return -encoder.getPosition();
   }
 
   /**
