@@ -13,6 +13,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxRelativeEncoder.Type;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -92,6 +93,10 @@ public class RotatingArm extends SubsystemBase {
     applyClawOutput();
   }
 
+  /**
+   * Must always call outputToMotor ONCE and be called periodicly for the linear
+   * filter to work correctly
+   */
   private void applyClawOutput() {
     double motorOutput = targetMotorOutput;
 
@@ -113,8 +118,9 @@ public class RotatingArm extends SubsystemBase {
       return;
     }
 
-    if (brakeEnabled && Math.abs(motorOutput) > 0.001) {
+    if (brakeEnabled && Math.abs(motorOutput) > 0.01) {
       disableBrake();
+      outputToMotor(0);
       return;
     }
 
@@ -122,7 +128,6 @@ public class RotatingArm extends SubsystemBase {
       outputToMotor(0);
       return;
     }
-
     outputToMotor(motorOutput);
   }
 
@@ -135,10 +140,15 @@ public class RotatingArm extends SubsystemBase {
     targetMotorOutput = speed;
   }
 
+  private final LinearFilter outputFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
+
   private void outputToMotor(double output) {
     // TODO: Remove clamp after initial testing
     output = MathUtil.clamp(output, -0.1, 0.1);
+
+    outputFilter.calculate(output);
     motorOutputEntry.setDouble(output);
+
     driveMotor.set(output * speedMultiplierEntry.getDouble(1));
     followMotor.set(output * speedMultiplierEntry.getDouble(1));
   }
