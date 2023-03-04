@@ -23,8 +23,11 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class RotatingArm extends SubsystemBase {
   private final CANSparkMax driveMotor = new CANSparkMax(RotatingArmConfig.driveMotorPort, MotorType.kBrushless);
@@ -41,6 +44,7 @@ public class RotatingArm extends SubsystemBase {
   private final RelativeEncoder encoder;
 
   private boolean brakeEnabled = false;
+  private boolean enablingBrake = false;
 
   private double targetMotorOutput = 0;
 
@@ -114,7 +118,9 @@ public class RotatingArm extends SubsystemBase {
 
     if (!brakeEnabled && Math.abs(motorOutput) < 0.001) {
       enableBrake();
-      outputToMotor(0);
+      enablingBrake = true;
+      CommandScheduler.getInstance().schedule(new SequentialCommandGroup(new WaitCommand(0.25), new InstantCommand(() -> outputToMotor(0)),
+      new InstantCommand(() -> enablingBrake = false)));
       return;
     }
 
@@ -128,7 +134,8 @@ public class RotatingArm extends SubsystemBase {
       outputToMotor(0);
       return;
     }
-    outputToMotor(motorOutput);
+    if (!enablingBrake)
+      outputToMotor(motorOutput);
   }
 
   /**
@@ -144,7 +151,7 @@ public class RotatingArm extends SubsystemBase {
 
   private void outputToMotor(double output) {
     // TODO: Remove clamp after initial testing
-    output = MathUtil.clamp(output, -0.1, 0.1);
+    output = MathUtil.clamp(output, 0, 0.1);
 
     outputFilter.calculate(output);
     motorOutputEntry.setDouble(output);
