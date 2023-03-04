@@ -144,7 +144,7 @@ public class Drivetrain extends SubsystemBase {
 
   /** Returns the robot's current pitch in degrees. */
   public double getPitch() {
-    return gyro.getPitch();
+    return -gyro.getPitch();
   }
 
   /** Returns the robot's current roll in degrees. */

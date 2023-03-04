@@ -27,7 +27,7 @@ public class DriveOntoChargeStation extends CommandBase {
 
   @Override
   public void execute() {
-    drivetrain.arcadeDrive((backwards ? -1 : 1) * 0.4, 0);
+    drivetrain.arcadeDrive((backwards ? -1 : 1) * 0.25, 0);
   }
 
   @Override
