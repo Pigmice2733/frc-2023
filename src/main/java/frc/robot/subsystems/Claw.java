@@ -29,8 +29,8 @@ public class Claw extends SubsystemBase {
 
   public Claw() {
     compressor.enableDigital();
-    leftPiston.set(Value.kReverse);
-    rightPiston.set(Value.kForward);
+    leftPiston.set(Value.kForward);
+    rightPiston.set(Value.kReverse);
 
     leftMotor.restoreFactoryDefaults();
     rightMotor.restoreFactoryDefaults();
@@ -40,16 +40,16 @@ public class Claw extends SubsystemBase {
   }
 
   public void closeClaw(boolean stopMotors) {
-    leftPiston.set(Value.kReverse);
-    rightPiston.set(Value.kForward);
+    leftPiston.set(Value.kForward);
+    rightPiston.set(Value.kReverse);
 
     if (stopMotors)
       stopMotors();
   }
 
   public void openClaw(boolean startMotors) {
-    leftPiston.set(Value.kForward);
-    rightPiston.set(Value.kReverse);
+    leftPiston.set(Value.kReverse);
+    rightPiston.set(Value.kForward);
 
     if (startMotors)
       startMotors(false);

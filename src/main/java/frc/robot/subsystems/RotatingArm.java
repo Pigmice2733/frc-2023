@@ -32,7 +32,8 @@ public class RotatingArm extends SubsystemBase {
       MotorType.kBrushed);
 
   private final ShuffleboardTab armTab;
-  private final GenericEntry /* topSwitchEntry, bottomSwitchEntry, */ angleEntry, motorOutputEntry, attemptedOutputEntry, brakeEntry, speedMultiplierEntry;
+  private final GenericEntry /* topSwitchEntry, bottomSwitchEntry, */ angleEntry, motorOutputEntry,
+      attemptedOutputEntry, brakeEntry, speedMultiplierEntry;
 
   private final DoubleSolenoid brake = new DoubleSolenoid(20, PneumaticsModuleType.REVPH,
       RotatingArmConfig.brakePort[0], RotatingArmConfig.brakePort[1]);
@@ -59,9 +60,8 @@ public class RotatingArm extends SubsystemBase {
 
     driveMotor.restoreFactoryDefaults();
     followMotor.restoreFactoryDefaults();
-    followMotor.follow(driveMotor);
 
-    driveMotor.setInverted(false);
+    driveMotor.setInverted(true);
     followMotor.setInverted(false);
 
     encoder = encoderController.getEncoder(Type.kQuadrature, 8192); // Converts rotatings to
@@ -102,20 +102,20 @@ public class RotatingArm extends SubsystemBase {
     attemptedOutputEntry.setDouble(targetMotorOutput);
 
     // if (getAngle() > RotatingArmConfig.maxArmAngleDegrees)
-    //   motorOutput = Math.min(0, motorOutput);
+    // motorOutput = Math.min(0, motorOutput);
 
     // if (getAngle() < RotatingArmConfig.minArmAngleDegrees)
-    //   motorOutput = Math.max(0, motorOutput);
+    // motorOutput = Math.max(0, motorOutput);
 
-    if (!brakeEnabled && Math.abs(motorOutput) < 0.01) {
-    enableBrake();
-    outputToMotor(0);
-    return;
+    if (!brakeEnabled && Math.abs(motorOutput) < 0.001) {
+      enableBrake();
+      outputToMotor(0);
+      return;
     }
 
-    if (brakeEnabled && Math.abs(motorOutput) > 0.01) {
-    disableBrake();
-    return;
+    if (brakeEnabled && Math.abs(motorOutput) > 0.001) {
+      disableBrake();
+      return;
     }
 
     if (brakeEnabled) {
@@ -140,6 +140,7 @@ public class RotatingArm extends SubsystemBase {
     output = MathUtil.clamp(output, -0.1, 0.1);
     motorOutputEntry.setDouble(output);
     driveMotor.set(output * speedMultiplierEntry.getDouble(1));
+    followMotor.set(output * speedMultiplierEntry.getDouble(1));
   }
 
   /**
