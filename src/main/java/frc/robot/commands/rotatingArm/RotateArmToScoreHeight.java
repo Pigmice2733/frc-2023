@@ -4,6 +4,7 @@
 
 package frc.robot.commands.rotatingArm;
 
+import edu.wpi.first.math.estimator.AngleStatistics;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -14,7 +15,7 @@ import frc.robot.subsystems.RotatingArm;
 
 public class RotateArmToScoreHeight extends CommandBase {
   private final RotatingArm arm;
-  private RotateArmToAngleConstant rotateCommand;
+  //private RotateArmToAngleConstant rotateCommand;
 
   public RotateArmToScoreHeight(RotatingArm arm) {
     this.arm = arm;
@@ -71,15 +72,17 @@ public class RotateArmToScoreHeight extends CommandBase {
     } 
 
     //rotateCommand = new RotateArmToAngleConstant(arm, arm.armHeightToAngle(height));
-    rotateCommand = new RotateArmToAngleConstant(arm, targetAngle);
+    //rotateCommand = new RotateArmToAngleConstant(arm, targetAngle);
+    arm.setSetpoint(targetAngle);
   }
 
   @Override
   public boolean isFinished() {
-    if (rotateCommand == null)
-      return true;
+    // if (rotateCommand == null)
+    //   return true;
 
-    return rotateCommand.isFinished();
+    // return rotateCommand.isFinished();
+    return arm.arm
   }
 
   public enum ScoreHeight {

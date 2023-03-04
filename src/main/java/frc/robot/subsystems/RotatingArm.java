@@ -13,6 +13,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxRelativeEncoder.Type;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -33,7 +34,7 @@ public class RotatingArm extends SubsystemBase {
       MotorType.kBrushed);
 
   private final ShuffleboardTab armTab;
-  private final GenericEntry /* topSwitchEntry, bottomSwitchEntry, */ angleEntry, motorOutputEntry, attemptedOutputEntry, brakeEntry, speedMultiplierEntry;
+  private final GenericEntry /* topSwitchEntry, bottomSwitchEntry, */ angleEntry, motorOutputEntry, brakeEntry, speedMultiplierEntry, setpointEntry;
 
   private final DoubleSolenoid brake = new DoubleSolenoid(20, PneumaticsModuleType.REVPH,
       RotatingArmConfig.brakePort[0], RotatingArmConfig.brakePort[1]);
@@ -42,6 +43,8 @@ public class RotatingArm extends SubsystemBase {
   private boolean brakeEnabled = false;
 
   private double targetMotorOutput = 0;
+
+  PIDController armController = new PIDController(0.001, 0, 0);
 
   // private final DigitalInput topLimitSwitch;
   // private final DigitalInput bottomLimitSwitch;
@@ -55,6 +58,9 @@ public class RotatingArm extends SubsystemBase {
   // }
 
   public RotatingArm() {
+    armController.setTolerance(3, 3);
+    armController.setSetpoint(0);
+
     // topLimitSwitch = new DigitalInput(RotatingArmConfig.topLimitSwitchID);
     // bottomLimitSwitch = new DigitalInput(RotatingArmConfig.bottomLimitSwitchID);
 
@@ -74,9 +80,10 @@ public class RotatingArm extends SubsystemBase {
     // bottomSwitchEntry = armTab.add("Bottom Switch", false).getEntry();
     angleEntry = armTab.add("Arm Angle", 0).getEntry();
     motorOutputEntry = armTab.add("Motor Output", 0).getEntry();
-    attemptedOutputEntry = armTab.add("Attempted Output", 0).getEntry();
     brakeEntry = armTab.add("Brake Enabled", false).getEntry();
     speedMultiplierEntry = armTab.add("Speed Multiplier", 1).getEntry();
+    setpointEntry = armTab.add("Setpoint", 0).getEntry();
+
 
     armTab.add(new InstantCommand(() -> setMotorIdleMode(IdleMode.kBrake)).withName("BRAKE MODE"));
     armTab.add(new InstantCommand(() -> setMotorIdleMode(IdleMode.kCoast)).withName("COAST MODE"));
@@ -90,7 +97,27 @@ public class RotatingArm extends SubsystemBase {
   @Override
   public void periodic() {
     updateShuffleboard();
-    applyClawOutput();
+    //applyClawOutput();
+    updateController();
+
+  }
+
+  public void changeSetpoint(double change) {
+    setSetpoint(armController.getSetpoint()+change);
+  }
+  public void setSetpoint(double setpoint) {
+    armController.setSetpoint(setpoint);
+    setpointEntry.setDouble(setpoint);
+  }
+  public boolean atSetpoint() {
+    return armController.atSetpoint();
+  }
+
+  private void updateController() {
+    outputToMotor(armController.calculate(getAngle()));
+
+    if (armController.atSetpoint() && !brakeEnabled) enableBrake();
+    else if (!armController.atSetpoint() && brakeEnabled) disableBrake();
   }
 
   /** Must always call outputToMotor ONCE and be called periodicly for the linear filter to work correctly*/
@@ -101,7 +128,6 @@ public class RotatingArm extends SubsystemBase {
     // motorOutput = Math.min(0, motorOutput);
     // if (getBottomSwitch())
     // motorOutput = Math.max(0, motorOutput);
-    attemptedOutputEntry.setDouble(targetMotorOutput);
 
     // if (getAngle() > RotatingArmConfig.maxArmAngleDegrees)
     //   motorOutput = Math.min(0, motorOutput);
@@ -140,7 +166,7 @@ public class RotatingArm extends SubsystemBase {
   private final LinearFilter outputFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
   private void outputToMotor(double output) {
     // TODO: Remove clamp after initial testing. Clamps to 
-    output = MathUtil.clamp(output, 0, 0.1);
+    output = MathUtil.clamp(output, -0.1, 0.1);
 
     outputFilter.calculate(output);
     motorOutputEntry.setDouble(output);

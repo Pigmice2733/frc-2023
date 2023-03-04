@@ -110,6 +110,8 @@ public final class Constants {
         public static final double manualUpSpeed = 0.05;
         public static final double manualDownSpeed = 0.02;
 
+        public static final double manualChangeSetpointSpeed = 0.01;
+
         public static final double constantUpSpeed = 0.05;
         public static final double constantDownSpeed = 0.02;
 

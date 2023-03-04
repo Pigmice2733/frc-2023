@@ -41,6 +41,7 @@ public class Controls {
     public double getArmRotationSpeed() {
         double joystickValue = operator.getRightTriggerAxis() - operator.getLeftTriggerAxis();
         joystickValue = MathUtil.applyDeadband(joystickValue, threshold);
-        return joystickValue * ((joystickValue > 0) ? RotatingArmConfig.manualUpSpeed : RotatingArmConfig.manualDownSpeed);
+        return joystickValue * RotatingArmConfig.manualChangeSetpointSpeed;
+        //return joystickValue * ((joystickValue > 0) ? RotatingArmConfig.manualUpSpeed : RotatingArmConfig.manualDownSpeed);
     }
 }

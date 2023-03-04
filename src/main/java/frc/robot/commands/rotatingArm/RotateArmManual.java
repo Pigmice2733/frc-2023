@@ -22,6 +22,7 @@ public class RotateArmManual extends CommandBase {
 
   @Override
   public void execute() {
-    arm.setTargetOutput(speed.getAsDouble());
+    //arm.setTargetOutput(speed.getAsDouble());
+    arm.changeSetpoint(speed.getAsDouble());
   }
 }
