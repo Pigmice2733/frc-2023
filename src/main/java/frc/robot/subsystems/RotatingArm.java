@@ -139,8 +139,8 @@ public class RotatingArm extends SubsystemBase {
 
   private final LinearFilter outputFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
   private void outputToMotor(double output) {
-    // TODO: Remove clamp after initial testing
-    output = MathUtil.clamp(output, -0.1, 0.1);
+    // TODO: Remove clamp after initial testing. Clamps to 
+    output = MathUtil.clamp(output, 0, 0.1);
 
     outputFilter.calculate(output);
     motorOutputEntry.setDouble(output);
