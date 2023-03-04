@@ -118,9 +118,13 @@ public class RotatingArm extends SubsystemBase {
 
     if (!brakeEnabled && Math.abs(motorOutput) < 0.001) {
       enableBrake();
-      enablingBrake = true;
-      CommandScheduler.getInstance().schedule(new SequentialCommandGroup(new WaitCommand(0.25), new InstantCommand(() -> outputToMotor(0)),
-      new InstantCommand(() -> enablingBrake = false)));
+      // enablingBrake = true;
+      outputToMotor(0);
+      enableBrake();
+      // CommandScheduler.getInstance()
+      // .schedule(new SequentialCommandGroup(new WaitCommand(0.25), new
+      // InstantCommand(() -> outputToMotor(0)),
+      // new InstantCommand(() -> enablingBrake = false)));
       return;
     }
 
@@ -130,7 +134,7 @@ public class RotatingArm extends SubsystemBase {
       return;
     }
 
-    if (brakeEnabled) {
+    if (brakeEnabled && !enablingBrake) {
       outputToMotor(0);
       return;
     }
@@ -147,17 +151,18 @@ public class RotatingArm extends SubsystemBase {
     targetMotorOutput = speed;
   }
 
-  private final LinearFilter outputFilter = LinearFilter.singlePoleIIR(0.3, 0.02);
+  // private final LinearFilter outputFilter = LinearFilter.singlePoleIIR(0.3,
+  // 0.02);
 
   private void outputToMotor(double output) {
     // TODO: Remove clamp after initial testing
-    output = MathUtil.clamp(output, 0, 0.1);
-
-    outputFilter.calculate(output);
+    // output = MathUtil.clamp(output, 0, 0.5);
+    // output *= speedMultiplierEntry.getDouble(1);
+    // outputFilter.calculate(output);
     motorOutputEntry.setDouble(output);
 
-    driveMotor.set(output * speedMultiplierEntry.getDouble(1));
-    followMotor.set(output * speedMultiplierEntry.getDouble(1));
+    driveMotor.set(output);
+    followMotor.set(output);
   }
 
   /**

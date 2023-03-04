@@ -107,10 +107,10 @@ public final class Constants {
         public static final double minArmAngleDegrees = 3;
 
         public static final int[] brakePort = { 0, 5 };
-        public static final double manualUpSpeed = 0.065;
+        public static final double manualUpSpeed = 0.34;
         public static final double manualDownSpeed = 0.007;
 
-        public static final double constantUpSpeed = 0.2;
+        public static final double constantUpSpeed = 0.36;
         public static final double constantDownSpeed = 0.02;
 
         public static final double armLengthMeters = Units.inchesToMeters(1.0);
@@ -131,7 +131,7 @@ public final class Constants {
         // public static final int leftMotorPort = 8;
         // public static final int rightMotorPort = 9;
 
-        public static final double speedMultipler = 0.1;
+        public static final double speedMultipler = 0.5;
 
         public static final double rotationToDistanceConversion = 1; // ratio of encoder-measured rotations to distance
                                                                      // moved

@@ -37,6 +37,8 @@ public class Claw extends SubsystemBase {
 
     leftMotor.setInverted(false);
     rightMotor.setInverted(true);
+
+    SmartDashboard.putNumber("Output multiplier", 1);
   }
 
   public void closeClaw(boolean stopMotors) {
@@ -56,8 +58,10 @@ public class Claw extends SubsystemBase {
   }
 
   private void outputToMotors(double output) {
+    output *= SmartDashboard.getNumber("Output multiplier", 1);
     leftMotor.set(output);
     rightMotor.set(output);
+    SmartDashboard.putNumber("Claw output", output);
   }
 
   public void startMotors(boolean intakeDirection) {
