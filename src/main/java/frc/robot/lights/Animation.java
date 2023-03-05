@@ -45,7 +45,7 @@ public class Animation {
         images.add(image);
     }
 
-    public void addImage(int[][] buffer) {
+    public void addImage(byte[][] buffer) {
         images.add(new Image(buffer));
     }
 

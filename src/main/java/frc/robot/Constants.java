@@ -29,11 +29,11 @@ public final class Constants {
         public static final int leftFollowPort = 4;
         public static final int rightFollowPort = 2;
 
-        public static final double driveSpeed = .6;
-        public static final double turnSpeed = .3;
+        public static final double driveSpeed = .7;
+        public static final double turnSpeed = .4;
 
         // Multiplied by drive speed when in slow mode
-        public static final double slowMultiplier = 0.25;
+        public static final double slowMultiplier = 0.2;
 
         public static final double gearRatio = 1 / 8.45; // Times motor has to rotate for wheel to rotate once
         public static final double wheelDiameterMeters = Units.inchesToMeters(6);
@@ -88,7 +88,7 @@ public final class Constants {
 
         public static final double autoBalanceAngleThreshold = 5;
         public static final double autoBalanceSpeed = 0.3;
-        public static final double autoBalanceProportional = 0.4;
+        public static final double autoBalanceProportional = 0.3;
 
         public static final double maxTrajectoryVel = 2;
         public static final double maxTrajectoryAcc = 1;
@@ -107,12 +107,10 @@ public final class Constants {
         public static final double minArmAngleDegrees = 3;
 
         public static final int[] brakePort = { 0, 5 };
-        public static final double manualUpSpeed = 0.045;
+        public static final double manualUpSpeed = 0.34;
         public static final double manualDownSpeed = 0.007;
 
-        public static final double manualChangeSetpointSpeed = 0.01;
-
-        public static final double constantUpSpeed = 0.05;
+        public static final double constantUpSpeed = 0.36;
         public static final double constantDownSpeed = 0.02;
 
         public static final double armLengthMeters = Units.inchesToMeters(1.0);
@@ -133,7 +131,7 @@ public final class Constants {
         // public static final int leftMotorPort = 8;
         // public static final int rightMotorPort = 9;
 
-        public static final double speedMultipler = 0.1;
+        public static final double speedMultipler = 0.5;
 
         public static final double rotationToDistanceConversion = 1; // ratio of encoder-measured rotations to distance
                                                                      // moved

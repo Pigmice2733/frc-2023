@@ -24,7 +24,8 @@ public class AutoBalance extends CommandBase {
 
     double proportional = pitch / 15.0;
 
-    double speed = proportional * DrivetrainConfig.autoBalanceProportional + 0.03 * Math.signum(pitch); // was 0.1, 0.07
+    double speed = proportional * DrivetrainConfig.autoBalanceProportional + 0.075 * Math.signum(pitch); // was 0.1,
+                                                                                                         // 0.07
     speed = MathUtil.clamp(speed, -0.5, 0.5);
 
     drivetrain.arcadeDrive(speed, 0);

@@ -1,13 +1,8 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot;
 
 import java.util.List;
 
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -47,14 +42,13 @@ import frc.robot.subsystems.Vision;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
- * Command-based is a "declarative" paradigm, very little robot logic should
- * actually be handled in the {@link Robot} periodic methods (other than the
- * scheduler calls). Instead, the structure of the robot (including subsystems,
+ * 
+ * @@ -53,202 +35,107 @@
  * commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
     private final Drivetrain drivetrain = new Drivetrain();
-    // private final Vision vision = new Vision();
+    private final Vision vision = new Vision();
     private final RotatingArm arm = new RotatingArm();
     private final Claw claw = new Claw();
     // private final LightsPanel lightPanel = new LightsPanel();
@@ -84,7 +78,8 @@ public class RobotContainer {
     }
 
     private void configureDefaultCommands() {
-        drivetrain.setDefaultCommand(new ArcadeDrive(drivetrain, controls::getDriveSpeed, controls::getTurnSpeed));
+        drivetrain.setDefaultCommand(
+                new ArcadeDrive(drivetrain, controls::getDriveSpeed, controls::getTurnSpeed));
         arm.setDefaultCommand(new RotateArmManual(arm, controls::getArmRotationSpeed));
         lightStrip.setDefaultCommand(new RunningColor(lightStrip));
         // lightPanel.setDefaultCommand(new ScrollSponsors(lightPanel));
@@ -93,21 +88,24 @@ public class RobotContainer {
     private void configureAutoChooser() {
         driverTab.addString("FACE TOWARDS GRID", () -> "(do it)");
         List<Command> autoCommands = List.of(
-                new DriveDistancePID(drivetrain, -3).withName("Only Leave Community [Driver Left or Right]"),
-                new BalanceRoutine(drivetrain, true).withName("Only Balance [Center]"),
-                new SequentialCommandGroup(new DriveOntoChargeStation(drivetrain, true),
-                        new DriveOntoChargeStation(drivetrain, true)).withName("Only Leave Community [Center]")
-        // new ScoreAndLeave(drivetrain, arm, claw).withName("Score and Leave [Driver
-        // Left or Right]"),
-        // new ScoreAndBalance(drivetrain, arm, claw).withName("Score and Balance
-        // [Center]"),
-        // new ScoreAndLeaveAndBalance(drivetrain, arm, claw).withName("Score, Leave,
-        // and Balance [Center]"),
-        // new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Right)
-        // .withName("Score, Leave, and Balance [Driver Left]"),
-        // new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Left)
-        // .withName("Score, Leave, and Balance [Driver Right]")
-        );
+            new DriveDistancePID(drivetrain, -4)
+                .withName("Only Leave Community [Driver Left or Right]"),
+            new BalanceRoutine(drivetrain, true)
+                .withName("Only Balance [Center]"),
+            new SequentialCommandGroup(new DriveOntoChargeStation(drivetrain, true)
+                .withName("Drive Onto Charge Station [Center]"),
+            new DriveOntoChargeStation(drivetrain, true))
+                .withName("Only Leave Community [Center]"),
+            new ScoreAndLeave(drivetrain, arm, claw)
+                .withName("Score and Leave [Driver Left or Right]"),
+            new ScoreAndBalance(drivetrain, arm, claw)
+                .withName("Score and Balance[Center]"),
+            new ScoreAndLeaveAndBalance(drivetrain, arm, claw)
+                .withName("Score, Leave,and Balance [Center]"),
+            new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Right)
+                .withName("Score, Leave, and Balance [Driver Left]"),
+            new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Left)
+                .withName("Score, Leave, and Balance [Driver Right]"));
 
         autoChooser = new SendableChooser<Command>();
         driverTab.add("Auto Chooser", autoChooser);
@@ -141,23 +139,24 @@ public class RobotContainer {
                 .onTrue(new InstantCommand(drivetrain::enableSlow))
                 .onFalse(new InstantCommand(drivetrain::disableSlow));
 
-        // /** [driver] Schedule AlignToScore when A is pressed, cancel when released */
-        // final FullyAlign alignCommand = new FullyAlign(drivetrain, vision);
-        // new JoystickButton(driver, Button.kA.value)
-        // .onTrue(alignCommand)
-        // .onFalse(new InstantCommand(() -> {
-        // alignCommand.cancel();
-        // }));
+        /** [driver] Schedule AlignToScore when A is pressed, cancel when released */
+        final FullyAlign alignCommand = new FullyAlign(drivetrain, vision);
+        new JoystickButton(driver, Button.kA.value)
+                .onTrue(alignCommand)
+                .onFalse(new InstantCommand(() -> {
+                    alignCommand.cancel();
+                }));
 
-        // /** [driver] Schedule AlignAndScore when X is pressed, cancel when released
-        // */
-        // final AlignAndScore alignAndScore = new AlignAndScore(vision, drivetrain,
-        // arm, claw);
-        // new JoystickButton(driver, Button.kX.value)
-        // .onTrue(alignAndScore)
-        // .onFalse(new InstantCommand(() -> {
-        // alignAndScore.cancel();
-        // }));
+        /**
+         * [driver] Schedule AlignAndScore when X is pressed, cancel when released
+         */
+        final AlignAndScore alignAndScore = new AlignAndScore(vision, drivetrain,
+                arm, claw);
+        new JoystickButton(driver, Button.kX.value)
+                .onTrue(alignAndScore)
+                .onFalse(new InstantCommand(() -> {
+                    alignAndScore.cancel();
+                }));
 
         final BalanceRoutine autoBalance = new BalanceRoutine(drivetrain);
         new JoystickButton(driver, Button.kB.value)
@@ -172,22 +171,29 @@ public class RobotContainer {
 
         /** [driver] Set the TargetType in RuntimeTrajectoryGenerator with D-pad */
         new POVButton(driver, 0) // up
-                .onTrue(new InstantCommand(() -> RuntimeTrajectoryGenerator.setTargetType(TargetLocation.Center)));
+                .onTrue(new InstantCommand(
+                        () -> RuntimeTrajectoryGenerator.setTargetType(TargetLocation.Center)));
         new POVButton(driver, 90) // right
-                .onTrue(new InstantCommand(() -> RuntimeTrajectoryGenerator.setTargetType(TargetLocation.Right)));
+                .onTrue(new InstantCommand(
+                        () -> RuntimeTrajectoryGenerator.setTargetType(TargetLocation.Right)));
         new POVButton(driver, 270) // left
-                .onTrue(new InstantCommand(() -> RuntimeTrajectoryGenerator.setTargetType(TargetLocation.Left)));
+                .onTrue(new InstantCommand(
+                        () -> RuntimeTrajectoryGenerator.setTargetType(TargetLocation.Left)));
 
         // OPERATOR
         /** [operator] Set the ScoreHeight in ScoreObject with D-pad */
         new POVButton(operator, 0) // up
-                .onTrue(new InstantCommand(() -> RotateArmToScoreHeight.setScoreHeight(ScoreHeight.High)));
+                .onTrue(new InstantCommand(
+                        () -> RotateArmToScoreHeight.setScoreHeight(ScoreHeight.High)));
         new POVButton(operator, 90) // right
-                .onTrue(new InstantCommand(() -> RotateArmToScoreHeight.setScoreHeight(ScoreHeight.Mid)));
+                .onTrue(new InstantCommand(
+                        () -> RotateArmToScoreHeight.setScoreHeight(ScoreHeight.Mid)));
         new POVButton(operator, 270) // left
-                .onTrue(new InstantCommand(() -> RotateArmToScoreHeight.setScoreHeight(ScoreHeight.HumanPlayer)));
+                .onTrue(new InstantCommand(
+                        () -> RotateArmToScoreHeight.setScoreHeight(ScoreHeight.HumanPlayer)));
         new POVButton(operator, 180) // down
-                .onTrue(new InstantCommand(() -> RotateArmToScoreHeight.setScoreHeight(ScoreHeight.Floor)));
+                .onTrue(new InstantCommand(
+                        () -> RotateArmToScoreHeight.setScoreHeight(ScoreHeight.Floor)));
 
         /** [operator] Open Claw */
         new JoystickButton(operator, Button.kRightBumper.value)

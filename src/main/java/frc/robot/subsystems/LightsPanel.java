@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -14,6 +15,7 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lights.Animation;
+import frc.robot.lights.Colors;
 import frc.robot.lights.Image;
 import frc.robot.lights.RGB;
 import frc.robot.lights.Text;
@@ -23,7 +25,7 @@ import frc.robot.lights.Text.TextSequence;
 public class LightsPanel extends SubsystemBase {
     private AddressableLED led;
     private AddressableLEDBuffer led_buffer;
-    private final int LED_PORT = 9;
+    private final int LED_PORT = 1;
     public static final int LED_GRID_W = 16;
     public static final int LED_GRID_LEN = LED_GRID_W * LED_GRID_W;
 
@@ -88,16 +90,30 @@ public class LightsPanel extends SubsystemBase {
         this.displayImage(newImage);
     }
 
-    public void displayGrid(int[][] image) {
+    public void displayGrid(byte[][] image) {
         for (int y = 0; y < image.length; y++) {
             for (int x = 0; x < image[0].length; x++) {
                 int coord = mapCoordinatesToIndex(x, y);
                 if (image[y][x] > 0) {
-                    RGB color = hexToRGB(image[y][x]);
+                    RGB color = Colors.COLORS[image[y][x]]; // hexToRGB(image[y][x]);
                     led_buffer.setRGB(coord, color.getR(), color.getG(), color.getB());
                 } else
                     led_buffer.setRGB(coord, 0, 0, 0);
             }
+        }
+        led.setData(led_buffer);
+    }
+
+    public void displayGrid(BitSet bitSet, byte color) {
+        for (int i = 0; i < LED_GRID_LEN; i++) {
+            int row = i / LED_GRID_W;
+            int col = i % LED_GRID_W;
+            int coord = mapCoordinatesToIndex(col, row);
+            RGB rgb = Colors.COLORS[(int) color];
+            if (bitSet.get(i)) {
+                led_buffer.setRGB(coord, rgb.getR(), rgb.getG(), rgb.getB());
+            } else
+                led_buffer.setRGB(coord, 0, 0, 0);
         }
         led.setData(led_buffer);
     }
@@ -129,14 +145,14 @@ public class LightsPanel extends SubsystemBase {
     public void displayText(String text, int x, int y, int color) {
         TextSequence letters = Text.buildLetters(text);
         int xOffset = 0;
-        for (int[][] image : letters.getLetters()) {
+        for (byte[][] image : letters.getLetters()) {
             for (int y_2 = 0; y_2 < image.length; y_2++) {
                 for (int x_2 = 0; x_2 < image[y_2].length; x_2++) {
                     int coord = mapCoordinatesToIndex(x + x_2 + xOffset, y + y_2);
                     if (coord < 0 || coord >= LED_GRID_LEN)
                         continue;
                     if (image[y_2][x_2] > 0) {
-                        RGB rgb = hexToRGB(color);
+                        RGB rgb = Colors.COLORS[color]; // hexToRGB(color);
                         led_buffer.setRGB(coord, rgb.getR(), rgb.getG(), rgb.getB());
                     }
                 }
@@ -147,28 +163,33 @@ public class LightsPanel extends SubsystemBase {
         led.setData(led_buffer);
     }
 
-    public void scrollText(String text, TextScrollDirection direction, int y, int color, int speed) {
+    public void scrollText(String text, TextScrollDirection direction, int y, byte color, int speed) {
         this.scrollText(text, direction, y, color, speed, 5);
     }
 
-    public void scrollText(String text, TextScrollDirection direction, int y, int color, int speed, int fps) {
+    public void scrollText(String text, TextScrollDirection direction, int y, byte color, int speed, int fps) {
         this.scrollText(text, new Image(), direction, y, color, speed, speed);
     }
 
-    public void scrollText(String text, Image background, TextScrollDirection direction, int y, int color, int speed) {
+    public void scrollText(String text, Image background, TextScrollDirection direction, int y, byte color, int speed) {
         this.scrollText(text, background, direction, y, color, speed, 5);
     }
 
-    public void scrollText(String text, Image background, TextScrollDirection direction, int y, int color, int speed,
+    public void scrollText(String text, Image background, TextScrollDirection direction, int y, byte color, int speed,
             int fps) {
         TextSequence letters = Text.buildLetters(text).setColor(color);
         List<Image> frames = new ArrayList<Image>();
         switch (direction) {
             case LEFT:
                 for (int x = LED_GRID_W; x + letters.getLength() + speed * 2 >= 0; x -= speed) {
-                    Image frame = Image.from(background);
+                    Image frame;
+                    if (background == null)
+                        frame = new Image();
+                    else
+                        frame = Image.from(background);
+
                     int xOffset = 0;
-                    for (int[][] image : letters.getLetters()) {
+                    for (byte[][] image : letters.getLetters()) {
                         frame.imposeGrid(image, x + xOffset, y);
                         xOffset += image[0].length + 1;
                     }
@@ -177,9 +198,14 @@ public class LightsPanel extends SubsystemBase {
                 break;
             case RIGHT:
                 for (int x = -letters.getLength(); x < LED_GRID_W; x += speed) {
-                    Image frame = Image.from(background);
+                    Image frame;
+                    if (background == null)
+                        frame = new Image();
+                    else
+                        frame = Image.from(background);
+
                     int xOffset = 0;
-                    for (int[][] image : letters.getLetters()) {
+                    for (byte[][] image : letters.getLetters()) {
                         frame.imposeGrid(image, x + xOffset, y);
                         xOffset += image[0].length + 1;
                     }

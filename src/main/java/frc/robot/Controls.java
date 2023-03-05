@@ -18,7 +18,8 @@ public class Controls {
         this.operator = operator;
     }
 
-    LinearFilter driveSpeedFilter = LinearFilter.singlePoleIIR(0.15, 0.02);
+    LinearFilter driveSpeedFilter = LinearFilter.singlePoleIIR(0.2, 0.02);
+
     /** Return the left joystick's Y as long as it's over the threshold. */
     public double getDriveSpeed() {
         double joystickValue = driver.getLeftY();
@@ -29,6 +30,7 @@ public class Controls {
     }
 
     LinearFilter turnSpeedFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
+
     /** Return the right joystick's X as long as it's over the threshold. */
     public double getTurnSpeed() {
         double joystickValue = driver.getRightX();
@@ -41,7 +43,7 @@ public class Controls {
     public double getArmRotationSpeed() {
         double joystickValue = operator.getRightTriggerAxis() - operator.getLeftTriggerAxis();
         joystickValue = MathUtil.applyDeadband(joystickValue, threshold);
-        return joystickValue * RotatingArmConfig.manualChangeSetpointSpeed;
-        //return joystickValue * ((joystickValue > 0) ? RotatingArmConfig.manualUpSpeed : RotatingArmConfig.manualDownSpeed);
+        return Math.signum(joystickValue)
+                * ((joystickValue > 0) ? RotatingArmConfig.manualUpSpeed : RotatingArmConfig.manualDownSpeed);
     }
 }

@@ -32,8 +32,8 @@ public class AutoBalanceWithRoll extends CommandBase {
   @Override
   public void execute() {
     double pitch = MathUtil.applyDeadband(drivetrain.getPitch(), 5);
-    double proportionalPitch = pitch / 15.0;
-    double speedPitch = proportionalPitch * DrivetrainConfig.autoBalanceProportional + 0.075 * Math.signum(pitch); // was
+    double proportionalPitch = MathUtil.clamp(pitch / 15.0, -1, 1);
+    double speedPitch = proportionalPitch * DrivetrainConfig.autoBalanceProportional + 0.055 * Math.signum(pitch); // was
                                                                                                                    // 0.1,
                                                                                                                    // 0.07
     speedPitch = MathUtil.clamp(speedPitch, -0.5, 0.5);
