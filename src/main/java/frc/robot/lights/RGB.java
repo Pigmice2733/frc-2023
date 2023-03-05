@@ -1,5 +1,7 @@
 package frc.robot.lights;
 
+import edu.wpi.first.wpilibj.util.Color;
+
 public class RGB {
     private final int[] rgb;
 
@@ -9,6 +11,10 @@ public class RGB {
 
     public RGB(int[] rgb) {
         this.rgb = rgb;
+    }
+
+    public RGB(Color color) {
+        this((int) (color.red * 255), (int) (color.green * 255), (int) (color.blue * 255));
     }
 
     public int[] getRGB() {

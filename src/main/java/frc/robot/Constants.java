@@ -29,11 +29,11 @@ public final class Constants {
         public static final int leftFollowPort = 4;
         public static final int rightFollowPort = 2;
 
-        public static final double driveSpeed = .6;
-        public static final double turnSpeed = .3;
+        public static final double driveSpeed = .7;
+        public static final double turnSpeed = .4;
 
         // Multiplied by drive speed when in slow mode
-        public static final double slowMultiplier = 0.25;
+        public static final double slowMultiplier = 0.2;
 
         public static final double gearRatio = 1 / 8.45; // Times motor has to rotate for wheel to rotate once
         public static final double wheelDiameterMeters = Units.inchesToMeters(6);
@@ -88,7 +88,7 @@ public final class Constants {
 
         public static final double autoBalanceAngleThreshold = 5;
         public static final double autoBalanceSpeed = 0.3;
-        public static final double autoBalanceProportional = 0.4;
+        public static final double autoBalanceProportional = 0.3;
 
         public static final double maxTrajectoryVel = 2;
         public static final double maxTrajectoryAcc = 1;

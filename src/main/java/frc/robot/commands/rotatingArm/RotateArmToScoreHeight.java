@@ -4,7 +4,6 @@
 
 package frc.robot.commands.rotatingArm;
 
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
@@ -22,38 +21,42 @@ public class RotateArmToScoreHeight extends CommandBase {
 
   @Override
   public void initialize() {
-    //double height = 0.0; // meters
+    // double height = 0.0; // meters
 
     TargetLocation targetLocation = RuntimeTrajectoryGenerator.getTargetType();
 
     // Old
-    // if (selectedScoreHeight == ScoreHeight.Mid && targetLocation == TargetLocation.Center) {
-    //   height = Units.inchesToMeters(24.0);
+    // if (selectedScoreHeight == ScoreHeight.Mid && targetLocation ==
+    // TargetLocation.Center) {
+    // height = Units.inchesToMeters(24.0);
     // } // mid cube
-    // else if (selectedScoreHeight == ScoreHeight.Mid && targetLocation != TargetLocation.Center) {
-    //   height = Units.inchesToMeters(36.0);
+    // else if (selectedScoreHeight == ScoreHeight.Mid && targetLocation !=
+    // TargetLocation.Center) {
+    // height = Units.inchesToMeters(36.0);
     // } // mid cone
-    // else if (selectedScoreHeight == ScoreHeight.High && targetLocation == TargetLocation.Center) {
-    //   height = Units.inchesToMeters(36.0);
+    // else if (selectedScoreHeight == ScoreHeight.High && targetLocation ==
+    // TargetLocation.Center) {
+    // height = Units.inchesToMeters(36.0);
     // } // high cube
-    // else if (selectedScoreHeight == ScoreHeight.High && targetLocation != TargetLocation.Center) {
-    //   height = Units.inchesToMeters(38.0);
+    // else if (selectedScoreHeight == ScoreHeight.High && targetLocation !=
+    // TargetLocation.Center) {
+    // height = Units.inchesToMeters(38.0);
     // } // high cone
     // else {
-    //   height = 0;
+    // height = 0;
     // } // floor
 
     // if (selectedScoreHeight == ScoreHeight.Floor) {
-    //   height = Units.inchesToMeters(0.0);
+    // height = Units.inchesToMeters(0.0);
     // } // mid cube
     // if (selectedScoreHeight == ScoreHeight.Mid) {
-    //   height = Units.inchesToMeters(34);
+    // height = Units.inchesToMeters(34);
     // } // mid cube
     // else if (selectedScoreHeight == ScoreHeight.High) {
-    //   height = Units.inchesToMeters(46.0);
+    // height = Units.inchesToMeters(46.0);
     // } // mid cone
     // else if (selectedScoreHeight == ScoreHeight.HumanPlayer) {
-    //   height = Units.inchesToMeters(38.0);
+    // height = Units.inchesToMeters(38.0);
     // } // high cube
 
     double targetAngle = 3;
@@ -62,15 +65,14 @@ public class RotateArmToScoreHeight extends CommandBase {
     }
     if (selectedScoreHeight == ScoreHeight.Mid) {
       targetAngle = 45;
-    }
-    else if (selectedScoreHeight == ScoreHeight.High) {
+    } else if (selectedScoreHeight == ScoreHeight.High) {
       targetAngle = 65;
-    } 
-    else if (selectedScoreHeight == ScoreHeight.HumanPlayer) {
+    } else if (selectedScoreHeight == ScoreHeight.HumanPlayer) {
       targetAngle = 60;
-    } 
+    }
 
-    //rotateCommand = new RotateArmToAngleConstant(arm, arm.armHeightToAngle(height));
+    // rotateCommand = new RotateArmToAngleConstant(arm,
+    // arm.armHeightToAngle(height));
     rotateCommand = new RotateArmToAngleConstant(arm, targetAngle);
   }
 
