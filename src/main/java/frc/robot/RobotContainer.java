@@ -140,31 +140,18 @@ public class RobotContainer {
                 .onFalse(new InstantCommand(drivetrain::disableSlow));
 
         /** [driver] Schedule AlignToScore when A is pressed, cancel when released */
-        final FullyAlign alignCommand = new FullyAlign(drivetrain, vision);
         new JoystickButton(driver, Button.kA.value)
-                .onTrue(alignCommand)
-                .onFalse(new InstantCommand(() -> {
-                    alignCommand.cancel();
-                }));
+                .whileTrue(new FullyAlign(drivetrain, vision));
 
         /**
          * [driver] Schedule AlignAndScore when X is pressed, cancel when released
          */
-        final AlignAndScore alignAndScore = new AlignAndScore(vision, drivetrain,
-                arm, claw);
         new JoystickButton(driver, Button.kX.value)
-                .onTrue(alignAndScore)
-                .onFalse(new InstantCommand(() -> {
-                    alignAndScore.cancel();
-                }));
+                .whileTrue(new AlignAndScore(vision, drivetrain, arm, claw));
 
-        final BalanceRoutine autoBalance = new BalanceRoutine(drivetrain);
         new JoystickButton(driver, Button.kB.value)
-                .onTrue(autoBalance)
-                .onFalse(new InstantCommand(() -> {
-                    autoBalance.cancel();
-                }));
-
+                .whileTrue(new BalanceRoutine(drivetrain));
+                
         /** [driver] Force reset odometry when Start is pressed */
         // new JoystickButton(driver, Button.kStart.value)
         // .onTrue(new InstantCommand(() -> drivetrain.resetOdometry()));
@@ -181,6 +168,7 @@ public class RobotContainer {
                         () -> RuntimeTrajectoryGenerator.setTargetType(TargetLocation.Left)));
 
         // OPERATOR
+        
         /** [operator] Set the ScoreHeight in ScoreObject with D-pad */
         new POVButton(operator, 0) // up
                 .onTrue(new InstantCommand(
