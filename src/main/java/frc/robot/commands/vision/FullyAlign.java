@@ -6,8 +6,8 @@ package frc.robot.commands.vision;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.drivetrain.DriveDistancePID;
-import frc.robot.commands.drivetrain.TurnToAnglePID;
+import frc.robot.commands.drivetrain.autoDrive.DriveDistancePID;
+import frc.robot.commands.drivetrain.autoDrive.TurnToAnglePID;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
 

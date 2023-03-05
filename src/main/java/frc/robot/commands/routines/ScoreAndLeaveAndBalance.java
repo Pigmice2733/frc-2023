@@ -6,12 +6,12 @@ package frc.robot.commands.routines;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RuntimeTrajectoryGenerator.TargetLocation;
-import frc.robot.commands.automated.ScoreObject;
-import frc.robot.commands.drivetrain.DriveDistancePID;
-import frc.robot.commands.drivetrain.DriveOverChargeStation;
-import frc.robot.commands.drivetrain.TurnDegreesPID;
-import frc.robot.commands.rotatingArm.RotateArmToScoreHeight.ScoreHeight;
-import frc.robot.commands.drivetrain.DriveOntoChargeStation;
+import frc.robot.commands.drivetrain.autoDrive.DriveDistancePID;
+import frc.robot.commands.drivetrain.autoDrive.TurnDegreesPID;
+import frc.robot.commands.drivetrain.balance.DriveOntoChargeStation;
+import frc.robot.commands.drivetrain.balance.DriveOverChargeStation;
+import frc.robot.commands.objectManipulation.ScoreObject;
+import frc.robot.commands.rotatingArm.RotateArmToAngle.ArmHeight;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.RotatingArm;
@@ -28,14 +28,14 @@ public class ScoreAndLeaveAndBalance extends SequentialCommandGroup {
   public ScoreAndLeaveAndBalance(Drivetrain drivetrain, RotatingArm arm, Claw claw, TargetLocation startLocation) {
     if (startLocation == TargetLocation.Center) {
     addCommands(
-       new ScoreObject(drivetrain, arm, claw, ScoreHeight.High, true),
+       new ScoreObject(drivetrain, arm, claw, ArmHeight.High, true, true),
         new DriveOntoChargeStation(drivetrain, true),
         new DriveOverChargeStation(drivetrain, true),
         new BalanceRoutine(drivetrain));
     }
     else {
       addCommands(
-          new ScoreObject(drivetrain, arm, claw, ScoreHeight.High, true),
+          new ScoreObject(drivetrain, arm, claw, ArmHeight.High, true, true),
           new DriveDistancePID(drivetrain, -5.6).withTimeout(5),
           new TurnDegreesPID(drivetrain, 40 * ((startLocation == TargetLocation.Left) ? -1.0 : 1.0)).withTimeout(2),
           new BalanceRoutine(drivetrain));

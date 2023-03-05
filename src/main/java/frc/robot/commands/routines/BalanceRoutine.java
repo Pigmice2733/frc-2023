@@ -5,8 +5,8 @@
 package frc.robot.commands.routines;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.drivetrain.AutoBalanceWithRoll;
-import frc.robot.commands.drivetrain.DriveOntoChargeStation;
+import frc.robot.commands.drivetrain.balance.AutoBalanceWithRoll;
+import frc.robot.commands.drivetrain.balance.DriveOntoChargeStation;
 import frc.robot.subsystems.Drivetrain;
 
 public class BalanceRoutine extends SequentialCommandGroup {

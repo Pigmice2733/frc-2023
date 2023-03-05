@@ -16,17 +16,17 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.RuntimeTrajectoryGenerator.TargetLocation;
-import frc.robot.commands.automated.PickUpObjectFromHuman;
-import frc.robot.commands.automated.ScoreObject;
 import frc.robot.commands.claw.SpinIntakeWheels;
-import frc.robot.commands.drivetrain.ArcadeDrive;
-import frc.robot.commands.drivetrain.DriveDistancePID;
-import frc.robot.commands.drivetrain.DriveOntoChargeStation;
+import frc.robot.commands.drivetrain.autoDrive.DriveDistancePID;
+import frc.robot.commands.drivetrain.balance.DriveOntoChargeStation;
+import frc.robot.commands.drivetrain.defaultCommands.ArcadeDrive;
 import frc.robot.commands.lights.panel.ScrollSponsors;
 import frc.robot.commands.lights.strip.RunningColor;
+import frc.robot.commands.objectManipulation.PickUpObject;
+import frc.robot.commands.objectManipulation.ScoreObject;
 import frc.robot.commands.rotatingArm.RotateArmManual;
-import frc.robot.commands.rotatingArm.RotateArmToScoreHeight;
-import frc.robot.commands.rotatingArm.RotateArmToScoreHeight.ScoreHeight;
+import frc.robot.commands.rotatingArm.RotateArmToAngle;
+import frc.robot.commands.rotatingArm.RotateArmToAngle.ArmHeight;
 import frc.robot.commands.routines.BalanceRoutine;
 import frc.robot.commands.routines.ScoreAndBalance;
 import frc.robot.commands.routines.ScoreAndLeave;
@@ -184,16 +184,16 @@ public class RobotContainer {
         /** [operator] Set the ScoreHeight in ScoreObject with D-pad */
         new POVButton(operator, 0) // up
                 .onTrue(new InstantCommand(
-                        () -> RotateArmToScoreHeight.setScoreHeight(ScoreHeight.High)));
+                        () -> RotateArmToAngle.setScoreHeight(ArmHeight.High)));
         new POVButton(operator, 90) // right
                 .onTrue(new InstantCommand(
-                        () -> RotateArmToScoreHeight.setScoreHeight(ScoreHeight.Mid)));
+                        () -> RotateArmToAngle.setScoreHeight(ArmHeight.Mid)));
         new POVButton(operator, 270) // left
                 .onTrue(new InstantCommand(
-                        () -> RotateArmToScoreHeight.setScoreHeight(ScoreHeight.HumanPlayer)));
+                        () -> RotateArmToAngle.setScoreHeight(ArmHeight.HumanPlayer)));
         new POVButton(operator, 180) // down
                 .onTrue(new InstantCommand(
-                        () -> RotateArmToScoreHeight.setScoreHeight(ScoreHeight.Floor)));
+                        () -> RotateArmToAngle.setScoreHeight(ArmHeight.Floor)));
 
         /** [operator] Open Claw */
         new JoystickButton(operator, Button.kRightBumper.value)
@@ -207,21 +207,21 @@ public class RobotContainer {
          * [operator] Schedule ScoreObject when Y is pressed, cancel when released
          */
         new JoystickButton(operator, Button.kY.value)
-                .whileTrue(new ScoreObject(drivetrain, arm, claw));
+                .whileTrue(new ScoreObject(drivetrain, arm, claw, false, false));
 
         /**
-         * [operator] Schedule PickUpObjectFromHuman when A is pressed, cancel when
+         * [operator] Schedule PickUpObject with HumanPlayer height when A is pressed, cancel when
          * released
          */
         new JoystickButton(operator, Button.kA.value)
-                .whileTrue(new PickUpObjectFromHuman(arm, claw, drivetrain));
+                .whileTrue(new PickUpObject(drivetrain, arm, claw, ArmHeight.HumanPlayer, false, false));
 
         /**
          * [operator] Schedule RotateArmToScoreHeight when B is pressed, cancel when
          * released
          */
         new JoystickButton(operator, Button.kB.value)
-                .whileTrue(new RotateArmToScoreHeight(arm));
+                .whileTrue(new RotateArmToAngle(arm));
 
         /**
          * [operator] Schedule SpinIntakeWheels when X is pressed, cancel when

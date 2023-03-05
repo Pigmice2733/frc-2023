@@ -12,6 +12,11 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/Shuffleboard/Drive Info/Auto Chooser": "String Chooser",
+      "/Shuffleboard/armTab/Arm Rotation Controller": "PIDController",
+      "/Shuffleboard/armTab/BRAKE MODE": "Command",
+      "/Shuffleboard/armTab/COAST MODE": "Command",
+      "/Shuffleboard/armTab/Disable Brake": "Command",
+      "/Shuffleboard/armTab/Enable Brake": "Command",
       "/SmartDashboard/Auto Chooser": "String Chooser"
     }
   },
@@ -22,6 +27,9 @@
     "transitory": {
       "Shuffleboard": {
         "Drive Info": {
+          "Auto Chooser": {
+            "open": true
+          },
           "open": true
         },
         "open": true

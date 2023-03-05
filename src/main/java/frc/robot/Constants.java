@@ -19,8 +19,6 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static final double robotHeight = 15.0; // inches
-
     public final static class DrivetrainConfig {
         public static final double axisThreshold = 0.25;
 
@@ -99,8 +97,8 @@ public final class Constants {
     }
 
     public final static class RotatingArmConfig {
-        public static final int driveMotorPort = 5;
-        public static final int followMotorPort = 6;
+        public static final int leftMotorPort = 5;
+        public static final int rightMotorPort = 6;
         public static final int encoderControllerPort = 7;
 
         public static final double maxArmAngleDegrees = 120;
@@ -125,23 +123,6 @@ public final class Constants {
 
         public static final int topLimitSwitchID = 0;
         public static final int bottomLimitSwitchID = 1;
-    }
-
-    public static final class ElevatorConfig {
-        // public static final int leftMotorPort = 8;
-        // public static final int rightMotorPort = 9;
-
-        public static final double speedMultipler = 0.5;
-
-        public static final double rotationToDistanceConversion = 1; // ratio of encoder-measured rotations to distance
-                                                                     // moved
-        public static final double maxHeight = 0.0;
-
-        public static final double kP = 0.0;
-        public static final double kI = 0.0;
-        public static final double kD = 0.0;
-        public static final double maxVelocity = 0.0;
-        public static final double maxAcceleration = 0.0;
     }
 
     public static final class ClawConfig { // BRAKE 0

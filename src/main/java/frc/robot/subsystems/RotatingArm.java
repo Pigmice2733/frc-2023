@@ -16,39 +16,44 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class RotatingArm extends SubsystemBase {
-  private final CANSparkMax driveMotor = new CANSparkMax(RotatingArmConfig.driveMotorPort, MotorType.kBrushless);
-  private final CANSparkMax followMotor = new CANSparkMax(RotatingArmConfig.followMotorPort, MotorType.kBrushless);
+  private final CANSparkMax leftMotor = new CANSparkMax(RotatingArmConfig.leftMotorPort, MotorType.kBrushless);
+  private final CANSparkMax rightMotor = new CANSparkMax(RotatingArmConfig.rightMotorPort, MotorType.kBrushless);
+  
   private final CANSparkMax encoderController = new CANSparkMax(RotatingArmConfig.encoderControllerPort,
       MotorType.kBrushed);
 
   private final ShuffleboardTab armTab;
-  private final GenericEntry /* topSwitchEntry, bottomSwitchEntry, */ angleEntry, motorOutputEntry, brakeEntry, speedMultiplierEntry, setpointEntry;
+  private final GenericEntry /* topSwitchEntry, bottomSwitchEntry, */ angleEntry, targetOutputEntry, motorOutputEntry, brakeEntry, setpointEntry;
 
   private final DoubleSolenoid brake = new DoubleSolenoid(20, PneumaticsModuleType.REVPH,
       RotatingArmConfig.brakePort[0], RotatingArmConfig.brakePort[1]);
   private final RelativeEncoder encoder;
 
   private boolean brakeEnabled = false;
-  private boolean enablingBrake = false;
 
   private double targetMotorOutput = 0;
 
-  PIDController armController = new PIDController(0.001, 0, 0);
+  PIDController armController = new PIDController(RotatingArmConfig.kP, RotatingArmConfig.kI, RotatingArmConfig.kD);
+
+  public void changeSetpoint(double change) {
+    setSetpoint(armController.getSetpoint() + change);
+  }
+  public void setSetpoint(double setpoint) {
+    armController.setSetpoint(setpoint);
+    setpointEntry.setDouble(setpoint);
+  }
+  public boolean atSetpoint() {
+    return armController.atSetpoint();
+  }
 
   // private final DigitalInput topLimitSwitch;
   // private final DigitalInput bottomLimitSwitch;
@@ -68,11 +73,11 @@ public class RotatingArm extends SubsystemBase {
     // topLimitSwitch = new DigitalInput(RotatingArmConfig.topLimitSwitchID);
     // bottomLimitSwitch = new DigitalInput(RotatingArmConfig.bottomLimitSwitchID);
 
-    driveMotor.restoreFactoryDefaults();
-    followMotor.restoreFactoryDefaults();
+    leftMotor.restoreFactoryDefaults();
+    rightMotor.restoreFactoryDefaults();
 
-    driveMotor.setInverted(true);
-    followMotor.setInverted(false);
+    leftMotor.setInverted(true);
+    rightMotor.setInverted(false);
 
     encoder = encoderController.getEncoder(Type.kQuadrature, 8192); // Converts rotatings to
     encoder.setPositionConversionFactor(360); // degrees
@@ -82,19 +87,20 @@ public class RotatingArm extends SubsystemBase {
     // topSwitchEntry = armTab.add("Top Switch", false).getEntry();
     // bottomSwitchEntry = armTab.add("Bottom Switch", false).getEntry();
     angleEntry = armTab.add("Arm Angle", 0).getEntry();
+    brakeEntry = armTab.add("Brake Enabled", brakeEnabled).getEntry();
     motorOutputEntry = armTab.add("Motor Output", 0).getEntry();
-    brakeEntry = armTab.add("Brake Enabled", false).getEntry();
-    speedMultiplierEntry = armTab.add("Speed Multiplier", 1).getEntry();
+    targetOutputEntry = armTab.add("Target Output", 0).getEntry();
+    
     setpointEntry = armTab.add("Setpoint", 0).getEntry();
 
-
+    setMotorIdleMode(IdleMode.kCoast);
     armTab.add(new InstantCommand(() -> setMotorIdleMode(IdleMode.kBrake)).withName("BRAKE MODE"));
     armTab.add(new InstantCommand(() -> setMotorIdleMode(IdleMode.kCoast)).withName("COAST MODE"));
 
     armTab.add(new InstantCommand(() -> enableBrake()).withName("Enable Brake"));
     armTab.add(new InstantCommand(() -> disableBrake()).withName("Disable Brake"));
 
-    setMotorIdleMode(IdleMode.kCoast);
+    armTab.add("Arm Rotation Controller", armController);
   }
 
   @Override
@@ -102,31 +108,30 @@ public class RotatingArm extends SubsystemBase {
     updateShuffleboard();
     //applyClawOutput();
     updateController();
-
-  }
-
-  public void changeSetpoint(double change) {
-    setSetpoint(armController.getSetpoint()+change);
-  }
-  public void setSetpoint(double setpoint) {
-    armController.setSetpoint(setpoint);
-    setpointEntry.setDouble(setpoint);
-  }
-  public boolean atSetpoint() {
-    return armController.atSetpoint();
-  }
-
-  private void updateController() {
-    outputToMotor(armController.calculate(getAngle()));
-
-    if (armController.atSetpoint() && !brakeEnabled) enableBrake();
-    else if (!armController.atSetpoint() && brakeEnabled) disableBrake();
   }
 
   /**
-   * Must always call outputToMotor ONCE and be called periodicly for the linear
-   * filter to work correctly
-   */
+  * Must always call outputToMotor ONCE and be called periodicly for the linear
+  * filter to work correctly
+  */
+  private void updateController() {
+    double motorOutput = armController.calculate(getAngle());
+    targetOutputEntry.setDouble(motorOutput);
+
+    if (getAngle() > RotatingArmConfig.maxArmAngleDegrees) // Upper software stop
+      motorOutput = Math.min(0, motorOutput);
+    if (getAngle() < RotatingArmConfig.minArmAngleDegrees) // Lower software stop
+      motorOutput = Math.max(0, motorOutput);
+
+    if (armController.atSetpoint() && !brakeEnabled) enableBrake();
+    else if (!armController.atSetpoint() && brakeEnabled) disableBrake();
+
+    if (brakeEnabled)
+      motorOutput = 0;
+
+    outputToMotor(motorOutput);
+  }
+
   private void applyClawOutput() {
     double motorOutput = targetMotorOutput;
 
@@ -135,21 +140,15 @@ public class RotatingArm extends SubsystemBase {
     // if (getBottomSwitch())
     // motorOutput = Math.max(0, motorOutput);
 
-    // if (getAngle() > RotatingArmConfig.maxArmAngleDegrees)
-    // motorOutput = Math.min(0, motorOutput);
+    if (getAngle() > RotatingArmConfig.maxArmAngleDegrees)
+      motorOutput = Math.min(0, motorOutput);
 
-    // if (getAngle() < RotatingArmConfig.minArmAngleDegrees)
-    // motorOutput = Math.max(0, motorOutput);
+    if (getAngle() < RotatingArmConfig.minArmAngleDegrees)
+      motorOutput = Math.max(0, motorOutput);
 
     if (!brakeEnabled && Math.abs(motorOutput) < 0.001) {
       enableBrake();
-      // enablingBrake = true;
       outputToMotor(0);
-      enableBrake();
-      // CommandScheduler.getInstance()
-      // .schedule(new SequentialCommandGroup(new WaitCommand(0.25), new
-      // InstantCommand(() -> outputToMotor(0)),
-      // new InstantCommand(() -> enablingBrake = false)));
       return;
     }
 
@@ -159,12 +158,12 @@ public class RotatingArm extends SubsystemBase {
       return;
     }
 
-    if (brakeEnabled && !enablingBrake) {
+    if (brakeEnabled) {
       outputToMotor(0);
       return;
     }
-    if (!enablingBrake)
-      outputToMotor(motorOutput);
+
+    outputToMotor(motorOutput);
   }
 
   /**
@@ -183,8 +182,8 @@ public class RotatingArm extends SubsystemBase {
     outputFilter.calculate(output);
     motorOutputEntry.setDouble(output);
 
-    driveMotor.set(output);
-    followMotor.set(output);
+    leftMotor.set(output);
+    rightMotor.set(output);
   }
 
   /**
@@ -238,7 +237,7 @@ public class RotatingArm extends SubsystemBase {
   }
 
   public void setMotorIdleMode(IdleMode mode) {
-    driveMotor.setIdleMode(mode);
-    followMotor.setIdleMode(mode);
+    leftMotor.setIdleMode(mode);
+    rightMotor.setIdleMode(mode);
   }
 }
