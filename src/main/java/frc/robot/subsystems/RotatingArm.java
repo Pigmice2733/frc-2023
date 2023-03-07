@@ -27,15 +27,17 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class RotatingArm extends SubsystemBase {
   private final CANSparkMax leftMotor = new CANSparkMax(RotatingArmConfig.leftMotorPort, MotorType.kBrushless);
   private final CANSparkMax rightMotor = new CANSparkMax(RotatingArmConfig.rightMotorPort, MotorType.kBrushless);
-  
+
   private final CANSparkMax encoderController = new CANSparkMax(RotatingArmConfig.encoderControllerPort,
       MotorType.kBrushed);
 
   private final ShuffleboardTab armTab;
-  private final GenericEntry /* topSwitchEntry, bottomSwitchEntry, */ angleEntry, targetOutputEntry, motorOutputEntry, brakeEntry, setpointEntry;
+  private final GenericEntry /* topSwitchEntry, bottomSwitchEntry, */ angleEntry, targetOutputEntry, motorOutputEntry,
+      brakeEntry, setpointEntry;
 
-  private final DoubleSolenoid brake = new DoubleSolenoid(20, PneumaticsModuleType.REVPH,
-      RotatingArmConfig.brakePort[0], RotatingArmConfig.brakePort[1]);
+  // private final DoubleSolenoid brake = new DoubleSolenoid(20,
+  // PneumaticsModuleType.REVPH,
+  // RotatingArmConfig.brakePort[0], RotatingArmConfig.brakePort[1]);
   private final RelativeEncoder encoder;
 
   private boolean brakeEnabled = false;
@@ -47,10 +49,12 @@ public class RotatingArm extends SubsystemBase {
   public void changeSetpoint(double change) {
     setSetpoint(armController.getSetpoint() + change);
   }
+
   public void setSetpoint(double setpoint) {
     armController.setSetpoint(setpoint);
     setpointEntry.setDouble(setpoint);
   }
+
   public boolean atSetpoint() {
     return armController.atSetpoint();
   }
@@ -90,7 +94,7 @@ public class RotatingArm extends SubsystemBase {
     brakeEntry = armTab.add("Brake Enabled", brakeEnabled).getEntry();
     motorOutputEntry = armTab.add("Motor Output", 0).getEntry();
     targetOutputEntry = armTab.add("Target Output", 0).getEntry();
-    
+
     setpointEntry = armTab.add("Setpoint", 0).getEntry();
 
     setMotorIdleMode(IdleMode.kCoast);
@@ -106,14 +110,14 @@ public class RotatingArm extends SubsystemBase {
   @Override
   public void periodic() {
     updateShuffleboard();
-    //applyClawOutput();
+    // applyClawOutput();
     updateController();
   }
 
   /**
-  * Must always call outputToMotor ONCE and be called periodicly for the linear
-  * filter to work correctly
-  */
+   * Must always call outputToMotor ONCE and be called periodicly for the linear
+   * filter to work correctly
+   */
   private void updateController() {
     double motorOutput = armController.calculate(getAngle());
     targetOutputEntry.setDouble(motorOutput);
@@ -123,8 +127,10 @@ public class RotatingArm extends SubsystemBase {
     if (getAngle() < RotatingArmConfig.minArmAngleDegrees) // Lower software stop
       motorOutput = Math.max(0, motorOutput);
 
-    if (armController.atSetpoint() && !brakeEnabled) enableBrake();
-    else if (!armController.atSetpoint() && brakeEnabled) disableBrake();
+    if (armController.atSetpoint() && !brakeEnabled)
+      enableBrake();
+    else if (!armController.atSetpoint() && brakeEnabled)
+      disableBrake();
 
     if (brakeEnabled)
       motorOutput = 0;
@@ -183,7 +189,7 @@ public class RotatingArm extends SubsystemBase {
     motorOutputEntry.setDouble(output);
 
     leftMotor.set(output);
-    rightMotor.set(output);
+    // rightMotor.set(output);
   }
 
   /**
@@ -220,14 +226,14 @@ public class RotatingArm extends SubsystemBase {
   }
 
   public void enableBrake() {
-    brake.set(Value.kForward);
+    // brake.set(Value.kForward);
     outputToMotor(0);
     brakeEnabled = true;
     brakeEntry.setBoolean(true);
   }
 
   public void disableBrake() {
-    brake.set(Value.kReverse);
+    // brake.set(Value.kReverse);
     brakeEntry.setBoolean(false);
     brakeEnabled = false;
   }

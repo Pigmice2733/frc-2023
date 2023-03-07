@@ -11,14 +11,19 @@ import frc.robot.subsystems.RotatingArm;
 
 public class RotateArmToAngle extends CommandBase {
   private final RotatingArm arm;
-  private final double targetAngle;
+  private double targetAngle;
+  private boolean useSelectedHeight;
 
   public RotateArmToAngle(RotatingArm arm) {
-    this(arm, selectedScoreHeight);
+    this.arm = arm;
+    useSelectedHeight = true;
   }
+
   public RotateArmToAngle(RotatingArm arm, ArmHeight height) {
-    this(arm, scoreHeightToAngle(height));
+    this.arm = arm;
+    targetAngle = scoreHeightToAngle(height);
   }
+
   public RotateArmToAngle(RotatingArm arm, double angle) {
     this.arm = arm;
     this.targetAngle = angle;
@@ -26,6 +31,8 @@ public class RotateArmToAngle extends CommandBase {
 
   @Override
   public void initialize() {
+    if (useSelectedHeight)
+      targetAngle = scoreHeightToAngle(selectedScoreHeight);
     arm.setSetpoint(targetAngle);
   }
 
@@ -42,7 +49,7 @@ public class RotateArmToAngle extends CommandBase {
   }
 
   public static double scoreHeightToAngle(ArmHeight scoreHeight) {
-    switch(scoreHeight) {
+    switch (scoreHeight) {
       case Floor:
         return 5;
       case Mid:
