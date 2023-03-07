@@ -4,30 +4,40 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.math.system.plant.LinearSystemId.identifyDrivetrainSystem;
+
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.controller.DifferentialDriveAccelerationLimiter;
+import edu.wpi.first.math.controller.DifferentialDriveFeedforward;
+import edu.wpi.first.math.controller.DifferentialDriveWheelVoltages;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.numbers.N2;
+import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.DrivetrainConfig;
 import frc.robot.Constants.ShuffleboardConfig;
 
 public class Drivetrain extends SubsystemBase {
   GenericEntry xPosEntry;
 
-  private final GenericEntry yPosEntry, headingEntry, leftOutputEntry, rightOutputEntry;
+  private final GenericEntry yPosEntry, headingEntry, leftOutputEntry, rightOutputEntry, voltageEntry;
 
   private final CANSparkMax leftDrive = new CANSparkMax(DrivetrainConfig.leftDrivePort, MotorType.kBrushless);
   private final CANSparkMax rightDrive = new CANSparkMax(DrivetrainConfig.rightDrivePort, MotorType.kBrushless);
@@ -35,15 +45,37 @@ public class Drivetrain extends SubsystemBase {
   private final CANSparkMax leftFollow = new CANSparkMax(DrivetrainConfig.leftFollowPort, MotorType.kBrushless);
   private final CANSparkMax rightFollow = new CANSparkMax(DrivetrainConfig.rightFollowPort, MotorType.kBrushless);
 
+  private final MotorControllerGroup leftGroup = new MotorControllerGroup(leftDrive, leftFollow);
+  private final MotorControllerGroup rightGroup = new MotorControllerGroup(rightDrive, rightFollow);
+
+  // private final DifferentialDrive differentialDrive = new
+  // DifferentialDrive(leftGroup, rightGroup);
+
+  private DifferentialDriveWheelSpeeds lastSpeeds = new DifferentialDriveWheelSpeeds();
+
   private final AHRS gyro = new AHRS();
+
+  private LinearSystem<N2, N2, N2> drivetrainModel = identifyDrivetrainSystem(
+      DrivetrainConfig.Feedforward.Linear.kV,
+      DrivetrainConfig.Feedforward.Linear.kA,
+      DrivetrainConfig.Feedforward.Angular.kV,
+      DrivetrainConfig.Feedforward.Angular.kA);
 
   private final DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(
       DrivetrainConfig.drivetrainWidthMeters);
   private final DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(new Rotation2d(), 0, 0,
       new Pose2d());
 
-  private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(DrivetrainConfig.kS,
-      DrivetrainConfig.kV, DrivetrainConfig.kA);
+  private final DifferentialDriveAccelerationLimiter accelerationLimiter = new DifferentialDriveAccelerationLimiter(
+      drivetrainModel,
+      DrivetrainConfig.drivetrainWidthMeters,
+      DrivetrainConfig.maxAccelerationMetersPerSecondSquared,
+      DrivetrainConfig.maxAngularAccelerationRadiansPerSecondSquared);
+
+  private final DifferentialDriveFeedforward feedforward = new DifferentialDriveFeedforward(
+      DrivetrainConfig.Feedforward.Linear.kV, DrivetrainConfig.Feedforward.Linear.kA,
+      DrivetrainConfig.Feedforward.Angular.kV, DrivetrainConfig.Feedforward.Angular.kA,
+      DrivetrainConfig.drivetrainWidthMeters);
 
   private Pose2d pose = new Pose2d();
 
@@ -59,14 +91,28 @@ public class Drivetrain extends SubsystemBase {
 
     enableBrakeMode();
 
-    leftFollow.follow(leftDrive);
-    rightFollow.follow(rightDrive);
+    // leftFollow.follow(leftDrive);
+    // rightFollow.follow(rightDrive);
 
-    leftDrive.setInverted(false);
-    rightDrive.setInverted(true);
+    // rightDrive.setInverted(true);
+
+    leftGroup.setInverted(true);
 
     leftDrive.getEncoder().setPositionConversionFactor(DrivetrainConfig.rotationToDistanceConversion);
     rightDrive.getEncoder().setPositionConversionFactor(DrivetrainConfig.rotationToDistanceConversion);
+    leftDrive.getEncoder().setVelocityConversionFactor(DrivetrainConfig.rotationToDistanceConversion);
+    rightDrive.getEncoder().setVelocityConversionFactor(DrivetrainConfig.rotationToDistanceConversion);
+
+    try {
+      Thread.sleep(200);
+      leftDrive.burnFlash();
+      rightDrive.burnFlash();
+      leftFollow.burnFlash();
+      rightFollow.burnFlash();
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
 
     ShuffleboardTab driveTab = Shuffleboard.getTab("Drivetrain");
 
@@ -76,6 +122,8 @@ public class Drivetrain extends SubsystemBase {
 
     leftOutputEntry = driveTab.add("Left Output", 0).getEntry();
     rightOutputEntry = driveTab.add("Right Output", 0).getEntry();
+
+    voltageEntry = driveTab.add("Left Voltage", 0).getEntry();
 
     resetOdometry();
   }
@@ -172,7 +220,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   /** Returns the feedforward object used by the drivetrain. */
-  public SimpleMotorFeedforward getFeedForward() {
+  public DifferentialDriveFeedforward getFeedForward() {
     return feedforward;
   }
 
@@ -237,10 +285,58 @@ public class Drivetrain extends SubsystemBase {
    * @param turn    turn speed (clockwise is positive)
    */
   public void arcadeDrive(double forward, double turn) {
-    double left = forward + turn;
-    double right = forward - turn;
+    driveLimitedChassisSpeeds(new ChassisSpeeds(forward, 0, turn));
+  }
 
-    updateOutputs(left, right);
+  public void driveWheelSpeeds(DifferentialDriveWheelSpeeds wheelSpeeds) {
+    driveVoltages(feedforward.calculate(lastSpeeds.leftMetersPerSecond, wheelSpeeds.leftMetersPerSecond,
+        lastSpeeds.rightMetersPerSecond, wheelSpeeds.rightMetersPerSecond, 20.0 / 1000.0));
+    lastSpeeds = wheelSpeeds;
+  }
+
+  public void driveLimitedWheelSpeeds(DifferentialDriveWheelSpeeds wheelSpeeds) {
+    driveLimitedVoltages(feedforward.calculate(lastSpeeds.leftMetersPerSecond, wheelSpeeds.leftMetersPerSecond,
+        lastSpeeds.rightMetersPerSecond, wheelSpeeds.rightMetersPerSecond, 20.0 / 1000.0));
+    lastSpeeds = wheelSpeeds;
+  }
+
+  public void driveLimitedVoltages(DifferentialDriveWheelVoltages voltages) {
+    // double leftRate = leftDrive.getEncoder().getVelocity();
+    // double rightRate = rightDrive.getEncoder().getVelocity();
+    DifferentialDriveWheelSpeeds speeds = getWheelSpeeds();
+    // System.out.println("BEFORE VOLTAGES: " + voltages.left + " | " +
+    // voltages.right);
+
+    // voltages = accelerationLimiter.calculate(speeds.leftMetersPerSecond,
+    // speeds.rightMetersPerSecond, voltages.left,
+    // voltages.right);
+    System.out
+        .println("LEFT MPS: " + leftDrive.getEncoder().getVelocity() + " | RIGHT MPS: "
+            + rightDrive.getEncoder().getVelocity());
+    // System.out.println("AFTER VOLTAGES: " + voltages.left + " | " +
+    // voltages.right);
+    driveVoltages(voltages);
+  }
+
+  public void driveVoltages(double leftVoltage, double rightVoltage) {
+    // voltageEntry.setDouble(leftVoltage);
+
+    leftGroup.setVoltage(leftVoltage);
+    rightGroup.setVoltage(rightVoltage);
+  }
+
+  public void driveVoltages(DifferentialDriveWheelVoltages voltages) {
+    driveVoltages(voltages.left, voltages.right);
+  }
+
+  public void driveChassisSpeeds(ChassisSpeeds speeds) {
+    DifferentialDriveWheelSpeeds wheelSpeeds = kinematics.toWheelSpeeds(speeds);
+    driveWheelSpeeds(wheelSpeeds);
+  }
+
+  public void driveLimitedChassisSpeeds(ChassisSpeeds speeds) {
+    DifferentialDriveWheelSpeeds wheelSpeeds = kinematics.toWheelSpeeds(speeds);
+    driveLimitedWheelSpeeds(wheelSpeeds);
   }
 
   public void stop() {
@@ -264,7 +360,6 @@ public class Drivetrain extends SubsystemBase {
 
     leftDrive.set(left * outputFactor);
     rightDrive.set(right * outputFactor);
-
     if (ShuffleboardConfig.drivetrainPrintsEnabled) {
       leftOutputEntry.setDouble(left);
       rightOutputEntry.setDouble(right);
