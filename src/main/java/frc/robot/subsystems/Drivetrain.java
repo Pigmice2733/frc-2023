@@ -37,7 +37,8 @@ import frc.robot.Constants.ShuffleboardConfig;
 public class Drivetrain extends SubsystemBase {
   GenericEntry xPosEntry;
 
-  private final GenericEntry yPosEntry, headingEntry, leftOutputEntry, rightOutputEntry, voltageEntry;
+  private final GenericEntry yPosEntry, headingEntry, leftOutputEntry, rightOutputEntry, motorVeloEntry, navXVeloEntry,
+      leftVoltageEntry, rightVoltageEntry;
 
   private final CANSparkMax leftDrive = new CANSparkMax(DrivetrainConfig.leftDrivePort, MotorType.kBrushless);
   private final CANSparkMax rightDrive = new CANSparkMax(DrivetrainConfig.rightDrivePort, MotorType.kBrushless);
@@ -100,19 +101,10 @@ public class Drivetrain extends SubsystemBase {
 
     leftDrive.getEncoder().setPositionConversionFactor(DrivetrainConfig.rotationToDistanceConversion);
     rightDrive.getEncoder().setPositionConversionFactor(DrivetrainConfig.rotationToDistanceConversion);
-    leftDrive.getEncoder().setVelocityConversionFactor(DrivetrainConfig.rotationToDistanceConversion);
-    rightDrive.getEncoder().setVelocityConversionFactor(DrivetrainConfig.rotationToDistanceConversion);
-
-    try {
-      Thread.sleep(200);
-      leftDrive.burnFlash();
-      rightDrive.burnFlash();
-      leftFollow.burnFlash();
-      rightFollow.burnFlash();
-    } catch (InterruptedException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+    // velocity is in RPM, so to find MPS we must linearize and divide by 60
+    leftDrive.getEncoder().setVelocityConversionFactor(DrivetrainConfig.rotationToDistanceConversion / 60);
+    rightDrive.getEncoder().setVelocityConversionFactor(DrivetrainConfig.rotationToDistanceConversion / 60);
+    // leftDrive.getEncoder().setInverted(true);
 
     ShuffleboardTab driveTab = Shuffleboard.getTab("Drivetrain");
 
@@ -123,7 +115,10 @@ public class Drivetrain extends SubsystemBase {
     leftOutputEntry = driveTab.add("Left Output", 0).getEntry();
     rightOutputEntry = driveTab.add("Right Output", 0).getEntry();
 
-    voltageEntry = driveTab.add("Left Voltage", 0).getEntry();
+    motorVeloEntry = driveTab.add("Motor Velocity", 0).getEntry();
+    navXVeloEntry = driveTab.add("NavX Velocity", 0).getEntry();
+    leftVoltageEntry = driveTab.add("Left Voltage", 0).getEntry();
+    rightVoltageEntry = driveTab.add("Right Voltage", 0).getEntry();
 
     resetOdometry();
   }
@@ -204,7 +199,7 @@ public class Drivetrain extends SubsystemBase {
    * Returns a DifferentialDriveWheelSpeeds object from the encoder velocities.
    */
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-    double left = leftDrive.getEncoder().getVelocity();
+    double left = -leftDrive.getEncoder().getVelocity();
     double right = rightDrive.getEncoder().getVelocity();
 
     return new DifferentialDriveWheelSpeeds(left, right);
@@ -303,16 +298,21 @@ public class Drivetrain extends SubsystemBase {
   public void driveLimitedVoltages(DifferentialDriveWheelVoltages voltages) {
     // double leftRate = leftDrive.getEncoder().getVelocity();
     // double rightRate = rightDrive.getEncoder().getVelocity();
-    DifferentialDriveWheelSpeeds speeds = getWheelSpeeds();
     // System.out.println("BEFORE VOLTAGES: " + voltages.left + " | " +
     // voltages.right);
 
-    // voltages = accelerationLimiter.calculate(speeds.leftMetersPerSecond,
-    // speeds.rightMetersPerSecond, voltages.left,
-    // voltages.right);
-    System.out
-        .println("LEFT MPS: " + leftDrive.getEncoder().getVelocity() + " | RIGHT MPS: "
-            + rightDrive.getEncoder().getVelocity());
+    DifferentialDriveWheelSpeeds speeds = getWheelSpeeds();
+
+    voltages = accelerationLimiter.calculate(speeds.leftMetersPerSecond,
+        speeds.rightMetersPerSecond, voltages.left,
+        voltages.right);
+    motorVeloEntry
+        .setDouble(
+            (Math.abs(speeds.leftMetersPerSecond) +
+                Math.abs(speeds.rightMetersPerSecond)) / 2d);
+    navXVeloEntry.setDouble(this.gyro.getVelocityY());
+    leftVoltageEntry.setDouble(voltages.left);
+    rightVoltageEntry.setDouble(voltages.right);
     // System.out.println("AFTER VOLTAGES: " + voltages.left + " | " +
     // voltages.right);
     driveVoltages(voltages);

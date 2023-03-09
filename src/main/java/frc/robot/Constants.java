@@ -22,29 +22,30 @@ public final class Constants {
     public final static class DrivetrainConfig {
         public static final double axisThreshold = 0.25;
 
-        public static final double maxAccelerationMetersPerSecondSquared = 0.9;
-        public static final double maxAngularAccelerationRadiansPerSecondSquared = 2;
+        public static final double maxAccelerationMetersPerSecondSquared = 8.0;
+        public static final double maxAngularAccelerationRadiansPerSecondSquared = 15;
 
-        public static final int leftDrivePort = 3;
-        public static final int rightDrivePort = 1;
-        public static final int leftFollowPort = 4;
-        public static final int rightFollowPort = 2;
+        public static final int leftDrivePort = 4;
+        public static final int rightDrivePort = 2;
+        public static final int leftFollowPort = 3;
+        public static final int rightFollowPort = 1;
 
-        public static final double driveSpeed = .7;
-        public static final double turnSpeed = .4;
+        public static final double driveSpeed = 2.0;
+        public static final double turnSpeed = .8;
 
         // Multiplied by drive speed when in slow mode
         public static final double slowMultiplier = 0.2;
 
-        public static final double gearRatio = 1.0 / 12.75; // Times motor has to rotate for wheel to rotate once
+        public static final double gearRatio = 1.0 / 8.45; // Times motor has to rotate for wheel to rotate once
         public static final double wheelDiameterMeters = Units.inchesToMeters(6);
         public static final double rotationToDistanceConversion = (Math.PI * wheelDiameterMeters) * gearRatio; // Encoder
         // rotations
         // to
         // distance
         // moved
-        public static final double drivetrainWidthMeters = Units.inchesToMeters(24); // Distance between left and right
-                                                                                     // wheels in meters
+        public static final double drivetrainWidthMeters = Units.inchesToMeters(22.939); // Distance between left and
+                                                                                         // right
+                                                                                         // wheels in meters
 
         public static final double constantDriveDistSpeed = 0.2;
 
@@ -102,8 +103,9 @@ public final class Constants {
             }
 
             public static class Angular {
-                public static final double kV = 2.4706; // TODO change this
-                public static final double kA = 0.2166;
+                public static final double kS = 0.28991; // TODO change this
+                public static final double kV = 3.097;
+                public static final double kA = 0.32243;
             }
         }
     }
