@@ -15,7 +15,6 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxRelativeEncoder.Type;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -23,12 +22,10 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class RotatingArm extends SubsystemBase {
@@ -50,7 +47,7 @@ public class RotatingArm extends SubsystemBase {
 
   private double targetMotorOutput = 0;
 
-  ProfiledPIDController armController = new ProfiledPIDController(0.019, 0, 0, new TrapezoidProfile.Constraints(23, 10));
+  ProfiledPIDController armController = new ProfiledPIDController(RotatingArmConfig.kP, RotatingArmConfig.kI, RotatingArmConfig.kD, new TrapezoidProfile.Constraints(RotatingArmConfig.maxVelocity, RotatingArmConfig.maxAcceleration));
 
   public void changeSetpoint(double change) {
     setSetpoint(armController.getGoal().position + change);
