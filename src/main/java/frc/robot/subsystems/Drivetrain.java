@@ -20,6 +20,7 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivetrainConfig;
 import frc.robot.Constants.ShuffleboardConfig;
@@ -76,6 +77,9 @@ public class Drivetrain extends SubsystemBase {
 
     leftOutputEntry = driveTab.add("Left Output", 0).getEntry();
     rightOutputEntry = driveTab.add("Right Output", 0).getEntry();
+
+    driveTab.add("Coast Mode", new InstantCommand(() -> enableCoastMode()));
+    driveTab.add("Brake Mode", new InstantCommand(() -> enableBrakeMode()));
 
     resetOdometry();
   }

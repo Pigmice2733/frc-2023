@@ -101,12 +101,11 @@ public final class Constants {
         public static final int rightMotorPort = 6;
         public static final int encoderControllerPort = 7;
 
-        public static final double maxArmAngleDegrees = 120;
+        public static final double maxArmAngleDegrees = 100;
         public static final double minArmAngleDegrees = 3;
 
         public static final int[] brakePort = { 0, 5 };
-        public static final double manualUpSpeed = 0.34;
-        public static final double manualDownSpeed = 0.007;
+        public static final double manualSpeed = 0.34;
 
         public static final double constantUpSpeed = 0.36;
         public static final double constantDownSpeed = 0.02;

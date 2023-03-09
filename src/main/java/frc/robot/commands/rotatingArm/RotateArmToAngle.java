@@ -5,16 +5,19 @@
 package frc.robot.commands.rotatingArm;
 
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.RotatingArm;
 
 public class RotateArmToAngle extends CommandBase {
   private final RotatingArm arm;
-  private final double targetAngle;
+  private double targetAngle;
+  private boolean findAngleInInit;
 
   public RotateArmToAngle(RotatingArm arm) {
-    this(arm, selectedScoreHeight);
+    findAngleInInit = true;
+    this.arm = arm;
   }
   public RotateArmToAngle(RotatingArm arm, ArmHeight height) {
     this(arm, scoreHeightToAngle(height));
@@ -26,7 +29,16 @@ public class RotateArmToAngle extends CommandBase {
 
   @Override
   public void initialize() {
+    if (findAngleInInit)
+      targetAngle = scoreHeightToAngle(selectedScoreHeight);
     arm.setSetpoint(targetAngle);
+    SmartDashboard.putBoolean("Command Running", true);
+  }
+
+  @Override
+  public void end(boolean interupted) {
+    SmartDashboard.putBoolean("Command Running", false);
+
   }
 
   @Override
@@ -48,9 +60,9 @@ public class RotateArmToAngle extends CommandBase {
       case Mid:
         return 45;
       case High:
-        return 95;
-      case HumanPlayer:
         return 85;
+      case HumanPlayer:
+        return 75;
       default:
         return 0;
     }
