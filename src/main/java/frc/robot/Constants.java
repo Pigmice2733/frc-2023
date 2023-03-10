@@ -90,7 +90,7 @@ public final class Constants {
 
         public static final double autoBalanceAngleThreshold = 5;
         public static final double autoBalanceSpeed = 0.3;
-        public static final double autoBalanceProportional = 0.3;
+        public static final double autoBalanceProportional = 0.5;
 
         public static final double maxTrajectoryVel = 2;
         public static final double maxTrajectoryAcc = 1;

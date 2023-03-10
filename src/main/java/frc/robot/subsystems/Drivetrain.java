@@ -280,7 +280,7 @@ public class Drivetrain extends SubsystemBase {
    * @param turn    turn speed (clockwise is positive)
    */
   public void arcadeDrive(double forward, double turn) {
-    driveLimitedChassisSpeeds(new ChassisSpeeds(forward, 0, turn));
+    driveLimitedChassisSpeeds(new ChassisSpeeds(-forward, 0, turn));
   }
 
   public void driveWheelSpeeds(DifferentialDriveWheelSpeeds wheelSpeeds) {
