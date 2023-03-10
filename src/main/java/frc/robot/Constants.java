@@ -135,8 +135,8 @@ public final class Constants {
         public static final double kP = 0.019;
         public static final double kI = 0.0;
         public static final double kD = 0.0;
-        public static final double maxVelocity = 23;
-        public static final double maxAcceleration = 10;
+        public static final double maxVelocity = 33;
+        public static final double maxAcceleration = 13;
 
         public static final int topLimitSwitchID = 0;
         public static final int bottomLimitSwitchID = 1;
