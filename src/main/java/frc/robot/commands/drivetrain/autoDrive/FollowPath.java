@@ -2,6 +2,7 @@ package frc.robot.commands.drivetrain.autoDrive;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.Constants.DrivetrainConfig;
@@ -21,7 +22,9 @@ public class FollowPath extends RamseteCommand {
                 trajectory,
                 drivetrain::getPose,
                 new RamseteController(DrivetrainConfig.kB, DrivetrainConfig.kZeta),
-                drivetrain.getFeedForward(),
+                new SimpleMotorFeedforward(DrivetrainConfig.kS,
+                        DrivetrainConfig.kV,
+                        DrivetrainConfig.kA),
                 drivetrain.getKinematics(),
                 drivetrain::getWheelSpeeds,
                 new PIDController(DrivetrainConfig.pathP, DrivetrainConfig.pathI, DrivetrainConfig.pathD), // Left

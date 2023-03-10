@@ -1,0 +1,24 @@
+{
+  "NetworkTables": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/Drive Info/Auto Chooser": "String Chooser",
+      "/Shuffleboard/armTab/Arm Rotation Controller": "PIDController",
+      "/Shuffleboard/armTab/BRAKE MODE": "Command",
+      "/Shuffleboard/armTab/COAST MODE": "Command",
+      "/Shuffleboard/armTab/Disable Brake": "Command",
+      "/Shuffleboard/armTab/Enable Brake": "Command"
+    },
+    "windows": {
+      "/Shuffleboard/Drive Info/Auto Chooser": {
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  },
+  "NetworkTables Settings": {
+    "mode": "Client (NT4)",
+    "serverTeam": "2733"
+  }
+}
