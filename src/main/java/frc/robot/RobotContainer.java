@@ -149,7 +149,7 @@ public class RobotContainer {
         // .whileTrue(new AlignAndScore(vision, drivetrain, arm, claw));
 
         new JoystickButton(driver, Button.kB.value)
-                .whileTrue(new BalanceRoutine(drivetrain, true));
+                .whileTrue(new BalanceRoutine(drivetrain, false));
 
         /** [driver] Force reset odometry when Start is pressed */
         // new JoystickButton(driver, Button.kStart.value)
