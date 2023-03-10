@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -116,6 +117,9 @@ public class RotatingArm extends SubsystemBase {
     updateShuffleboard();
     // applyClawOutput();
     updateController();
+
+    SmartDashboard.putNumber("Amps", leftMotor.getOutputCurrent());
+    SmartDashboard.putNumber("Temp", leftMotor.getMotorTemperature());
   }
 
   /**
@@ -125,10 +129,10 @@ public class RotatingArm extends SubsystemBase {
   private void updateController() {
     double motorOutput = armController.calculate(getAngle());
 
-    if (getAngle() > RotatingArmConfig.maxArmAngleDegrees) // Upper software stop
-      motorOutput = Math.min(0, motorOutput);
-    if (getAngle() < RotatingArmConfig.minArmAngleDegrees) // Lower software stop
-      motorOutput = Math.max(0, motorOutput);
+    // if (getAngle() > RotatingArmConfig.maxArmAngleDegrees) // Upper software stop
+    //   motorOutput = Math.min(0, motorOutput);
+    // if (getAngle() < RotatingArmConfig.minArmAngleDegrees) // Lower software stop
+    //   motorOutput = Math.max(0, motorOutput);
 
     if (armController.atSetpoint() && !brakeEnabled)
       enableBrake();
@@ -254,5 +258,9 @@ public class RotatingArm extends SubsystemBase {
   public void setMotorIdleMode(IdleMode mode) {
     leftMotor.setIdleMode(mode);
     rightMotor.setIdleMode(mode);
+  }
+
+  public void setSetpointToCurrentAngle() {
+    setSetpoint(getAngle());
   }
 }

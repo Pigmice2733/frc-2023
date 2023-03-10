@@ -67,6 +67,10 @@ public class RobotContainer {
     return driverTab.add(name, defaultValue).getEntry();
   }
 
+//   public void onRobotEnable() {
+//       arm.setSetpointToCurrentAngle();
+//   }
+
   private SendableChooser<Command> autoChooser;
 
   /**

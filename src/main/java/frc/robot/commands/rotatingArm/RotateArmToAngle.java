@@ -60,15 +60,15 @@ public class RotateArmToAngle extends CommandBase {
   public static double scoreHeightToAngle(ArmHeight scoreHeight) {
     switch (scoreHeight) {
       case Floor:
-        return 5;
+        return 20;
       case Mid:
-        return 45;
+        return 65;
       case High:
-        return 85;
+        return 82;
       case HumanPlayer:
-        return 75;
+        return 65;
       default:
-        return 0;
+        return 20;
     }
   }
 
