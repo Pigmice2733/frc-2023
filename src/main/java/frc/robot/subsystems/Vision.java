@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Optional;
 
 import org.photonvision.PhotonCamera;
@@ -22,8 +23,10 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Vision extends SubsystemBase {
@@ -55,13 +58,13 @@ public class Vision extends SubsystemBase {
       new Transform3d(new Translation3d(0, 0, Units.inchesToMeters(9)),new Rotation3d(0, Math.toRadians(23), 0)));
 
     ShuffleboardTab visionTab = Shuffleboard.getTab("Vision");
-    robotXEntry = visionTab.add("Robot X", 0).getEntry();
-    robotYEntry = visionTab.add("Robot Y", 0).getEntry();
-    robotYawEntry = visionTab.add("Robot Yaw", 0).getEntry();
+    robotXEntry = visionTab.add("Robot X", 0).withPosition(1, 0).getEntry();
+    robotYEntry = visionTab.add("Robot Y", 0).withPosition(2, 0).getEntry();
+    robotYawEntry = visionTab.add("Robot Yaw", 0).withWidget(BuiltInWidgets.kDial).withProperties(Map.of("min", -180, "max", 180)).withPosition(0, 0).getEntry();
 
-    tagXEntry = visionTab.add("Tag X", 0).getEntry();
-    tagYEntry = visionTab.add("Tag Y", 0).getEntry();
-    tagYawEntry = visionTab.add("Tag Yaw", 0).getEntry();
+    tagXEntry = visionTab.add("Tag X", 0).withPosition(1, 1).getEntry();
+    tagYEntry = visionTab.add("Tag Y", 0).withPosition(2, 1).getEntry();
+    tagYawEntry = visionTab.add("Tag Yaw", 0).withWidget(BuiltInWidgets.kDial).withProperties(Map.of("min", -180, "max", 180)).withPosition(0, 1).getEntry();
   }
 
   private Pose2d estimatedRobotPose;

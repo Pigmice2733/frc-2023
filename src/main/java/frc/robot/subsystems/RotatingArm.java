@@ -6,6 +6,8 @@ package frc.robot.subsystems;
 
 import frc.robot.Constants.RotatingArmConfig;
 
+import java.util.Map;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -13,12 +15,14 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxRelativeEncoder.Type;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -27,30 +31,33 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class RotatingArm extends SubsystemBase {
   private final CANSparkMax leftMotor = new CANSparkMax(RotatingArmConfig.leftMotorPort, MotorType.kBrushless);
   private final CANSparkMax rightMotor = new CANSparkMax(RotatingArmConfig.rightMotorPort, MotorType.kBrushless);
-  
+
   private final CANSparkMax encoderController = new CANSparkMax(RotatingArmConfig.encoderControllerPort,
       MotorType.kBrushed);
 
   private final ShuffleboardTab armTab;
-  private final GenericEntry /* topSwitchEntry, bottomSwitchEntry, */ angleEntry, targetOutputEntry, motorOutputEntry, brakeEntry, setpointEntry;
+  private final GenericEntry /* topSwitchEntry, bottomSwitchEntry, */ angleEntry, targetOutputEntry, motorOutputEntry,
+      brakeEntry, setpointEntry;
 
-  private final DoubleSolenoid brake = new DoubleSolenoid(20, PneumaticsModuleType.REVPH,
-      RotatingArmConfig.brakePort[0], RotatingArmConfig.brakePort[1]);
+  // private final DoubleSolenoid brake = new DoubleSolenoid(20, PneumaticsModuleType.REVPH,
+  //     RotatingArmConfig.brakePort[0], RotatingArmConfig.brakePort[1]);
   private final RelativeEncoder encoder;
 
   private boolean brakeEnabled = false;
 
   private double targetMotorOutput = 0;
 
-  PIDController armController = new PIDController(RotatingArmConfig.kP, RotatingArmConfig.kI, RotatingArmConfig.kD);
+  ProfiledPIDController armController = new ProfiledPIDController(RotatingArmConfig.kP, RotatingArmConfig.kI, RotatingArmConfig.kD, new TrapezoidProfile.Constraints(RotatingArmConfig.maxVelocity, RotatingArmConfig.maxAcceleration));
 
   public void changeSetpoint(double change) {
-    setSetpoint(armController.getSetpoint() + change);
+    setSetpoint(armController.getGoal().position + change);
   }
+
   public void setSetpoint(double setpoint) {
-    armController.setSetpoint(setpoint);
+    armController.setGoal(setpoint);
     setpointEntry.setDouble(setpoint);
   }
+
   public boolean atSetpoint() {
     return armController.atSetpoint();
   }
@@ -68,7 +75,7 @@ public class RotatingArm extends SubsystemBase {
 
   public RotatingArm() {
     armController.setTolerance(3, 3);
-    armController.setSetpoint(0);
+    armController.setGoal(0);
 
     // topLimitSwitch = new DigitalInput(RotatingArmConfig.topLimitSwitchID);
     // bottomLimitSwitch = new DigitalInput(RotatingArmConfig.bottomLimitSwitchID);
@@ -76,8 +83,10 @@ public class RotatingArm extends SubsystemBase {
     leftMotor.restoreFactoryDefaults();
     rightMotor.restoreFactoryDefaults();
 
-    leftMotor.setInverted(true);
+    leftMotor.setInverted(false); // wrong
     rightMotor.setInverted(false);
+
+    setMotorIdleMode(IdleMode.kCoast);
 
     encoder = encoderController.getEncoder(Type.kQuadrature, 8192); // Converts rotatings to
     encoder.setPositionConversionFactor(360); // degrees
@@ -86,49 +95,50 @@ public class RotatingArm extends SubsystemBase {
     armTab = Shuffleboard.getTab("armTab");
     // topSwitchEntry = armTab.add("Top Switch", false).getEntry();
     // bottomSwitchEntry = armTab.add("Bottom Switch", false).getEntry();
-    angleEntry = armTab.add("Arm Angle", 0).getEntry();
-    brakeEntry = armTab.add("Brake Enabled", brakeEnabled).getEntry();
-    motorOutputEntry = armTab.add("Motor Output", 0).getEntry();
-    targetOutputEntry = armTab.add("Target Output", 0).getEntry();
+    angleEntry = armTab.add("Arm Angle", 0).withWidget(BuiltInWidgets.kDial).withProperties(Map.of("min", 0, "max", 180)).withPosition(0, 2).getEntry();
+    setpointEntry = armTab.add("Setpoint", 0).withWidget(BuiltInWidgets.kDial).withProperties(Map.of("min", 0, "max", 180)).withPosition(1, 2).withSize(1, 2).withSize(1, 1).getEntry();
+    brakeEntry = armTab.add("Brake Enabled", brakeEnabled).withPosition(5, 0).getEntry();
+    motorOutputEntry = armTab.add("Motor Output", 0).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("min", 0, "max", 1)).withPosition(0, 0).getEntry();
+    targetOutputEntry = armTab.add("Target Output", 0).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("min", 0, "max", 1)).withPosition(0, 1).getEntry();
     
-    setpointEntry = armTab.add("Setpoint", 0).getEntry();
 
-    setMotorIdleMode(IdleMode.kCoast);
-    armTab.add(new InstantCommand(() -> setMotorIdleMode(IdleMode.kBrake)).withName("BRAKE MODE"));
-    armTab.add(new InstantCommand(() -> setMotorIdleMode(IdleMode.kCoast)).withName("COAST MODE"));
+    armTab.add(new InstantCommand(() -> setMotorIdleMode(IdleMode.kBrake)).withName("BRAKE MODE")).withPosition(4, 0);
+    armTab.add(new InstantCommand(() -> setMotorIdleMode(IdleMode.kCoast)).withName("COAST MODE")).withPosition(3, 0);
 
-    armTab.add(new InstantCommand(() -> enableBrake()).withName("Enable Brake"));
-    armTab.add(new InstantCommand(() -> disableBrake()).withName("Disable Brake"));
+    armTab.add(new InstantCommand(() -> enableBrake()).withName("Enable Brake")).withPosition(3, 1);
+    armTab.add(new InstantCommand(() -> disableBrake()).withName("Disable Brake")).withPosition(4, 1);
 
-    armTab.add("Arm Rotation Controller", armController);
+    armTab.add("Arm Rotation Controller", armController).withPosition(2, 0);
   }
 
   @Override
   public void periodic() {
     updateShuffleboard();
-    //applyClawOutput();
+    // applyClawOutput();
     updateController();
   }
 
   /**
-  * Must always call outputToMotor ONCE and be called periodicly for the linear
-  * filter to work correctly
-  */
+   * Must always call outputToMotor ONCE and be called periodicly for the linear
+   * filter to work correctly
+   */
   private void updateController() {
     double motorOutput = armController.calculate(getAngle());
-    targetOutputEntry.setDouble(motorOutput);
 
     if (getAngle() > RotatingArmConfig.maxArmAngleDegrees) // Upper software stop
       motorOutput = Math.min(0, motorOutput);
     if (getAngle() < RotatingArmConfig.minArmAngleDegrees) // Lower software stop
       motorOutput = Math.max(0, motorOutput);
 
-    if (armController.atSetpoint() && !brakeEnabled) enableBrake();
-    else if (!armController.atSetpoint() && brakeEnabled) disableBrake();
+    if (armController.atSetpoint() && !brakeEnabled)
+      enableBrake();
+    else if (!armController.atSetpoint() && brakeEnabled)
+      disableBrake();
 
     if (brakeEnabled)
       motorOutput = 0;
 
+    motorOutput += (Math.sin(getAngle()*(Math.PI/180))/2) * 0.35;
     outputToMotor(motorOutput);
   }
 
@@ -178,11 +188,16 @@ public class RotatingArm extends SubsystemBase {
   private final LinearFilter outputFilter = LinearFilter.singlePoleIIR(0.3, 0.02);
 
   private void outputToMotor(double output) {
+    targetOutputEntry.setDouble(output);
 
     outputFilter.calculate(output);
+
+    output = Math.max(0, output);
+
+    output = MathUtil.clamp(output, -0.5, 0.5);
     motorOutputEntry.setDouble(output);
 
-    leftMotor.set(output);
+    leftMotor.set(-output);
     rightMotor.set(output);
   }
 
@@ -220,14 +235,14 @@ public class RotatingArm extends SubsystemBase {
   }
 
   public void enableBrake() {
-    brake.set(Value.kForward);
+    //brake.set(Value.kForward);
     outputToMotor(0);
     brakeEnabled = true;
     brakeEntry.setBoolean(true);
   }
 
   public void disableBrake() {
-    brake.set(Value.kReverse);
+    //brake.set(Value.kReverse);
     brakeEntry.setBoolean(false);
     brakeEnabled = false;
   }

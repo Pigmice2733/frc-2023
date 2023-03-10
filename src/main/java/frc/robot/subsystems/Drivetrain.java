@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.DrivetrainConfig;
@@ -119,6 +120,8 @@ public class Drivetrain extends SubsystemBase {
     navXVeloEntry = driveTab.add("NavX Velocity", 0).getEntry();
     leftVoltageEntry = driveTab.add("Left Voltage", 0).getEntry();
     rightVoltageEntry = driveTab.add("Right Voltage", 0).getEntry();
+    driveTab.add("Coast Mode", new InstantCommand(() -> enableCoastMode()));
+    driveTab.add("Brake Mode", new InstantCommand(() -> enableBrakeMode()));
 
     resetOdometry();
   }
