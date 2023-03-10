@@ -212,9 +212,10 @@ public class Drivetrain extends SubsystemBase {
    * Returns the average distance moved by left and right wheels since last reset.
    */
   public double getAverageDistance() {
-    double distance = (leftDrive.getEncoder().getPosition() + rightDrive.getEncoder().getPosition()) / 2;
+    double left = leftDrive.getEncoder().getPosition() * (leftGroup.getInverted() ? 1 : -1);
+    double right = rightDrive.getEncoder().getPosition() * (rightGroup.getInverted() ? 1 : -1);
 
-    return (Math.abs(distance) < 0.1) ? 0.1 : distance;
+    return (left + right) / 2d;
   }
 
   /** Returns the feedforward object used by the drivetrain. */

@@ -5,6 +5,7 @@ import java.util.List;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
@@ -22,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.RuntimeTrajectoryGenerator.TargetLocation;
 import frc.robot.commands.drivetrain.autoDrive.DriveDistancePID;
 import frc.robot.commands.drivetrain.balance.DriveOntoChargeStation;
+import frc.robot.commands.drivetrain.balance.HoldPosition;
 import frc.robot.commands.drivetrain.defaultCommands.ArcadeDrive;
 import frc.robot.commands.lights.strip.RunningColor;
 import frc.robot.commands.rotatingArm.RotateArmManual;
@@ -70,6 +72,7 @@ public class RobotContainer {
         var field = new Field2d();
         field.setRobotPose(new Pose2d(1, 2, new Rotation2d(180)));
         SmartDashboard.putData("FIELD", field);
+        DriverStation.silenceJoystickConnectionWarning(true);
     }
 
     private void configureDefaultCommands() {
@@ -145,8 +148,8 @@ public class RobotContainer {
         /**
          * [driver] Schedule AlignAndScore when X is pressed, cancel when released
          */
-        // new JoystickButton(driver, Button.kX.value)
-        // .whileTrue(new AlignAndScore(vision, drivetrain, arm, claw));
+        new JoystickButton(driver, Button.kX.value)
+                .whileTrue(new HoldPosition(drivetrain));
 
         new JoystickButton(driver, Button.kB.value)
                 .whileTrue(new BalanceRoutine(drivetrain, false));
