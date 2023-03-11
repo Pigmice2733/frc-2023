@@ -12,10 +12,13 @@ public class Controls {
 
     private double threshold = DrivetrainConfig.axisThreshold;
 
+    private RotatingArm arm;
+
     // Create a new Controls
-    public Controls(XboxController driver, XboxController operator) {
+    public Controls(XboxController driver, XboxController operator, RotatingArm arm) {
         this.driver = driver;
         this.operator = operator;
+        this.arm = arm;
     }
 
     LinearFilter driveSpeedFilter = LinearFilter.singlePoleIIR(0.2, 0.02);
@@ -26,7 +29,7 @@ public class Controls {
         joystickValue = MathUtil.applyDeadband(-joystickValue, threshold); // deals with stick drag
         joystickValue = driveSpeedFilter.calculate(joystickValue);
 
-        return joystickValue * DrivetrainConfig.driveSpeed;
+        return joystickValue * DrivetrainConfig.driveSpeed * (arm.getAngle() > 45 ? DrivetrainConfig.armUpSlower : 1);
     }
 
     LinearFilter turnSpeedFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
@@ -37,7 +40,7 @@ public class Controls {
         joystickValue = MathUtil.applyDeadband(joystickValue, threshold); // deals with stick drag
         joystickValue = turnSpeedFilter.calculate(joystickValue);
 
-        return joystickValue * DrivetrainConfig.turnSpeed;
+        return joystickValue * DrivetrainConfig.turnSpeed * (arm.getAngle() > 45 ? DrivetrainConfig.armUpSlower : 1);
     }
 
     public double getArmRotationSpeed() {

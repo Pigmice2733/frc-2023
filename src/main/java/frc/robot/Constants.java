@@ -36,6 +36,9 @@ public final class Constants {
         // Multiplied by drive speed when in slow mode
         public static final double slowMultiplier = 0.2;
 
+        // Multiplied by drive speed when arm is above 45 degrees
+        public static final double armUpSlower = 0.25;
+
         public static final double gearRatio = 1.0 / 8.45; // Times motor has to rotate for wheel to rotate once
         public static final double wheelDiameterMeters = Units.inchesToMeters(6);
         public static final double rotationToDistanceConversion = (Math.PI * wheelDiameterMeters) * gearRatio; // Encoder

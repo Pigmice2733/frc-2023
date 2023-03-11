@@ -50,7 +50,7 @@ public class RobotContainer {
 
     private final XboxController driver = new XboxController(0);
     private final XboxController operator = new XboxController(1);
-    private final Controls controls = new Controls(driver, operator);
+    private final Controls controls = new Controls(driver, operator, arm);
 
     private static final ShuffleboardTab driverTab = Shuffleboard.getTab("Drive Info");
 
