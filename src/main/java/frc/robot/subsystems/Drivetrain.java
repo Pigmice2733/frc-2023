@@ -325,8 +325,8 @@ public class Drivetrain extends SubsystemBase {
   public void driveVoltages(double leftVoltage, double rightVoltage) {
     // voltageEntry.setDouble(leftVoltage);
 
-    leftGroup.setVoltage(leftVoltage);
-    rightGroup.setVoltage(rightVoltage);
+    leftGroup.setVoltage(leftVoltage * outputFactor);
+    rightGroup.setVoltage(rightVoltage * outputFactor);
   }
 
   public void driveVoltages(DifferentialDriveWheelVoltages voltages) {
