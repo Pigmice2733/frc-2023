@@ -29,7 +29,7 @@ public class Controls {
         joystickValue = MathUtil.applyDeadband(-joystickValue, threshold); // deals with stick drag
         joystickValue = driveSpeedFilter.calculate(joystickValue);
 
-        return joystickValue * DrivetrainConfig.driveSpeed * (arm.getAngle() > 45 ? DrivetrainConfig.armUpSlower : 1);
+        return joystickValue * DrivetrainConfig.driveSpeed * calcArmAngleMultiplier();
     }
 
     LinearFilter turnSpeedFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
@@ -40,12 +40,25 @@ public class Controls {
         joystickValue = MathUtil.applyDeadband(joystickValue, threshold); // deals with stick drag
         joystickValue = turnSpeedFilter.calculate(joystickValue);
 
-        return joystickValue * DrivetrainConfig.turnSpeed * (arm.getAngle() > 45 ? DrivetrainConfig.armUpSlower : 1);
+        return joystickValue * DrivetrainConfig.turnSpeed * calcArmAngleMultiplier();
     }
 
     public double getArmRotationSpeed() {
         double joystickValue = operator.getRightTriggerAxis() - operator.getLeftTriggerAxis();
         joystickValue = MathUtil.applyDeadband(joystickValue, threshold);
         return Math.signum(joystickValue) * RotatingArmConfig.manualSpeed;
+    }
+
+    private double calcArmAngleMultiplier() {
+        double minSpeed = DrivetrainConfig.armUpSlower;
+        double angle = arm.getAngle();
+        if(angle < 30) {
+            return 1;
+        } else if(angle > 60) {
+            return minSpeed;
+        } else {
+            return ((minSpeed - 1)/30) * (angle - 30) + 1;
+        }
+
     }
 }
