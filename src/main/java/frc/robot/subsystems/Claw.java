@@ -28,7 +28,8 @@ public class Claw extends SubsystemBase {
   private final CANSparkMax rightMotor = new CANSparkMax(ClawConfig.rightMotorPort, MotorType.kBrushless);
 
   public Claw() {
-    compressor.enableDigital();
+    compressor.disable();
+    compressor.close();
     leftPiston.set(Value.kForward);
     rightPiston.set(Value.kReverse);
 

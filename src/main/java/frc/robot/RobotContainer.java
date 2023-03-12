@@ -2,11 +2,23 @@ package frc.robot;
 
 import java.util.List;
 
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.commands.PPRamseteCommand;
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -20,8 +32,10 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import frc.robot.Constants.DrivetrainConfig;
 import frc.robot.RuntimeTrajectoryGenerator.TargetLocation;
 import frc.robot.commands.drivetrain.autoDrive.DriveDistancePID;
+import frc.robot.commands.drivetrain.autoDrive.FollowPath;
 import frc.robot.commands.drivetrain.balance.DriveOntoChargeStation;
 import frc.robot.commands.drivetrain.balance.HoldPosition;
 import frc.robot.commands.drivetrain.defaultCommands.ArcadeDrive;
@@ -30,6 +44,7 @@ import frc.robot.commands.rotatingArm.RotateArmManual;
 import frc.robot.commands.rotatingArm.RotateArmToAngle;
 import frc.robot.commands.rotatingArm.RotateArmToAngle.ArmHeight;
 import frc.robot.commands.routines.BalanceRoutine;
+import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.LightStrip;
 import frc.robot.subsystems.RotatingArm;
@@ -44,7 +59,7 @@ public class RobotContainer {
     private final Drivetrain drivetrain = new Drivetrain();
     // private final Vision vision = new Vision();
     private final RotatingArm arm = new RotatingArm();
-    // private final Claw claw = new Claw();
+    private final Claw claw = new Claw();
     // private final LightsPanel lightPanel = new LightsPanel();
     private final LightStrip lightStrip = new LightStrip();
 
@@ -69,9 +84,6 @@ public class RobotContainer {
         configureButtonBindings();
 
         RuntimeTrajectoryGenerator.setTargetType(TargetLocation.Left);
-        var field = new Field2d();
-        field.setRobotPose(new Pose2d(1, 2, new Rotation2d(180)));
-        SmartDashboard.putData("FIELD", field);
         DriverStation.silenceJoystickConnectionWarning(true);
     }
 
@@ -252,6 +264,16 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return autoChooser.getSelected();
+        //return autoChooser.getSelected();
+        drivetrain.resetOdometry();
+        TrajectoryConfig config = new TrajectoryConfig(DrivetrainConfig.maxTrajectoryVel,
+        DrivetrainConfig.maxTrajectoryAcc);
+        Trajectory trajectory = TrajectoryGenerator.generateTrajectory(List.of(new Pose2d(), new Pose2d(2, -1, new Rotation2d()), new Pose2d(0, 1, new Rotation2d())), config);
+        System.out.println(trajectory);
+
+        var traj = PathPlanner.loadPath("New New Path", new PathConstraints(DrivetrainConfig.maxTrajectoryVel,
+        DrivetrainConfig.maxTrajectoryAcc));
+        return new PPRamseteCommand(traj, drivetrain::getPose, new RamseteController(), new SimpleMotorFeedforward(DrivetrainConfig.kS, DrivetrainConfig.kV), drivetrain.getKinematics(), drivetrain::getWheelSpeeds, new PIDController(0, 0, 0), new PIDController(0, 0, 0), drivetrain::driveVoltages, true, drivetrain);
+        //return new FollowPath(drivetrain, trajectory);
     }
 }

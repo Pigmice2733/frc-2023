@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -85,6 +86,8 @@ public class Drivetrain extends SubsystemBase {
   private boolean backwards = false;
   public double outputFactor = 1;
 
+  private Field2d field = new Field2d();
+
   public Drivetrain() {
     rightDrive.restoreFactoryDefaults();
     leftDrive.restoreFactoryDefaults();
@@ -98,7 +101,8 @@ public class Drivetrain extends SubsystemBase {
 
     // rightDrive.setInverted(true);
 
-    leftGroup.setInverted(true);
+    rightGroup.setInverted(true);
+    leftGroup.setInverted(false);
 
     leftDrive.getEncoder().setPositionConversionFactor(DrivetrainConfig.rotationToDistanceConversion);
     rightDrive.getEncoder().setPositionConversionFactor(DrivetrainConfig.rotationToDistanceConversion);
@@ -123,12 +127,12 @@ public class Drivetrain extends SubsystemBase {
     driveTab.add("Coast Mode", new InstantCommand(() -> enableCoastMode()));
     driveTab.add("Brake Mode", new InstantCommand(() -> enableBrakeMode()));
 
+    SmartDashboard.putData("FIELD", field);
+
     resetOdometry();
   }
 
   public void periodic() {
-    SmartDashboard.putNumber("Roll", gyro.getRoll());
-    SmartDashboard.putNumber("Pitch", this.getPitch());
     updateOdometry();
   }
 
@@ -173,14 +177,16 @@ public class Drivetrain extends SubsystemBase {
 
   /** Updates the odometry pose with the heading and position measurements. */
   private void updateOdometry() {
-    pose = odometry.update(getHeading(), leftDrive.getEncoder().getPosition(),
-        rightDrive.getEncoder().getPosition());
+    pose = odometry.update(getHeading(), (leftGroup.getInverted() ? -1 : 1) * leftDrive.getEncoder().getPosition(),
+        (rightGroup.getInverted() ? -1 : 1) * rightDrive.getEncoder().getPosition());
 
     if (ShuffleboardConfig.drivetrainPrintsEnabled) {
       xPosEntry.setDouble(pose.getX());
       yPosEntry.setDouble(pose.getY());
       headingEntry.setDouble(getHeading().getDegrees());
     }
+
+    field.setRobotPose(getPose());
   }
 
   /** Returns the robot's current yaw as a Rotation2d object (in radians). */
@@ -202,8 +208,8 @@ public class Drivetrain extends SubsystemBase {
    * Returns a DifferentialDriveWheelSpeeds object from the encoder velocities.
    */
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-    double left = -leftDrive.getEncoder().getVelocity();
-    double right = rightDrive.getEncoder().getVelocity();
+    double left = (leftGroup.getInverted() ? -1 : 1) * leftDrive.getEncoder().getVelocity();
+    double right = (rightGroup.getInverted() ? -1 : 1) * rightDrive.getEncoder().getVelocity();
 
     return new DifferentialDriveWheelSpeeds(left, right);
   }
@@ -255,36 +261,13 @@ public class Drivetrain extends SubsystemBase {
   }
 
   /**
-   * Drives the robot with given speeds for left and right wheels.
-   * 
-   * @param left  speed of left wheels
-   * @param right speed of right wheels
-   */
-  public void tankDrive(double left, double right) {
-    updateOutputs(left, right);
-  }
-
-  /**
-   * Drives the robot with given voltages for left and right wheels.
-   * Input values are clamped between -12 and 12 because the motor cannot handle
-   * voltages more than 12V.
-   * 
-   * @param left  voltage for left wheels
-   * @param right voltage for right wheels
-   */
-  public void tankDriveVolts(double left, double right) {
-    // divides by 12 to scale possible inputs between 0 and 1 (12 is max voltage)
-    updateOutputs(MathUtil.clamp(left / 12.0, -1, 1), MathUtil.clamp(right / 12.0, -1, 1));
-  }
-
-  /**
    * Drives the robot with given directional and rotational speeds.
    * 
    * @param forward speed in robot's current direction
    * @param turn    turn speed (clockwise is positive)
    */
   public void arcadeDrive(double forward, double turn) {
-    driveLimitedChassisSpeeds(new ChassisSpeeds(-forward, 0, turn));
+    driveLimitedChassisSpeeds(new ChassisSpeeds(forward, 0, -turn));
   }
 
   public void driveWheelSpeeds(DifferentialDriveWheelSpeeds wheelSpeeds) {
@@ -322,11 +305,14 @@ public class Drivetrain extends SubsystemBase {
     driveVoltages(voltages);
   }
 
-  public void driveVoltages(double leftVoltage, double rightVoltage) {
-    // voltageEntry.setDouble(leftVoltage);
+  public void driveVoltages(double left, double right) {
+    leftGroup.setVoltage(left * outputFactor);
+    rightGroup.setVoltage(right * outputFactor);
 
-    leftGroup.setVoltage(leftVoltage * outputFactor);
-    rightGroup.setVoltage(rightVoltage * outputFactor);
+    if (ShuffleboardConfig.drivetrainPrintsEnabled) {
+      leftVoltageEntry.setDouble(left);
+      rightVoltageEntry.setDouble(right);
+    }
   }
 
   public void driveVoltages(DifferentialDriveWheelVoltages voltages) {

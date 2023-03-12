@@ -1,5 +1,6 @@
 package frc.robot.commands.drivetrain.autoDrive;
 
+import edu.wpi.first.math.controller.DifferentialDriveWheelVoltages;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -29,7 +30,8 @@ public class FollowPath extends RamseteCommand {
                 drivetrain::getWheelSpeeds,
                 new PIDController(DrivetrainConfig.pathP, DrivetrainConfig.pathI, DrivetrainConfig.pathD), // Left
                 new PIDController(DrivetrainConfig.pathP, DrivetrainConfig.pathI, DrivetrainConfig.pathD), // Right
-                drivetrain::tankDriveVolts,
+                // (left, right) -> drivetrain.driveLimitedVoltages(new DifferentialDriveWheelVoltages(left, right)),
+                drivetrain::driveVoltages,
                 drivetrain);
         addRequirements(drivetrain);
     }

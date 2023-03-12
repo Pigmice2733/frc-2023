@@ -201,8 +201,9 @@ public class RotatingArm extends SubsystemBase {
     output = MathUtil.clamp(output, -0.5, 0.5);
     motorOutputEntry.setDouble(output);
 
-    leftMotor.set(-output);
-    rightMotor.set(output);
+    // TODO: Uncomment .set()
+    // leftMotor.set(-output);
+    // rightMotor.set(output);
   }
 
   /**
