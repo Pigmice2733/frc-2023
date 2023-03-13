@@ -2,8 +2,14 @@ package frc.robot;
 
 import java.util.List;
 
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPoint;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
@@ -23,7 +29,7 @@ public class RuntimeTrajectoryGenerator {
      * Generates a trajectory to line up the robot to pick up or score based on an
      * AprilTag's location.
      */
-    public static Trajectory generateLineupTrajectory(Pose2d currentRobotPose, Pose2d tagPose) {
+    public static PathPlannerTrajectory generateLineupTrajectory(Pose2d currentRobotPose, Pose2d tagPose) {
         // if we are looking at a flipped tag then we have to invert all of our
         // distances
         double tagRotated = tagPose.getRotation().getDegrees() == 0 ? -1 : 1;
@@ -40,11 +46,12 @@ public class RuntimeTrajectoryGenerator {
             default:
                 break;
         }
-        Pose2d targetPose = new Pose2d(xPos, yPos, new Rotation2d(tagPose.getRotation().getRadians() - 3.1415));
+        PathPoint endPoint = new PathPoint(new Translation2d(xPos, yPos), new Rotation2d(tagPose.getRotation().getRadians() - 3.1415));
+        PathPoint currentPoint = new PathPoint(currentRobotPose.getTranslation(), currentRobotPose.getRotation());
 
-        TrajectoryConfig config = new TrajectoryConfig(DrivetrainConfig.maxTrajectoryVel,
+        PathConstraints constraints = new PathConstraints(DrivetrainConfig.maxTrajectoryVel,
                 DrivetrainConfig.maxTrajectoryAcc);
-        Trajectory trajectory = TrajectoryGenerator.generateTrajectory(List.of(currentRobotPose, targetPose), config);
+        PathPlannerTrajectory trajectory = PathPlanner.generatePath(constraints, List.of(currentPoint, endPoint));
         
         // System.out.println("Current Pose "+ currentRobotPose);
         // System.out.println("Target Pose "+ targetPose);

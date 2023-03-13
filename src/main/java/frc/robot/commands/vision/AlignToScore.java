@@ -4,8 +4,11 @@
 
 package frc.robot.commands.vision;
 
+import com.pathplanner.lib.PathPlannerTrajectory;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
@@ -18,7 +21,7 @@ public class AlignToScore extends CommandBase {
   private final Vision vision;
   private final Drivetrain drivetrain;
 
-  private RamseteCommand pathCommand;
+  private Command pathCommand;
 
   public AlignToScore(Vision vision, Drivetrain drivetrain) {
     this.vision = vision;
@@ -41,7 +44,7 @@ public class AlignToScore extends CommandBase {
     // Sets the robot odometry to the estimated global position
     drivetrain.setOdometryPose(robotPose);
 
-    Trajectory trajectory = RuntimeTrajectoryGenerator.generateLineupTrajectory(robotPose, tagPose);
+    PathPlannerTrajectory trajectory = RuntimeTrajectoryGenerator.generateLineupTrajectory(robotPose, tagPose);
 
     pathCommand = new FollowPath(drivetrain, trajectory);
     CommandScheduler.getInstance().schedule(pathCommand);

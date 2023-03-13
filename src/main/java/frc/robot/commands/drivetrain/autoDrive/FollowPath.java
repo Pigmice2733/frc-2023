@@ -1,15 +1,18 @@
 package frc.robot.commands.drivetrain.autoDrive;
 
-import edu.wpi.first.math.controller.DifferentialDriveWheelVoltages;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPRamseteCommand;
+import com.pathplanner.lib.PathConstraints;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.DrivetrainConfig;
 import frc.robot.subsystems.Drivetrain;
 
-public class FollowPath extends RamseteCommand {
+public class FollowPath extends SequentialCommandGroup {
     /**
      * Use a RamseteController to follow a specified path.
      * Call only from autonomous path-following commands that define a trajectory
@@ -18,26 +21,37 @@ public class FollowPath extends RamseteCommand {
      * @param drivetrain a drivetrain subsystem
      * @param trajectory a path-following trajectory
      */
-    public FollowPath(Drivetrain drivetrain, Trajectory trajectory) {
-        super(
+    public FollowPath(Drivetrain drivetrain, PathPlannerTrajectory trajectory) {
+        addCommands(
+            drivetrain.resetOdometryCommand(),
+            new PPRamseteCommand(
                 trajectory,
                 drivetrain::getPose,
-                new RamseteController(DrivetrainConfig.kB, DrivetrainConfig.kZeta),
-                new SimpleMotorFeedforward(DrivetrainConfig.kS,
-                        DrivetrainConfig.kV,
-                        DrivetrainConfig.kA),
-                drivetrain.getKinematics(),
-                drivetrain::getWheelSpeeds,
-                new PIDController(DrivetrainConfig.pathP, DrivetrainConfig.pathI, DrivetrainConfig.pathD), // Left
-                new PIDController(DrivetrainConfig.pathP, DrivetrainConfig.pathI, DrivetrainConfig.pathD), // Right
-                // (left, right) -> drivetrain.driveLimitedVoltages(new DifferentialDriveWheelVoltages(left, right)),
-                drivetrain::driveVoltages,
-                drivetrain);
+                new RamseteController(),
+                new SimpleMotorFeedforward(DrivetrainConfig.kS, DrivetrainConfig.kV), 
+                drivetrain.getKinematics(), 
+                drivetrain::getWheelSpeeds, 
+                new PIDController(DrivetrainConfig.pathP, DrivetrainConfig.pathI, DrivetrainConfig.pathD),
+                new PIDController(DrivetrainConfig.pathP, DrivetrainConfig.pathI, DrivetrainConfig.pathD),
+                drivetrain::driveVoltages, 
+                true, 
+                drivetrain)
+        );
         addRequirements(drivetrain);
     }
 
-    @Override
-    public void end(boolean interrupted) {
-        super.end(interrupted);
+    /**
+     * Use a RamseteController to follow a specified path.
+     * Call only from autonomous path-following commands that define a trajectory
+     * and a trajectory configuration.
+     * 
+     * @param drivetrain a drivetrain subsystem
+     * @param pathName the name of a premade path to follow
+     */
+    public FollowPath(Drivetrain drivetrain, String pathName) {
+        this(
+            drivetrain, 
+            PathPlanner.loadPath("New New Path", new PathConstraints(DrivetrainConfig.maxTrajectoryVel, DrivetrainConfig.maxTrajectoryAcc))
+        );
     }
 }
