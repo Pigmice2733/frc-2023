@@ -6,11 +6,13 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.math.system.plant.LinearSystemId.identifyDrivetrainSystem;
 
+import com.fasterxml.jackson.databind.deser.impl.ExternalTypeHandler.Builder;
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.hal.simulation.AccelerometerDataJNI;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.DifferentialDriveAccelerationLimiter;
 import edu.wpi.first.math.controller.DifferentialDriveFeedforward;
@@ -26,6 +28,7 @@ import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -40,7 +43,7 @@ import frc.robot.Constants.ShuffleboardConfig;
 public class Drivetrain extends SubsystemBase {
   GenericEntry xPosEntry;
 
-  private final GenericEntry yPosEntry, headingEntry, leftOutputEntry, rightOutputEntry, motorVeloEntry, navXVeloEntry,
+  private final GenericEntry yPosEntry, motorVeloEntry, navXVeloEntry,
       leftVoltageEntry, rightVoltageEntry;
 
   private final CANSparkMax leftDrive = new CANSparkMax(DrivetrainConfig.leftDrivePort, MotorType.kBrushless);
@@ -114,20 +117,21 @@ public class Drivetrain extends SubsystemBase {
 
     ShuffleboardTab driveTab = Shuffleboard.getTab("Drivetrain");
 
-    xPosEntry = driveTab.add("X", 0.0).getEntry();
-    yPosEntry = driveTab.add("Y", 0.0).getEntry();
-    headingEntry = driveTab.add("Heading", 0.0).getEntry();
+    xPosEntry = driveTab.add("X", 0.0).withPosition(0, 2).getEntry();
+    yPosEntry = driveTab.add("Y", 0.0).withPosition(1, 2).getEntry();
 
-    leftOutputEntry = driveTab.add("Left Output", 0).getEntry();
-    rightOutputEntry = driveTab.add("Right Output", 0).getEntry();
+    motorVeloEntry = driveTab.add("Motor Velocity", 0).withPosition(2, 1).getEntry();
+    navXVeloEntry = driveTab.add("NavX Velocity", 0).withPosition(2, 0).getEntry();
 
-    motorVeloEntry = driveTab.add("Motor Velocity", 0).getEntry();
-    navXVeloEntry = driveTab.add("NavX Velocity", 0).getEntry();
-    leftVoltageEntry = driveTab.add("Left Voltage", 0).getEntry();
-    rightVoltageEntry = driveTab.add("Right Voltage", 0).getEntry();
-    driveTab.add("Coast Mode", new InstantCommand(() -> enableCoastMode()));
-    driveTab.add("Brake Mode", new InstantCommand(() -> enableBrakeMode()));
+    leftVoltageEntry = driveTab.add("Left Voltage", 0).withWidget(BuiltInWidgets.kVoltageView).withPosition(0, 3).getEntry();
+    rightVoltageEntry = driveTab.add("Right Voltage", 0).withWidget(BuiltInWidgets.kVoltageView).withPosition(1, 3).getEntry();
 
+    driveTab.add("Heading", gyro).withPosition(0, 0);
+
+    driveTab.add("Coast Mode", new InstantCommand(() -> enableCoastMode())).withPosition(2, 2);
+    driveTab.add("Brake Mode", new InstantCommand(() -> enableBrakeMode())).withPosition(2, 3);
+
+    driveTab.add("Field", field).withWidget(BuiltInWidgets.kField).withPosition(4, 0).withSize(7, 5);
     SmartDashboard.putData("FIELD", field);
 
     resetOdometry();
@@ -184,7 +188,6 @@ public class Drivetrain extends SubsystemBase {
     if (ShuffleboardConfig.drivetrainPrintsEnabled) {
       xPosEntry.setDouble(pose.getX());
       yPosEntry.setDouble(pose.getY());
-      headingEntry.setDouble(getHeading().getDegrees());
     }
 
     field.setRobotPose(getPose());
@@ -334,30 +337,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void stop() {
-    updateOutputs(0, 0);
-  }
-
-  public void updateOutputs(double left, double right) {
-    // Clamp outputs FOR TESTING (to make sure drivetrain does not go crazy while
-    // testing auto commands)
-    // WILL BE REMOVED FOR COMP
-    // TODO (see above)
-
-    if (backwards) {
-      left *= -1;
-      right *= -1;
-    }
-
-    double maxSpeed = 1;
-    left = MathUtil.clamp(left, -maxSpeed, maxSpeed);
-    right = MathUtil.clamp(right, -maxSpeed, maxSpeed);
-
-    leftDrive.set(left * outputFactor);
-    rightDrive.set(right * outputFactor);
-    if (ShuffleboardConfig.drivetrainPrintsEnabled) {
-      leftOutputEntry.setDouble(left);
-      rightOutputEntry.setDouble(right);
-    }
+    driveVoltages(0, 0);
   }
 
   public void enableBrakeMode() {

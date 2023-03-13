@@ -12,12 +12,21 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/Shuffleboard/Drive Info/Auto Chooser": "String Chooser",
-      "/Shuffleboard/armTab/Arm Rotation Controller": "PIDController",
+      "/Shuffleboard/Drivetrain/Brake Mode": "Command",
+      "/Shuffleboard/Drivetrain/Coast Mode": "Command",
+      "/Shuffleboard/Drivetrain/Field": "Field2d",
+      "/Shuffleboard/Drivetrain/Heading": "Gyro",
       "/Shuffleboard/armTab/BRAKE MODE": "Command",
       "/Shuffleboard/armTab/COAST MODE": "Command",
       "/Shuffleboard/armTab/Disable Brake": "Command",
       "/Shuffleboard/armTab/Enable Brake": "Command",
-      "/SmartDashboard/Auto Chooser": "String Chooser"
+      "/SmartDashboard/FIELD": "Field2d",
+      "/SmartDashboard/PIDController[11]": "PIDController",
+      "/SmartDashboard/PIDController[15]": "PIDController",
+      "/SmartDashboard/PIDController[21]": "PIDController",
+      "/SmartDashboard/PIDController[27]": "PIDController",
+      "/SmartDashboard/PIDController[29]": "PIDController",
+      "/SmartDashboard/PIDController[3]": "PIDController"
     }
   },
   "NetworkTables": {
