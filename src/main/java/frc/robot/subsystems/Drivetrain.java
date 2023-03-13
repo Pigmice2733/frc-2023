@@ -6,14 +6,11 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.math.system.plant.LinearSystemId.identifyDrivetrainSystem;
 
-import com.fasterxml.jackson.databind.deser.impl.ExternalTypeHandler.Builder;
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.hal.simulation.AccelerometerDataJNI;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.DifferentialDriveAccelerationLimiter;
 import edu.wpi.first.math.controller.DifferentialDriveFeedforward;
 import edu.wpi.first.math.controller.DifferentialDriveWheelVoltages;
@@ -26,7 +23,6 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -36,7 +32,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotContainer;
 import frc.robot.Constants.DrivetrainConfig;
 import frc.robot.Constants.ShuffleboardConfig;
 
@@ -123,8 +118,10 @@ public class Drivetrain extends SubsystemBase {
     motorVeloEntry = driveTab.add("Motor Velocity", 0).withPosition(2, 1).getEntry();
     navXVeloEntry = driveTab.add("NavX Velocity", 0).withPosition(2, 0).getEntry();
 
-    leftVoltageEntry = driveTab.add("Left Voltage", 0).withWidget(BuiltInWidgets.kVoltageView).withPosition(0, 3).getEntry();
-    rightVoltageEntry = driveTab.add("Right Voltage", 0).withWidget(BuiltInWidgets.kVoltageView).withPosition(1, 3).getEntry();
+    leftVoltageEntry = driveTab.add("Left Voltage", 0).withWidget(BuiltInWidgets.kVoltageView).withPosition(0, 3)
+        .getEntry();
+    rightVoltageEntry = driveTab.add("Right Voltage", 0).withWidget(BuiltInWidgets.kVoltageView).withPosition(1, 3)
+        .getEntry();
 
     driveTab.add("Heading", gyro).withPosition(0, 0);
 
@@ -255,7 +252,9 @@ public class Drivetrain extends SubsystemBase {
   }
 
   /** resetOdometry() as a command */
-  public Command resetOdometryCommand() { return new InstantCommand(() -> resetOdometry()); }
+  public Command resetOdometryCommand() {
+    return new InstantCommand(() -> resetOdometry());
+  }
 
   /** Sets odometry to a specific Pose2d. */
   public void setOdometryPose(Pose2d newPose) {
