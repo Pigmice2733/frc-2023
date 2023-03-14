@@ -9,24 +9,16 @@ import frc.robot.RuntimeTrajectoryGenerator.TargetLocation;
 import frc.robot.commands.drivetrain.autoDrive.FollowPath;
 import frc.robot.commands.drivetrain.balance.DriveOntoChargeStation;
 import frc.robot.commands.drivetrain.balance.DriveOverChargeStation;
-import frc.robot.commands.objectManipulation.ScoreObject;
-import frc.robot.commands.rotatingArm.RotateArmToAngle.ArmHeight;
-import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.RotatingArm;
 
-public class ScoreAndLeaveAndBalance extends SequentialCommandGroup {
+public class LeaveAndBalance extends SequentialCommandGroup {
   /**
-   * A routine to be run in auto. Scores the object the robot starts with, leaves
-   * the community, then
+   * A routine to be run in auto. Leaves the community, then
    * balances. Robot needs to start in line with cube scoring zone specified with
    * startLocation.
    */
-  public ScoreAndLeaveAndBalance(Drivetrain drivetrain, RotatingArm arm, Claw claw, TargetLocation startLocation) {
-    // (1) Score
-    addCommands(new ScoreObject(drivetrain, arm, claw, ArmHeight.High, true, true));
-
-    // (2) Drive out of community and line up to balance
+  public LeaveAndBalance(Drivetrain drivetrain, TargetLocation startLocation) {
+    // (1) Drive out of community and line up to balance
     if (startLocation == TargetLocation.Center) {
       addCommands(
           new DriveOntoChargeStation(drivetrain, true),
@@ -41,8 +33,8 @@ public class ScoreAndLeaveAndBalance extends SequentialCommandGroup {
           new FollowPath(drivetrain, "ScoreLeaveBalanceDriverRight"));
     }
 
-    // (3) Balance
+    // (2) Balance
     addCommands(new BalanceRoutine(drivetrain, false));
-    addRequirements(drivetrain, arm, claw);
+    addRequirements(drivetrain);
   }
 }

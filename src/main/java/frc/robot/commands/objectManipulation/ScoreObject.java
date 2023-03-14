@@ -32,7 +32,7 @@ public class ScoreObject extends SequentialCommandGroup {
 
     addCommands(
       new DriveDistancePID(drivetrain, 1),
-      new InstantCommand(() -> claw.openClaw(true)));
+      claw.openClawCommand(true));
       
     if (lowerArm) {
       addCommands(

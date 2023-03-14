@@ -2,48 +2,32 @@ package frc.robot;
 
 import java.util.List;
 
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.commands.PPRamseteCommand;
-
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.RamseteController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
-import frc.robot.Constants.DrivetrainConfig;
 import frc.robot.RuntimeTrajectoryGenerator.TargetLocation;
+import frc.robot.commands.claw.SpinIntakeWheels;
 import frc.robot.commands.drivetrain.autoDrive.DriveDistancePID;
-import frc.robot.commands.drivetrain.autoDrive.FollowPath;
-import frc.robot.commands.drivetrain.balance.DriveOntoChargeStation;
 import frc.robot.commands.drivetrain.balance.HoldPosition;
 import frc.robot.commands.drivetrain.defaultCommands.ArcadeDrive;
 import frc.robot.commands.lights.strip.RunningColor;
+import frc.robot.commands.objectManipulation.PickUpObject;
+import frc.robot.commands.objectManipulation.ScoreObject;
 import frc.robot.commands.rotatingArm.RotateArmManual;
 import frc.robot.commands.rotatingArm.RotateArmToAngle;
 import frc.robot.commands.rotatingArm.RotateArmToAngle.ArmHeight;
 import frc.robot.commands.routines.BalanceRoutine;
+import frc.robot.commands.routines.LeaveAndBalance;
 import frc.robot.commands.routines.ScoreAndBalance;
 import frc.robot.commands.routines.ScoreAndLeave;
 import frc.robot.commands.routines.ScoreAndLeaveAndBalance;
@@ -72,8 +56,15 @@ public class RobotContainer {
 
         private static final ShuffleboardTab driverTab = Shuffleboard.getTab("Drive Info");
 
-        public static GenericEntry addToDriverTab(String name, Object defaultValue) {
-                return driverTab.add(name, defaultValue).getEntry();
+        public static GenericEntry addToDriverTab(String name, Object defaultValue, int xPos, int yPos) {
+                return driverTab.add(name, defaultValue).withPosition(xPos, yPos).getEntry();
+        }
+
+        private final GenericEntry driverControllerEntry;
+        private final GenericEntry operatorControllerEntry;
+        public void updateControllerEntries() {
+                driverControllerEntry.setBoolean(driver.isConnected());
+                operatorControllerEntry.setBoolean(operator.isConnected());
         }
 
         private SendableChooser<Command> autoChooser;
@@ -88,6 +79,9 @@ public class RobotContainer {
 
                 RuntimeTrajectoryGenerator.setTargetType(TargetLocation.Left);
                 DriverStation.silenceJoystickConnectionWarning(true);
+
+                operatorControllerEntry = addToDriverTab("Operator Controller", false, 4, 2);
+                driverControllerEntry = addToDriverTab("Driver Controller", false, 3, 2);
         }
 
         private void configureDefaultCommands() {
@@ -108,21 +102,23 @@ public class RobotContainer {
                         .withName("Only Leave Community [Driver Left or Right]"),
                 new BalanceRoutine(drivetrain, true)
                         .withName("Only Balance [Center]"),
-                new SequentialCommandGroup(new DriveOntoChargeStation(drivetrain, true)
-                        .withName("Drive Onto Charge Station [Center]"),
-                new DriveOntoChargeStation(drivetrain, true))
-                        .withName("Only Leave Community [Center]"),
                 new ScoreAndLeave(drivetrain, arm, claw)
                         .withName("Score and Leave [Driver Left or Right]"),
-                new ScoreAndBalance(drivetrain, arm, claw)
+                new ScoreAndBalance(drivetrain, arm, claw, true)
                         .withName("Score and Balance[Center]"),
-                new ScoreAndLeaveAndBalance(drivetrain, arm, claw)
-                        .withName("Score, Leave,and Balance [Center]"),
-                new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Right)
-                        .withName("Score, Leave, and Balance [Driver Left]"),
+                new LeaveAndBalance(drivetrain, TargetLocation.Center)
+                        .withName("Leave and Balance [Center]"),
+                new LeaveAndBalance(drivetrain, TargetLocation.Left)
+                        .withName("Leave and Balance [Driver Left]"),
+                new LeaveAndBalance(drivetrain, TargetLocation.Right)
+                        .withName("Leave and Balance [Driver Right]"),
+                new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Center)
+                        .withName("Score, Leave, and Balance [Center]"),
                 new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Left)
+                        .withName("Score, Leave, and Balance [Driver Left]"),
+                new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Right)
                         .withName("Score, Leave, and Balance [Driver Right]")
-        );
+                );
 
         autoChooser = new SendableChooser<Command>();
         driverTab.add("Auto Chooser", autoChooser).withPosition(3, 0);
@@ -200,28 +196,27 @@ public class RobotContainer {
                                 .onTrue(new InstantCommand(
                                                 () -> RotateArmToAngle.setScoreHeight(ArmHeight.Floor)));
 
-                // /** [operator] Open Claw */
-                // new JoystickButton(operator, Button.kRightBumper.value)
-                // .onTrue(new InstantCommand(() -> claw.openClaw(true)));
+                /** [operator] Open Claw */
+                new JoystickButton(operator, Button.kRightBumper.value)
+                .onTrue(claw.openClawCommand(true));
 
-                // /** [operator] Close Claw */
-                // new JoystickButton(operator, Button.kLeftBumper.value)
-                // .onTrue(new InstantCommand(() -> claw.closeClaw(true)));
+                /** [operator] Close Claw */
+                new JoystickButton(operator, Button.kLeftBumper.value)
+                .onTrue(claw.closeClawCommand(true));
 
-                // /**
-                // * [operator] Schedule ScoreObject when Y is pressed, cancel when released
-                // */
-                // new JoystickButton(operator, Button.kY.value)
-                // .whileTrue(new ScoreObject(drivetrain, arm, claw, false, false));
+                /**
+                * [operator] Schedule ScoreObject when Y is pressed, cancel when released
+                */
+                new JoystickButton(operator, Button.kY.value)
+                .whileTrue(new ScoreObject(drivetrain, arm, claw, false, false));
 
-                // /**
-                // * [operator] Schedule PickUpObject with HumanPlayer height when A is pressed,
-                // cancel when
-                // * released
-                // */
-                // new JoystickButton(operator, Button.kA.value)
-                // .whileTrue(new PickUpObject(drivetrain, arm, claw, ArmHeight.HumanPlayer,
-                // false, false));
+                /**
+                * [operator] Schedule PickUpObject with HumanPlayer height when A is pressed,
+                cancel when
+                * released
+                */
+                new JoystickButton(operator, Button.kA.value)
+                .whileTrue(new PickUpObject(drivetrain, arm, claw, ArmHeight.HumanPlayer, false, false));
 
                 /**
                  * [operator] Schedule RotateArmToScoreHeight when B is pressed, cancel when
@@ -234,23 +229,8 @@ public class RobotContainer {
                  * [operator] Schedule SpinIntakeWheels when X is pressed, cancel when
                  * released. This is for dispensing using intake wheels
                  */
-                // new JoystickButton(operator, Button.kX.value)
-                // .whileTrue(new SpinIntakeWheels(claw, false, 3));
-
-                /** [operator] Signal lights for cube */
-                new JoystickButton(operator, Button.kBack.value)
-                                .onTrue(new InstantCommand(() -> lightStrip.signalForCube()));
-
-                /** [operator] Signal lights for cone */
-                new JoystickButton(operator, Button.kStart.value)
-                                .onTrue(new InstantCommand(() -> lightStrip.signalForCone()));
-
-                // /**
-                // * [operator] Schedule SpinIntakeWheels when X is pressed, cancel when
-                // * released. This is for dispensing using intake wheels
-                // */
-                // new JoystickButton(operator, Button.kX.value)
-                // .whileTrue(new SpinIntakeWheels(claw, false, 3));
+                new JoystickButton(operator, Button.kX.value)
+                        .whileTrue(new SpinIntakeWheels(claw, false));
 
                 /** [operator] Signal lights for cube */
                 new JoystickButton(operator, Button.kBack.value)

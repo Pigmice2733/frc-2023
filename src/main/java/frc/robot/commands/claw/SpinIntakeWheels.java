@@ -12,11 +12,10 @@ public class SpinIntakeWheels extends CommandBase {
   private final Claw claw;
   private final boolean intakeDirection;
 
-  public SpinIntakeWheels(Claw claw, boolean intakeDirection, double time) {
+  public SpinIntakeWheels(Claw claw, boolean intakeDirection) {
     this.claw = claw;
     this.intakeDirection = intakeDirection;
 
-    withTimeout(time);
     addRequirements(claw);  
   }
 

@@ -68,7 +68,7 @@ public class RuntimeTrajectoryGenerator {
 
     private static TargetLocation selectedTargetLocation = TargetLocation.Center;
     private static GenericEntry targetLocationEntry = RobotContainer.addToDriverTab("Target Location",
-            selectedTargetLocation.toString());
+            selectedTargetLocation.toString(), 3, 1);
 
     public static void setTargetType(TargetLocation targetLocation) {
         selectedTargetLocation = targetLocation;

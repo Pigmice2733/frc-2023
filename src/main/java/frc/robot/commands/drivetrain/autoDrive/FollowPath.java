@@ -23,7 +23,7 @@ public class FollowPath extends SequentialCommandGroup {
      */
     public FollowPath(Drivetrain drivetrain, PathPlannerTrajectory trajectory) {
         addCommands(
-            drivetrain.resetOdometryCommand(),
+            drivetrain.setOdometryPoseCommand(trajectory.getInitialPose()),
             new PPRamseteCommand(
                 trajectory,
                 drivetrain::getPose,
@@ -51,7 +51,7 @@ public class FollowPath extends SequentialCommandGroup {
     public FollowPath(Drivetrain drivetrain, String pathName) {
         this(
             drivetrain, 
-            PathPlanner.loadPath("New New Path", new PathConstraints(DrivetrainConfig.maxTrajectoryVel, DrivetrainConfig.maxTrajectoryAcc))
+            PathPlanner.loadPath(pathName, new PathConstraints(DrivetrainConfig.maxTrajectoryVel, DrivetrainConfig.maxTrajectoryAcc))
         );
     }
 }

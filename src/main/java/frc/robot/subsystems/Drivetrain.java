@@ -267,6 +267,9 @@ public class Drivetrain extends SubsystemBase {
     rightDrive.getEncoder().setPosition(0);
   }
 
+  /** setOdometryPose() as a command */
+  public Command setOdometryPoseCommand(Pose2d pose) { return new InstantCommand( () -> setOdometryPose(pose)); }
+
   /**
    * Drives the robot with given directional and rotational speeds.
    * 

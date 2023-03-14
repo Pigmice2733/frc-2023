@@ -50,7 +50,7 @@ public class LightStrip extends SubsystemBase {
 
     private static SignaledObject selectedSignaledObject = SignaledObject.Cube;
     private static GenericEntry signaledObjectEntry = RobotContainer.addToDriverTab("Signaled Object",
-            selectedSignaledObject.toString());
+            selectedSignaledObject.toString(), 4, 0);
 
     private static void setSignaledObject(SignaledObject signaledObject) {
         selectedSignaledObject = signaledObject;

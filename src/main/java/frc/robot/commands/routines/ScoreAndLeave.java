@@ -12,11 +12,8 @@ import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.RotatingArm;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class ScoreAndLeave extends SequentialCommandGroup {
-  /** Creates a new ScoreAndLeave. */
+  /** Score and leave from Left or Right. Start facing the grid, command does not turn robot around */
   public ScoreAndLeave(Drivetrain drivetrain, RotatingArm arm, Claw claw) {
     addCommands(
       new ScoreObject(drivetrain, arm, claw, ArmHeight.High, true, true),

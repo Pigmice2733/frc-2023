@@ -5,18 +5,30 @@
 package frc.robot.commands.routines;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commands.drivetrain.autoDrive.DriveDistancePID;
+import frc.robot.commands.drivetrain.autoDrive.TurnDegreesPID;
 import frc.robot.commands.objectManipulation.ScoreObject;
 import frc.robot.commands.rotatingArm.RotateArmToAngle.ArmHeight;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.RotatingArm;
 
+/** Score, turns around (if specified), and balances. Always start robot at center facing the grid. 
+ * Will turn robot around if specified before balancing */
 public class ScoreAndBalance extends SequentialCommandGroup {
-  public ScoreAndBalance(Drivetrain drivetrain, RotatingArm arm, Claw claw) {
-    addCommands(
-      new ScoreObject(drivetrain, arm, claw, ArmHeight.High, true, true),
-      new BalanceRoutine(drivetrain, true));
-    
+  public ScoreAndBalance(Drivetrain drivetrain, RotatingArm arm, Claw claw, boolean turnAround) {
+    addCommands(new ScoreObject(drivetrain, arm, claw, ArmHeight.High, true, true));
+
+    if (turnAround)
+      addCommands(new DriveDistancePID(drivetrain, -0.5).withTimeout(3),
+        new TurnDegreesPID(drivetrain, 180));
+
+    addCommands(new BalanceRoutine(drivetrain));
     addRequirements(drivetrain, arm, claw);
+  }
+
+  /** Score and balances. Always start robot at center */
+  public ScoreAndBalance(Drivetrain drivetrain, RotatingArm arm, Claw claw) {
+    this(drivetrain, arm, claw, false);
   }
 }

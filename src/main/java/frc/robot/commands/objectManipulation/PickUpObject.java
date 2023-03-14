@@ -30,9 +30,9 @@ public class PickUpObject extends SequentialCommandGroup {
       addCommands(new DriveDistancePID(drivetrain, -1));
 
     addCommands(
-      new InstantCommand(() -> claw.openClaw(true)),
+      claw.openClawCommand(true),
       new DriveDistancePID(drivetrain, 1),
-      new InstantCommand(() -> claw.openClaw(false)));
+      claw.closeClawCommand(true));
       
     if (lowerArm) {
       addCommands(

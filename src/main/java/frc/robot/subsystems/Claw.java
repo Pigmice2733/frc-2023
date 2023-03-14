@@ -6,6 +6,8 @@ package frc.robot.subsystems;
 
 import frc.robot.Constants.ClawConfig;
 
+import javax.management.InstanceAlreadyExistsException;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -14,6 +16,8 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Claw extends SubsystemBase {
@@ -49,6 +53,7 @@ public class Claw extends SubsystemBase {
     if (stopMotors)
       stopMotors();
   }
+  public Command closeClawCommand(boolean stopMotors) { return new InstantCommand(() -> closeClaw(stopMotors)); }
 
   public void openClaw(boolean startMotors) {
     leftPiston.set(Value.kReverse);
@@ -57,6 +62,7 @@ public class Claw extends SubsystemBase {
     if (startMotors)
       startMotors(false);
   }
+  public Command openClawCommand(boolean startMotors) { return new InstantCommand(() -> openClaw(startMotors)); }
 
   private void outputToMotors(double output) {
     output *= SmartDashboard.getNumber("Output multiplier", 1);

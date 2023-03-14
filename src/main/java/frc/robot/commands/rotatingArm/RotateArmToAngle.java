@@ -74,7 +74,7 @@ public class RotateArmToAngle extends CommandBase {
 
   private static ArmHeight selectedScoreHeight = ArmHeight.Floor;
   private static GenericEntry targetHeightEntry = RobotContainer.addToDriverTab("Target Height",
-      selectedScoreHeight.toString());
+      selectedScoreHeight.toString(), 4, 1);
 
   public static void setScoreHeight(ArmHeight scoreHeight) {
     selectedScoreHeight = scoreHeight;
