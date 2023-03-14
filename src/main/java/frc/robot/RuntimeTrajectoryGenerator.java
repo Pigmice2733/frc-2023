@@ -10,11 +10,9 @@ import com.pathplanner.lib.PathPoint;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
+
 import frc.robot.Constants.DrivetrainConfig;
 
 public class RuntimeTrajectoryGenerator {
@@ -46,13 +44,14 @@ public class RuntimeTrajectoryGenerator {
             default:
                 break;
         }
-        PathPoint endPoint = new PathPoint(new Translation2d(xPos, yPos), new Rotation2d(tagPose.getRotation().getRadians() - 3.1415));
+        PathPoint endPoint = new PathPoint(new Translation2d(xPos, yPos),
+                new Rotation2d(tagPose.getRotation().getRadians() - 3.1415));
         PathPoint currentPoint = new PathPoint(currentRobotPose.getTranslation(), currentRobotPose.getRotation());
 
         PathConstraints constraints = new PathConstraints(DrivetrainConfig.maxTrajectoryVel,
                 DrivetrainConfig.maxTrajectoryAcc);
         PathPlannerTrajectory trajectory = PathPlanner.generatePath(constraints, List.of(currentPoint, endPoint));
-        
+
         // System.out.println("Current Pose "+ currentRobotPose);
         // System.out.println("Target Pose "+ targetPose);
         // System.out.println(trajectory);

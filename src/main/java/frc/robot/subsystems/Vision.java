@@ -26,7 +26,6 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Vision extends SubsystemBase {
@@ -34,11 +33,11 @@ public class Vision extends SubsystemBase {
   private final PhotonCamera camera = new PhotonCamera("OV5647");
 
   private AprilTagFieldLayout layout;
- 
+
   Drivetrain drivetrain;
 
   private PhotonPipelineResult camResult;
-  
+
   private final PhotonPoseEstimator poseEstimator;
 
   private final GenericEntry robotXEntry, robotYEntry, robotYawEntry, tagXEntry, tagYEntry, tagYawEntry;
@@ -52,19 +51,21 @@ public class Vision extends SubsystemBase {
     }
 
     poseEstimator = new PhotonPoseEstimator(
-      layout,
-      PhotonPoseEstimator.PoseStrategy.AVERAGE_BEST_TARGETS, 
-      camera, 
-      new Transform3d(new Translation3d(0, 0, Units.inchesToMeters(9)),new Rotation3d(0, Math.toRadians(23), 0)));
+        layout,
+        PhotonPoseEstimator.PoseStrategy.AVERAGE_BEST_TARGETS,
+        camera,
+        new Transform3d(new Translation3d(0, 0, Units.inchesToMeters(9)), new Rotation3d(0, Math.toRadians(23), 0)));
 
     ShuffleboardTab visionTab = Shuffleboard.getTab("Vision");
     robotXEntry = visionTab.add("Robot X", 0).withPosition(1, 0).getEntry();
     robotYEntry = visionTab.add("Robot Y", 0).withPosition(2, 0).getEntry();
-    robotYawEntry = visionTab.add("Robot Yaw", 0).withWidget(BuiltInWidgets.kDial).withProperties(Map.of("min", -180, "max", 180)).withPosition(0, 0).getEntry();
+    robotYawEntry = visionTab.add("Robot Yaw", 0).withWidget(BuiltInWidgets.kDial)
+        .withProperties(Map.of("min", -180, "max", 180)).withPosition(0, 0).getEntry();
 
     tagXEntry = visionTab.add("Tag X", 0).withPosition(1, 1).getEntry();
     tagYEntry = visionTab.add("Tag Y", 0).withPosition(2, 1).getEntry();
-    tagYawEntry = visionTab.add("Tag Yaw", 0).withWidget(BuiltInWidgets.kDial).withProperties(Map.of("min", -180, "max", 180)).withPosition(0, 1).getEntry();
+    tagYawEntry = visionTab.add("Tag Yaw", 0).withWidget(BuiltInWidgets.kDial)
+        .withProperties(Map.of("min", -180, "max", 180)).withPosition(0, 1).getEntry();
   }
 
   private Pose2d estimatedRobotPose;
