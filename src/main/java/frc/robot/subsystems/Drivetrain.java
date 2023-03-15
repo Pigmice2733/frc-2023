@@ -6,6 +6,8 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.math.system.plant.LinearSystemId.identifyDrivetrainSystem;
 
+import java.util.Map;
+
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -119,9 +121,9 @@ public class Drivetrain extends SubsystemBase {
     navXVeloEntry = driveTab.add("NavX Velocity", 0).withPosition(2, 0).getEntry();
 
     leftVoltageEntry = driveTab.add("Left Voltage", 0).withWidget(BuiltInWidgets.kVoltageView).withPosition(0, 3)
-        .getEntry();
-    rightVoltageEntry = driveTab.add("Right Voltage", 0).withWidget(BuiltInWidgets.kVoltageView).withPosition(1, 3)
-        .getEntry();
+      .withProperties(Map.of("min", -12, "max", 12)).getEntry();
+    rightVoltageEntry = driveTab.add("Right Voltage", 0).withWidget(BuiltInWidgets.kVoltageView).withPosition(0, 4)
+      .withProperties(Map.of("min", -12, "max", 12)).getEntry();
 
     driveTab.add("Heading", gyro).withPosition(0, 0);
 

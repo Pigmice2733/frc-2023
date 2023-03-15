@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DrivetrainConfig;
 import frc.robot.Constants.RotatingArmConfig;
 import frc.robot.subsystems.RotatingArm;
@@ -30,7 +31,9 @@ public class Controls {
         joystickValue = MathUtil.applyDeadband(-joystickValue, threshold); // deals with stick drag
         joystickValue = driveSpeedFilter.calculate(joystickValue);
 
-        return joystickValue * DrivetrainConfig.driveSpeed * calcArmAngleMultiplier();
+        double armAngleMultiplier = calcArmAngleMultiplier();
+        SmartDashboard.putNumber("Arm Angle Multiplier", armAngleMultiplier);
+        return joystickValue * DrivetrainConfig.driveSpeed * armAngleMultiplier;
     }
 
     LinearFilter turnSpeedFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
