@@ -8,12 +8,11 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants.DrivetrainConfig;
 import frc.robot.subsystems.Drivetrain;
 
 public class AutoBalance extends CommandBase {
   private Drivetrain drivetrain;
-  private PIDController balancePID = new PIDController(0.028, 0, 0.0035);
+  private PIDController balancePID = new PIDController(0.033, 0, 0.0007);
 
   /** Robot must be lined up with the charge station. */
   public AutoBalance(Drivetrain drivetrain) {
@@ -22,7 +21,7 @@ public class AutoBalance extends CommandBase {
     this.balancePID.setTolerance(0.1, 0.1);
     this.balancePID.setSetpoint(0);
 
-    SmartDashboard.putData(balancePID);
+    SmartDashboard.putData("balance/pid", balancePID);
 
     addRequirements(drivetrain);
   }
@@ -40,7 +39,7 @@ public class AutoBalance extends CommandBase {
     double speed = balancePID.calculate(drivetrain.getPitch());
     SmartDashboard.putNumber("balance/output", speed);
 
-    speed = MathUtil.clamp(speed, -0.5, 0.5);
+    speed = MathUtil.clamp(speed, -6.0, 6.0);
 
     drivetrain.arcadeDrive(speed, 0);
   }

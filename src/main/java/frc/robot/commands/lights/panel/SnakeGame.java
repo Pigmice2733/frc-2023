@@ -4,7 +4,9 @@ import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.lights.Colors;
 import frc.robot.lights.Images;
 import frc.robot.lights.Text.TextScrollDirection;
 import frc.robot.subsystems.LightsPanel;
@@ -35,6 +37,15 @@ public class SnakeGame extends CommandBase {
         if (!gameRunning)
             return;
         // get input
+        if (DriverStation.getStickPOV(1, 0) > 0) {
+            snakeDirection = 0;
+        } else if (DriverStation.getStickPOV(1, 90) > 0) {
+            snakeDirection = 1;
+        } else if (DriverStation.getStickPOV(1, 180) > 0) {
+            snakeDirection = 2;
+        } else if (DriverStation.getStickPOV(1, 270) > 0) {
+            snakeDirection = 3;
+        }
 
         // move snake head in direction
         switch (snakeDirection) {
@@ -107,7 +118,7 @@ public class SnakeGame extends CommandBase {
 
     private void endGame() {
         this.gameRunning = false;
-        this.lights.scrollText("Game Over", null, TextScrollDirection.LEFT, 0, Images.DB, 1, 10);
+        this.lights.scrollText("Game Over", null, TextScrollDirection.LEFT, 0, Colors.BLUE, 1, 10);
     }
 
     private static class Vec2i {

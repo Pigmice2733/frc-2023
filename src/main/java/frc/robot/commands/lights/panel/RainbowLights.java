@@ -25,8 +25,9 @@ public class RainbowLights extends CommandBase {
     }
 
     @Override
-    public boolean isFinished() {
-        return false;
+    public void end(boolean interrupted) {
+        System.out.println("ENDING RAINBOW");
+        this.lights.clearPanel();
     }
 
     @Override

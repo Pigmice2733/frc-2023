@@ -80,6 +80,12 @@ public class LightsPanel extends SubsystemBase {
         return rgb;
     }
 
+    public void clearPanel() {
+        for (int i = 0; i < LED_GRID_LEN; i++)
+            led_buffer.setRGB(i, 0, 0, 0);
+        led.setData(led_buffer);
+    }
+
     public void displayImage(Image image) {
         this.displayGrid(image.getBuffer());
     }
@@ -91,10 +97,10 @@ public class LightsPanel extends SubsystemBase {
     }
 
     public void displayGrid(byte[][] image) {
-        for (int y = 0; y < image.length; y++) {
-            for (int x = 0; x < image[0].length; x++) {
+        for (int y = 0; y < LED_GRID_W; y++) {
+            for (int x = 0; x < LED_GRID_W; x++) {
                 int coord = mapCoordinatesToIndex(x, y);
-                if (image[y][x] > 0) {
+                if (y < image.length && x < image[0].length && image[y][x] > 0) {
                     RGB color = Colors.COLORS[image[y][x]]; // hexToRGB(image[y][x]);
                     led_buffer.setRGB(coord, color.getR(), color.getG(), color.getB());
                 } else
@@ -136,7 +142,7 @@ public class LightsPanel extends SubsystemBase {
             int col = i % LED_GRID_W;
             int coord = mapCoordinatesToIndex(col, row);
             int dist = row + col;
-            led_buffer.setHSV(coord, (HUE_STEP * dist + HUE_OFFSET) % 180, 255, 64);
+            led_buffer.setHSV(coord, (HUE_STEP * dist + HUE_OFFSET) % 180, 255, 32);
         }
 
         led.setData(led_buffer);

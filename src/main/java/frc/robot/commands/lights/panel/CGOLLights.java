@@ -2,6 +2,7 @@ package frc.robot.commands.lights.panel;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.lights.Colors;
 import frc.robot.subsystems.LightsPanel;
 
 public class CGOLLights extends CommandBase {
@@ -32,36 +33,39 @@ public class CGOLLights extends CommandBase {
 
         for (int y = 0; y < board.length; y++) {
             for (int x = 0; x < board[0].length; x++) {
-                board[y][x] = (byte) Math.round(Math.random());
+                board[y][x] = (byte) (Math.round(Math.random()) * Colors.PURPLE);
             }
         }
 
-        lights.displayGrid(board);
-
         addRequirements(this.lights);
+    }
+
+    @Override
+    public void initialize() {
+        lights.displayGrid(board);
     }
 
     private int count_neighbors(int x, int y) {
         int neighbors = 0;
         // adjacent
         if (x > 0)
-            neighbors += board[y][x - 1];
+            neighbors += Math.signum(board[y][x - 1]);
         if (y > 0)
-            neighbors += board[y - 1][x];
+            neighbors += Math.signum(board[y - 1][x]);
         if (x < board[0].length - 1)
-            neighbors += board[y][x + 1];
+            neighbors += Math.signum(board[y][x + 1]);
         if (y < board.length - 1)
-            neighbors += board[y + 1][x];
+            neighbors += Math.signum(board[y + 1][x]);
 
         // diagonal
         if (x > 0 && y > 0)
-            neighbors += board[y - 1][x - 1];
+            neighbors += Math.signum(board[y - 1][x - 1]);
         if (x > 0 && y < board.length - 1)
-            neighbors += board[y + 1][x - 1];
+            neighbors += Math.signum(board[y + 1][x - 1]);
         if (x < board[0].length - 1 && y > 0)
-            neighbors += board[y - 1][x + 1];
+            neighbors += Math.signum(board[y - 1][x + 1]);
         if (x < board[0].length - 1 && y < board.length - 1)
-            neighbors += board[y + 1][x + 1];
+            neighbors += Math.signum(board[y + 1][x + 1]);
 
         return neighbors;
     }
@@ -92,7 +96,7 @@ public class CGOLLights extends CommandBase {
                 if (neighbors < 2)
                     new_board[y][x] = 0;
                 else if (neighbors == 3)
-                    new_board[y][x] = 1;
+                    new_board[y][x] = Colors.PURPLE;
                 else if (neighbors > 3)
                     new_board[y][x] = 0;
                 else

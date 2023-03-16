@@ -121,9 +121,9 @@ public class Drivetrain extends SubsystemBase {
     navXVeloEntry = driveTab.add("NavX Velocity", 0).withPosition(2, 0).getEntry();
 
     leftVoltageEntry = driveTab.add("Left Voltage", 0).withWidget(BuiltInWidgets.kVoltageView).withPosition(0, 3)
-      .withProperties(Map.of("min", -12, "max", 12)).getEntry();
+        .withProperties(Map.of("min", -12, "max", 12)).getEntry();
     rightVoltageEntry = driveTab.add("Right Voltage", 0).withWidget(BuiltInWidgets.kVoltageView).withPosition(0, 4)
-      .withProperties(Map.of("min", -12, "max", 12)).getEntry();
+        .withProperties(Map.of("min", -12, "max", 12)).getEntry();
 
     driveTab.add("Heading", gyro).withPosition(0, 0);
 
@@ -189,6 +189,8 @@ public class Drivetrain extends SubsystemBase {
       yPosEntry.setDouble(pose.getY());
     }
 
+    SmartDashboard.putNumber("Pitch", this.getPitch());
+
     field.setRobotPose(getPose());
   }
 
@@ -221,8 +223,8 @@ public class Drivetrain extends SubsystemBase {
    * Returns the average distance moved by left and right wheels since last reset.
    */
   public double getAverageDistance() {
-    double left = leftDrive.getEncoder().getPosition() * (leftGroup.getInverted() ? 1 : -1);
-    double right = rightDrive.getEncoder().getPosition() * (rightGroup.getInverted() ? 1 : -1);
+    double left = leftDrive.getEncoder().getPosition() * (leftGroup.getInverted() ? -1 : 1);
+    double right = rightDrive.getEncoder().getPosition() * (rightGroup.getInverted() ? -1 : 1);
 
     return (left + right) / 2d;
   }
@@ -269,7 +271,9 @@ public class Drivetrain extends SubsystemBase {
   }
 
   /** setOdometryPose() as a command */
-  public Command setOdometryPoseCommand(Pose2d pose) { return new InstantCommand( () -> setOdometryPose(pose)); }
+  public Command setOdometryPoseCommand(Pose2d pose) {
+    return new InstantCommand(() -> setOdometryPose(pose));
+  }
 
   /**
    * Drives the robot with given directional and rotational speeds.

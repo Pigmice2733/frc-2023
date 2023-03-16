@@ -32,8 +32,8 @@ public class Claw extends SubsystemBase {
   private final CANSparkMax rightMotor = new CANSparkMax(ClawConfig.rightMotorPort, MotorType.kBrushless);
 
   public Claw() {
-    compressor.disable();
-    compressor.close();
+    // compressor.disable();
+    // compressor.close();
     leftPiston.set(Value.kForward);
     rightPiston.set(Value.kReverse);
 
@@ -53,7 +53,10 @@ public class Claw extends SubsystemBase {
     if (stopMotors)
       stopMotors();
   }
-  public Command closeClawCommand(boolean stopMotors) { return new InstantCommand(() -> closeClaw(stopMotors)); }
+
+  public Command closeClawCommand(boolean stopMotors) {
+    return new InstantCommand(() -> closeClaw(stopMotors));
+  }
 
   public void openClaw(boolean startMotors) {
     leftPiston.set(Value.kReverse);
@@ -62,7 +65,10 @@ public class Claw extends SubsystemBase {
     if (startMotors)
       startMotors(false);
   }
-  public Command openClawCommand(boolean startMotors) { return new InstantCommand(() -> openClaw(startMotors)); }
+
+  public Command openClawCommand(boolean startMotors) {
+    return new InstantCommand(() -> openClaw(startMotors));
+  }
 
   private void outputToMotors(double output) {
     output *= SmartDashboard.getNumber("Output multiplier", 1);

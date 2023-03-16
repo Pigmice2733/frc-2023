@@ -4,7 +4,6 @@
 
 package frc.robot.commands.drivetrain.autoDrive;
 
-
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
@@ -18,19 +17,25 @@ public class DriveDistancePID extends ProfiledPIDCommand {
 
   private final double distance;
   private final Drivetrain drivetrain;
+
   /**
    * Use profiled PID to drive the specified distance.
+   * 
    * @param drivetrain a drivetrain subsystem
-   * @param distance The distance to drive in meters. The robot will move forward if this is positive or backward if this is negative.
+   * @param distance   The distance to drive in meters. The robot will move
+   *                   forward if this is positive or backward if this is
+   *                   negative.
    */
   public DriveDistancePID(Drivetrain drivetrain, double distance) {
     super(
-      new ProfiledPIDController(DrivetrainConfig.driveDistP, DrivetrainConfig.driveDistI, DrivetrainConfig.driveDistD, new Constraints(DrivetrainConfig.driveDistVel, DrivetrainConfig.driveDistAcc)), 
-      drivetrain::getAverageDistance,
-      100000, 
-      (output,setpoint) -> { drivetrain.arcadeDrive(output, 0); },
-      drivetrain
-    );
+        new ProfiledPIDController(DrivetrainConfig.driveDistP, DrivetrainConfig.driveDistI, DrivetrainConfig.driveDistD,
+            new Constraints(DrivetrainConfig.driveDistVel, DrivetrainConfig.driveDistAcc)),
+        drivetrain::getAverageDistance,
+        100000,
+        (output, setpoint) -> {
+          drivetrain.arcadeDrive(output, 0);
+        },
+        drivetrain);
     this.distance = distance;
     this.drivetrain = drivetrain;
 
@@ -39,12 +44,17 @@ public class DriveDistancePID extends ProfiledPIDCommand {
   }
 
   @Override
-  public void initialize() { 
+  public void initialize() {
     super.initialize();
     double targetDist = distance + drivetrain.getAverageDistance();
     m_goal = () -> new State(targetDist, 0);
     getController().setGoal(m_goal.get());
     SmartDashboard.putData(getController());
+  }
+
+  @Override
+  public void execute() {
+    super.execute();
   }
 
   @Override

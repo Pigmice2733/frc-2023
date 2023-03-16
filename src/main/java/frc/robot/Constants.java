@@ -125,7 +125,7 @@ public final class Constants {
         public static final double maxArmAngleDegrees = 100;
         public static final double minArmAngleDegrees = 3;
 
-        public static final int[] brakePort = { 0, 5 };
+        public static final int[] brakePort = { 4, 5 };
         public static final double manualSpeed = 0.34;
 
         public static final double constantUpSpeed = 0.36;
@@ -146,8 +146,8 @@ public final class Constants {
     }
 
     public static final class ClawConfig { // BRAKE 0
-        public static final int leftPistonPorts[] = { 1, 2 };
-        public static final int rightPistonPorts[] = { 3, 4 };
+        public static final int leftPistonPorts[] = { 0, 1 };
+        public static final int rightPistonPorts[] = { 2, 3 };
 
         public static final int leftMotorPort = 10;
         public static final int rightMotorPort = 11;

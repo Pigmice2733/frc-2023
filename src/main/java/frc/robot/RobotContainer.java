@@ -20,6 +20,7 @@ import frc.robot.commands.claw.SpinIntakeWheels;
 import frc.robot.commands.drivetrain.autoDrive.DriveDistancePID;
 import frc.robot.commands.drivetrain.balance.HoldPosition;
 import frc.robot.commands.drivetrain.defaultCommands.ArcadeDrive;
+import frc.robot.commands.lights.panel.RotatingPanelSequence;
 import frc.robot.commands.lights.strip.RunningColor;
 import frc.robot.commands.objectManipulation.PickUpObject;
 import frc.robot.commands.objectManipulation.ScoreObject;
@@ -35,6 +36,7 @@ import frc.robot.commands.routines.ScoreLeaveIntakeBalance;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.LightStrip;
+import frc.robot.subsystems.LightsPanel;
 import frc.robot.subsystems.RotatingArm;
 
 /**
@@ -48,7 +50,7 @@ public class RobotContainer {
         // private final Vision vision = new Vision();
         private final RotatingArm arm = new RotatingArm();
         private final Claw claw = new Claw();
-        // private final LightsPanel lightPanel = new LightsPanel();
+        private final LightsPanel lightPanel = new LightsPanel();
         private final LightStrip lightStrip = new LightStrip();
 
         private final XboxController driver = new XboxController(0);
@@ -63,6 +65,7 @@ public class RobotContainer {
 
         private final GenericEntry driverControllerEntry;
         private final GenericEntry operatorControllerEntry;
+
         public void updateControllerEntries() {
                 driverControllerEntry.setBoolean(driver.isConnected());
                 operatorControllerEntry.setBoolean(operator.isConnected());
@@ -90,48 +93,45 @@ public class RobotContainer {
                                 new ArcadeDrive(drivetrain, controls::getDriveSpeed, controls::getTurnSpeed));
                 arm.setDefaultCommand(new RotateArmManual(arm, controls::getArmRotationSpeed));
                 lightStrip.setDefaultCommand(new RunningColor(lightStrip));
-                // lightPanel.setDefaultCommand(new ScrollSponsors(lightPanel));
+                lightPanel.setDefaultCommand(new RotatingPanelSequence(lightPanel).repeatedly());
         }
 
-    private void configureAutoChooser() {
-        driverTab.addString("1", () -> "Select Auto Command").withPosition(0, 0).withSize(3, 1);
-        driverTab.addString("2", () -> "Face Robot Towards Grid").withPosition(0, 1).withSize(3, 1);
-        driverTab.addString("3", () -> "Check Controllers").withPosition(0, 2).withSize(3, 1);
+        private void configureAutoChooser() {
+                driverTab.addString("1", () -> "Select Auto Command").withPosition(0, 0).withSize(3, 1);
+                driverTab.addString("2", () -> "Face Robot Towards Grid").withPosition(0, 1).withSize(3, 1);
+                driverTab.addString("3", () -> "Check Controllers").withPosition(0, 2).withSize(3, 1);
 
-        List<Command> autoCommands = List.of(
-                new DriveDistancePID(drivetrain, -4)
-                        .withName("Only Leave Community [Driver Left or Right]"),
-                new BalanceRoutine(drivetrain, true)
-                        .withName("Only Balance [Center]"),
-                new ScoreAndLeave(drivetrain, arm, claw)
-                        .withName("Score, Leave [Driver Left or Right]"),
-                new ScoreAndBalance(drivetrain, arm, claw, true)
-                        .withName("Score, Balance[Center]"),
-                new LeaveAndBalance(drivetrain, TargetLocation.Center)
-                        .withName("Leave, Balance [Center]"),
-                new LeaveAndBalance(drivetrain, TargetLocation.Left)
-                        .withName("Leave, Balance [Driver Left]"),
-                new LeaveAndBalance(drivetrain, TargetLocation.Right)
-                        .withName("Leave, Balance [Driver Right]"),
-                new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Center)
-                        .withName("Score, Leave, Balance [Center]"),
-                new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Left)
-                        .withName("Score, Leave, Balance [Driver Left]"),
-                new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Right)
-                        .withName("Score, Leave, Balance [Driver Right]"),
-                new ScoreLeaveIntakeBalance(drivetrain, arm, claw)
-                        .withName("Score, Leave, Intake, Balance [Driver Left]")
-                );
+                List<Command> autoCommands = List.of(
+                                new DriveDistancePID(drivetrain, -4)
+                                                .withName("Only Leave Community [Driver Left or Right]"),
+                                new BalanceRoutine(drivetrain, true)
+                                                .withName("Only Balance [Center]"),
+                                new ScoreAndLeave(drivetrain, arm, claw)
+                                                .withName("Score and Leave [Driver Left or Right]"),
+                                new ScoreAndBalance(drivetrain, arm, claw, true)
+                                                .withName("Score and Balance[Center]"),
+                                new LeaveAndBalance(drivetrain, TargetLocation.Center)
+                                                .withName("Leave and Balance [Center]"),
+                                new LeaveAndBalance(drivetrain, TargetLocation.Left)
+                                                .withName("Leave and Balance [Driver Left]"),
+                                new LeaveAndBalance(drivetrain, TargetLocation.Right)
+                                                .withName("Leave and Balance [Driver Right]"),
+                                new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Center)
+                                                .withName("Score, Leave, and Balance [Center]"),
+                                new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Left)
+                                                .withName("Score, Leave, and Balance [Driver Left]"),
+                                new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Right)
+                                                .withName("Score, Leave, and Balance [Driver Right]"));
 
-        autoChooser = new SendableChooser<Command>();
-        driverTab.add("Auto Chooser", autoChooser).withPosition(3, 0);
+                autoChooser = new SendableChooser<Command>();
+                driverTab.add("Auto Chooser", autoChooser).withPosition(3, 0);
 
-        autoCommands.forEach(command -> {
-            autoChooser.addOption(command.getName(), command);
-        });
+                autoCommands.forEach(command -> {
+                        autoChooser.addOption(command.getName(), command);
+                });
 
-        autoChooser.setDefaultOption("None", new WaitCommand(1));
-    }
+                autoChooser.setDefaultOption("None", new WaitCommand(1));
+        }
 
         /**
          * Use this method to define your button->command mappings. Buttons can be
@@ -201,25 +201,26 @@ public class RobotContainer {
 
                 /** [operator] Open Claw */
                 new JoystickButton(operator, Button.kRightBumper.value)
-                .onTrue(claw.openClawCommand(true));
+                                .onTrue(claw.openClawCommand(true));
 
                 /** [operator] Close Claw */
                 new JoystickButton(operator, Button.kLeftBumper.value)
-                .onTrue(claw.closeClawCommand(true));
+                                .onTrue(claw.closeClawCommand(true));
 
                 /**
-                * [operator] Schedule ScoreObject when Y is pressed, cancel when released
-                */
+                 * [operator] Schedule ScoreObject when Y is pressed, cancel when released
+                 */
                 new JoystickButton(operator, Button.kY.value)
-                .whileTrue(new ScoreObject(drivetrain, arm, claw, false, false));
+                                .whileTrue(new ScoreObject(drivetrain, arm, claw, false, false));
 
                 /**
-                * [operator] Schedule PickUpObject with HumanPlayer height when A is pressed,
-                cancel when
-                * released
-                */
+                 * [operator] Schedule PickUpObject with HumanPlayer height when A is pressed,
+                 * cancel when
+                 * released
+                 */
                 new JoystickButton(operator, Button.kA.value)
-                .whileTrue(new PickUpObject(drivetrain, arm, claw, ArmHeight.HumanPlayer, false, false));
+                                .whileTrue(new PickUpObject(drivetrain, arm, claw, ArmHeight.HumanPlayer, false,
+                                                false));
 
                 /**
                  * [operator] Schedule RotateArmToScoreHeight when B is pressed, cancel when
@@ -233,7 +234,7 @@ public class RobotContainer {
                  * released. This is for dispensing using intake wheels
                  */
                 new JoystickButton(operator, Button.kX.value)
-                        .whileTrue(new SpinIntakeWheels(claw, false));
+                                .whileTrue(new SpinIntakeWheels(claw, false));
 
                 /** [operator] Signal lights for cube */
                 new JoystickButton(operator, Button.kBack.value)
