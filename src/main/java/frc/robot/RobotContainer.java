@@ -66,7 +66,7 @@ public class RobotContainer {
         private final GenericEntry driverControllerEntry;
         private final GenericEntry operatorControllerEntry;
 
-        public void updateControllerEntries() {
+        public void updateControllerEntries() { // Called in Robot.robotPeriodic()
                 driverControllerEntry.setBoolean(driver.isConnected());
                 operatorControllerEntry.setBoolean(operator.isConnected());
         }
@@ -121,7 +121,9 @@ public class RobotContainer {
                                 new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Left)
                                                 .withName("Score, Leave, and Balance [Driver Left]"),
                                 new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Right)
-                                                .withName("Score, Leave, and Balance [Driver Right]"));
+                                                .withName("Score, Leave, and Balance [Driver Right]"),
+                                new ScoreLeaveIntakeBalance(drivetrain, arm, claw)
+                                                .withName("Score, Leave, Intake, Balance [Driver Left]"));
 
                 autoChooser = new SendableChooser<Command>();
                 driverTab.add("Auto Chooser", autoChooser).withPosition(3, 0);
