@@ -15,7 +15,7 @@ public class AlignAndScore extends SequentialCommandGroup {
   public AlignAndScore(Vision vision, Drivetrain drivetrain, RotatingArm arm, Claw claw) {
     addCommands(
       new FullyAlign(drivetrain, vision),
-      new ScoreObject(drivetrain, arm, claw, true, true)
+      new ScoreObject(drivetrain, arm, claw, true, false)
     );
     addRequirements(vision, drivetrain);
   }

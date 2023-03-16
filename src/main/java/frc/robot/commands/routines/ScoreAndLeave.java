@@ -16,7 +16,8 @@ public class ScoreAndLeave extends SequentialCommandGroup {
   /** Score and leave from Left or Right. Start facing the grid, command does not turn robot around */
   public ScoreAndLeave(Drivetrain drivetrain, RotatingArm arm, Claw claw) {
     addCommands(
-      new ScoreObject(drivetrain, arm, claw, ArmHeight.High, true, true),
-      new DriveDistancePID(drivetrain, -3));
+      new ScoreObject(drivetrain, arm, claw, ArmHeight.High, false, false),
+      arm.setSetpointCommand(ArmHeight.Floor),
+      new DriveDistancePID(drivetrain, -4));
   }
 }

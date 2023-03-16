@@ -51,6 +51,7 @@ public class RotateArmToAngle extends CommandBase {
   }
 
   public enum ArmHeight {
+    Zero,
     Floor,
     Mid,
     High,
@@ -59,6 +60,8 @@ public class RotateArmToAngle extends CommandBase {
 
   public static double scoreHeightToAngle(ArmHeight scoreHeight) {
     switch (scoreHeight) {
+      case Zero:
+        return 0;
       case Floor:
         return 20;
       case Mid:

@@ -17,7 +17,8 @@ import frc.robot.subsystems.RotatingArm;
  * Will turn robot around if specified before balancing */
 public class ScoreAndBalance extends SequentialCommandGroup {
   public ScoreAndBalance(Drivetrain drivetrain, RotatingArm arm, Claw claw, boolean turnAround) {
-    addCommands(new ScoreObject(drivetrain, arm, claw, ArmHeight.High, true, true));
+    addCommands(new ScoreObject(drivetrain, arm, claw, ArmHeight.High, false, false),
+      arm.setSetpointCommand(ArmHeight.Floor));
 
     if (turnAround)
       addCommands(new DriveDistancePID(drivetrain, -0.5).withTimeout(3),

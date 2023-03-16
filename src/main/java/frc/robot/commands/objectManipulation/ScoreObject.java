@@ -28,15 +28,15 @@ public class ScoreObject extends SequentialCommandGroup {
       boolean lowerArm) {
 
     if (driveBackward)
-      addCommands(new DriveDistancePID(drivetrain, -1));
+      addCommands(new DriveDistancePID(drivetrain, -1).withTimeout(3));
 
     addCommands(
-      new DriveDistancePID(drivetrain, 1),
+      new DriveDistancePID(drivetrain, 1).withTimeout(3),
       claw.openClawCommand(true));
       
     if (lowerArm) {
       addCommands(
-          new DriveDistancePID(drivetrain, -1),
+          new DriveDistancePID(drivetrain, -1).withTimeout(3),
           new RotateArmToAngle(arm, ArmHeight.Floor));
     }
 

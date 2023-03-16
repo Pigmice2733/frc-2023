@@ -24,7 +24,7 @@ public class ScoreAndLeaveAndBalance extends SequentialCommandGroup {
    */
   public ScoreAndLeaveAndBalance(Drivetrain drivetrain, RotatingArm arm, Claw claw, TargetLocation startLocation) {
     // (1) Score
-    addCommands(new ScoreObject(drivetrain, arm, claw, ArmHeight.High, true, true));
+    addCommands(new ScoreObject(drivetrain, arm, claw, ArmHeight.High, false, false), arm.setSetpointCommand(ArmHeight.Floor));
 
     // (2) Drive out of community and line up to balance
     if (startLocation == TargetLocation.Center) {

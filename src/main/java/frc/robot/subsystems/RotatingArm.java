@@ -5,6 +5,8 @@
 package frc.robot.subsystems;
 
 import frc.robot.Constants.RotatingArmConfig;
+import frc.robot.commands.rotatingArm.RotateArmToAngle;
+import frc.robot.commands.rotatingArm.RotateArmToAngle.ArmHeight;
 
 import java.util.Map;
 
@@ -26,6 +28,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -58,6 +61,13 @@ public class RotatingArm extends SubsystemBase {
     armController.setGoal(setpoint);
     setpointEntry.setDouble(setpoint);
   }
+  public void setSetpoint(ArmHeight height) {
+    setSetpoint(RotateArmToAngle.scoreHeightToAngle(height));
+  }
+  public Command setSetpointCommand(double setpoint) { 
+    return new InstantCommand(() -> setSetpoint(setpoint)); }
+  public Command setSetpointCommand(ArmHeight height) { 
+      return new InstantCommand(() -> setSetpoint(height)); }
 
   public boolean atSetpoint() {
     return armController.atSetpoint();

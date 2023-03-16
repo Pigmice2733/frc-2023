@@ -31,6 +31,7 @@ import frc.robot.commands.routines.LeaveAndBalance;
 import frc.robot.commands.routines.ScoreAndBalance;
 import frc.robot.commands.routines.ScoreAndLeave;
 import frc.robot.commands.routines.ScoreAndLeaveAndBalance;
+import frc.robot.commands.routines.ScoreLeaveIntakeBalance;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.LightStrip;
@@ -103,21 +104,23 @@ public class RobotContainer {
                 new BalanceRoutine(drivetrain, true)
                         .withName("Only Balance [Center]"),
                 new ScoreAndLeave(drivetrain, arm, claw)
-                        .withName("Score and Leave [Driver Left or Right]"),
+                        .withName("Score, Leave [Driver Left or Right]"),
                 new ScoreAndBalance(drivetrain, arm, claw, true)
-                        .withName("Score and Balance[Center]"),
+                        .withName("Score, Balance[Center]"),
                 new LeaveAndBalance(drivetrain, TargetLocation.Center)
-                        .withName("Leave and Balance [Center]"),
+                        .withName("Leave, Balance [Center]"),
                 new LeaveAndBalance(drivetrain, TargetLocation.Left)
-                        .withName("Leave and Balance [Driver Left]"),
+                        .withName("Leave, Balance [Driver Left]"),
                 new LeaveAndBalance(drivetrain, TargetLocation.Right)
-                        .withName("Leave and Balance [Driver Right]"),
+                        .withName("Leave, Balance [Driver Right]"),
                 new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Center)
-                        .withName("Score, Leave, and Balance [Center]"),
+                        .withName("Score, Leave, Balance [Center]"),
                 new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Left)
-                        .withName("Score, Leave, and Balance [Driver Left]"),
+                        .withName("Score, Leave, Balance [Driver Left]"),
                 new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Right)
-                        .withName("Score, Leave, and Balance [Driver Right]")
+                        .withName("Score, Leave, Balance [Driver Right]"),
+                new ScoreLeaveIntakeBalance(drivetrain, arm, claw)
+                        .withName("Score, Leave, Intake, Balance [Driver Left]")
                 );
 
         autoChooser = new SendableChooser<Command>();
