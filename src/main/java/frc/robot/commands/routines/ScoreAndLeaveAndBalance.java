@@ -34,11 +34,11 @@ public class ScoreAndLeaveAndBalance extends SequentialCommandGroup {
     }
     else if (startLocation == TargetLocation.Left) {
       addCommands(
-          new FollowPath(drivetrain, "ScoreLeaveBalanceDriverLeft"));
+          new FollowPath(drivetrain, "ScoreLeaveBalanceDriverLeft", true));
     }
     else if (startLocation == TargetLocation.Right) {
       addCommands(
-          new FollowPath(drivetrain, "ScoreLeaveBalanceDriverRight"));
+          new FollowPath(drivetrain, "ScoreLeaveBalanceDriverRight", true));
     }
 
     // (3) Balance
