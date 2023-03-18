@@ -37,7 +37,7 @@ public final class Constants {
         public static final double slowMultiplier = 0.2;
 
         // Multiplied by drive speed when arm is above 45 degrees
-        public static final double armUpSlower = 0.25;
+        public static final double armUpSlower = 0.6;
 
         public static final double gearRatio = 1.0 / 8.45; // Times motor has to rotate for wheel to rotate once
         public static final double wheelDiameterMeters = Units.inchesToMeters(6);
@@ -95,7 +95,8 @@ public final class Constants {
         public static final double autoBalanceSpeed = 0.3;
         public static final double autoBalanceProportional = 0.5;
 
-        public static final double maxTrajectoryVel = 2;
+        public static final double maxTrajectoryVel = 1.2;
+        //public static final double maxTrajectoryVel = 2;
         public static final double maxTrajectoryAcc = 1;
 
         // drivetrainModel
@@ -122,8 +123,8 @@ public final class Constants {
         public static final int rightMotorPort = 6;
         public static final int encoderControllerPort = 7;
 
-        public static final double maxArmAngleDegrees = 100;
-        public static final double minArmAngleDegrees = 3;
+        public static final double maxArmAngleDegrees = 90;
+        public static final double minArmAngleDegrees = 0;
 
         public static final int[] brakePort = { 4, 5 };
         public static final double manualSpeed = 0.34;
@@ -135,11 +136,14 @@ public final class Constants {
         public static final double armHeightMeters = Units.inchesToMeters(1.0); // height of arm mount on robot from
                                                                                 // ground
 
-        public static final double kP = 0.019;
-        public static final double kI = 0.0;
-        public static final double kD = 0.0;
-        public static final double maxVelocity = 33;
-        public static final double maxAcceleration = 13;
+        public static final double kP = 0.007;
+        public static final double kI = 0.001;
+        public static final double kD = 0.0001;
+        public static final double maxVelocity = 120;
+        public static final double maxAcceleration = 150;
+
+        //public static final double armGravCompensation = 0.3;
+        public static final double armGravCompensation = 0.23;
 
         public static final int topLimitSwitchID = 0;
         public static final int bottomLimitSwitchID = 1;

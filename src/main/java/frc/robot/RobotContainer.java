@@ -1,6 +1,9 @@
 package frc.robot;
 
+import java.util.HashMap;
 import java.util.List;
+
+import com.pathplanner.lib.commands.FollowPathWithEvents;
 
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -10,6 +13,7 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -18,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.RuntimeTrajectoryGenerator.TargetLocation;
 import frc.robot.commands.claw.SpinIntakeWheels;
 import frc.robot.commands.drivetrain.autoDrive.DriveDistancePID;
+import frc.robot.commands.drivetrain.autoDrive.FollowPath;
 import frc.robot.commands.drivetrain.balance.HoldPosition;
 import frc.robot.commands.drivetrain.defaultCommands.ArcadeDrive;
 import frc.robot.commands.lights.panel.RotatingPanelSequence;
@@ -48,7 +53,7 @@ import frc.robot.subsystems.RotatingArm;
 public class RobotContainer {
         private final Drivetrain drivetrain = new Drivetrain();
         // private final Vision vision = new Vision();
-        private final RotatingArm arm = new RotatingArm();
+        public final RotatingArm arm = new RotatingArm();
         private final Claw claw = new Claw();
         private final LightsPanel lightPanel = new LightsPanel();
         private final LightStrip lightStrip = new LightStrip();
@@ -101,29 +106,36 @@ public class RobotContainer {
                 driverTab.addString("2", () -> "Face Robot Towards Grid").withPosition(0, 1).withSize(3, 1);
                 driverTab.addString("3", () -> "Check Controllers").withPosition(0, 2).withSize(3, 1);
 
+                var testEventMap = new HashMap<String, Command>();
+                SmartDashboard.putBoolean("Test Called", false);
+                testEventMap.put("TestPoint", new InstantCommand(() -> SmartDashboard.putBoolean("Test Called", true)));
                 List<Command> autoCommands = List.of(
-                                new DriveDistancePID(drivetrain, -4)
-                                                .withName("Only Leave Community [Driver Left or Right]"),
-                                new BalanceRoutine(drivetrain, true)
-                                                .withName("Only Balance [Center]"),
-                                new ScoreAndLeave(drivetrain, arm, claw)
-                                                .withName("Score and Leave [Driver Left or Right]"),
-                                new ScoreAndBalance(drivetrain, arm, claw, true)
-                                                .withName("Score and Balance[Center]"),
-                                new LeaveAndBalance(drivetrain, TargetLocation.Center)
-                                                .withName("Leave and Balance [Center]"),
-                                new LeaveAndBalance(drivetrain, TargetLocation.Left)
-                                                .withName("Leave and Balance [Driver Left]"),
-                                new LeaveAndBalance(drivetrain, TargetLocation.Right)
-                                                .withName("Leave and Balance [Driver Right]"),
-                                new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Center)
-                                                .withName("Score, Leave, and Balance [Center]"),
-                                new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Left)
-                                                .withName("Score, Leave, and Balance [Driver Left]"),
-                                new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Right)
-                                                .withName("Score, Leave, and Balance [Driver Right]"),
-                                new ScoreLeaveIntakeBalance(drivetrain, arm, claw)
-                                                .withName("Score, Leave, Intake, Balance [Driver Left]"));
+                        new DriveDistancePID(drivetrain, -4)
+                                .withName("Only Leave Community [Driver Left or Right]"),
+                        new BalanceRoutine(drivetrain, true)
+                                .withName("Only Balance [Center]"),
+                        new ScoreAndLeave(drivetrain, arm, claw)
+                                .withName("Score and Leave [Driver Left or Right]"),
+                        new ScoreAndBalance(drivetrain, arm, claw, true)
+                                .withName("Score and Balance[Center]"),
+                        new LeaveAndBalance(drivetrain, TargetLocation.Center, arm)
+                                .withName("Leave and Balance [Center]"),
+                        new LeaveAndBalance(drivetrain, TargetLocation.Left, arm)
+                                .withName("Leave and Balance [Driver Left]"),
+                        new LeaveAndBalance(drivetrain, TargetLocation.Right, arm)
+                                .withName("Leave and Balance [Driver Right]"),
+                        new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Center)
+                                .withName("Score, Leave, and Balance [Center]"),
+                        new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Left)
+                                .withName("Score, Leave, and Balance [Driver Left]"),
+                        new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Right)
+                                .withName("Score, Leave, and Balance [Driver Right]"),
+                        new ScoreLeaveIntakeBalance(drivetrain, arm, claw)
+                                .withName("Score, Leave, Intake, Balance [Driver Left]"),
+                        new ScoreObject(drivetrain, arm, claw, ArmHeight.High, false, false)
+                                .withName("Score Object Test"),
+                        new FollowPath(drivetrain, "EventTest", testEventMap, false)
+                                .withName("Path follow event test"));
 
                 autoChooser = new SendableChooser<Command>();
                 driverTab.add("Auto Chooser", autoChooser).withPosition(3, 0);
@@ -151,11 +163,11 @@ public class RobotContainer {
                  * released
                  */
                 new JoystickButton(driver, Button.kY.value)
-                                .onTrue(new InstantCommand(drivetrain::enableSlow))
-                                .onFalse(new InstantCommand(drivetrain::disableSlow));
+                        .onTrue(new InstantCommand(drivetrain::enableSlow))
+                        .onFalse(new InstantCommand(drivetrain::disableSlow));
                 new JoystickButton(driver, Button.kRightBumper.value)
-                                .onTrue(new InstantCommand(drivetrain::enableSlow))
-                                .onFalse(new InstantCommand(drivetrain::disableSlow));
+                        .onTrue(new InstantCommand(drivetrain::enableSlow))
+                        .onFalse(new InstantCommand(drivetrain::disableSlow));
 
                 // /** [driver] Schedule AlignToScore when A is pressed, cancel when released */
                 // new JoystickButton(driver, Button.kA.value)
@@ -165,55 +177,53 @@ public class RobotContainer {
                  * [driver] Schedule AlignAndScore when X is pressed, cancel when released
                  */
                 new JoystickButton(driver, Button.kX.value)
-                                .whileTrue(new HoldPosition(drivetrain));
+                        .whileTrue(new HoldPosition(drivetrain));
 
+                
+                /** [driver] Schedule BalanceRoutine when B is pressed, cancel when released */
                 new JoystickButton(driver, Button.kB.value)
-                                .whileTrue(new BalanceRoutine(drivetrain, false));
-
-                /** [driver] Force reset odometry when Start is pressed */
-                // new JoystickButton(driver, Button.kStart.value)
-                // .onTrue(new InstantCommand(() -> drivetrain.resetOdometry()));
+                        .whileTrue(new BalanceRoutine(drivetrain, false));
 
                 /** [driver] Set the TargetType in RuntimeTrajectoryGenerator with D-pad */
                 new POVButton(driver, 0) // up
-                                .onTrue(new InstantCommand(
-                                                () -> RuntimeTrajectoryGenerator.setTargetType(TargetLocation.Center)));
+                        .onTrue(new InstantCommand(
+                                () -> RuntimeTrajectoryGenerator.setTargetType(TargetLocation.Center)));
                 new POVButton(driver, 90) // right
-                                .onTrue(new InstantCommand(
-                                                () -> RuntimeTrajectoryGenerator.setTargetType(TargetLocation.Right)));
+                        .onTrue(new InstantCommand(
+                                () -> RuntimeTrajectoryGenerator.setTargetType(TargetLocation.Right)));
                 new POVButton(driver, 270) // left
-                                .onTrue(new InstantCommand(
-                                                () -> RuntimeTrajectoryGenerator.setTargetType(TargetLocation.Left)));
+                        .onTrue(new InstantCommand(
+                                () -> RuntimeTrajectoryGenerator.setTargetType(TargetLocation.Left)));
 
                 // OPERATOR
 
                 /** [operator] Set the ScoreHeight in ScoreObject with D-pad */
                 new POVButton(operator, 0) // up
-                                .onTrue(new InstantCommand(
-                                                () -> RotateArmToAngle.setScoreHeight(ArmHeight.High)));
+                        .onTrue(new InstantCommand(
+                                () -> RotateArmToAngle.setScoreHeight(ArmHeight.High)));
                 new POVButton(operator, 90) // right
-                                .onTrue(new InstantCommand(
-                                                () -> RotateArmToAngle.setScoreHeight(ArmHeight.Mid)));
+                        .onTrue(new InstantCommand(
+                                () -> RotateArmToAngle.setScoreHeight(ArmHeight.Mid)));
                 new POVButton(operator, 270) // left
-                                .onTrue(new InstantCommand(
-                                                () -> RotateArmToAngle.setScoreHeight(ArmHeight.HumanPlayer)));
+                        .onTrue(new InstantCommand(
+                                () -> RotateArmToAngle.setScoreHeight(ArmHeight.HumanPlayer)));
                 new POVButton(operator, 180) // down
-                                .onTrue(new InstantCommand(
-                                                () -> RotateArmToAngle.setScoreHeight(ArmHeight.Floor)));
+                        .onTrue(new InstantCommand(
+                                () -> RotateArmToAngle.setScoreHeight(ArmHeight.Floor)));
 
                 /** [operator] Open Claw */
                 new JoystickButton(operator, Button.kRightBumper.value)
-                                .onTrue(claw.openClawCommand(true));
+                        .onTrue(claw.openClawCommand(true));
 
                 /** [operator] Close Claw */
                 new JoystickButton(operator, Button.kLeftBumper.value)
-                                .onTrue(claw.closeClawCommand(true));
+                        .onTrue(claw.closeClawCommand(true));
 
                 /**
                  * [operator] Schedule ScoreObject when Y is pressed, cancel when released
                  */
                 new JoystickButton(operator, Button.kY.value)
-                                .whileTrue(new ScoreObject(drivetrain, arm, claw, false, false));
+                        .whileTrue(new ScoreObject(drivetrain, arm, claw, false, false));
 
                 /**
                  * [operator] Schedule PickUpObject with HumanPlayer height when A is pressed,
@@ -221,30 +231,30 @@ public class RobotContainer {
                  * released
                  */
                 new JoystickButton(operator, Button.kA.value)
-                                .whileTrue(new PickUpObject(drivetrain, arm, claw, ArmHeight.HumanPlayer, false,
-                                                false));
+                        .whileTrue(new PickUpObject(drivetrain, arm, claw, ArmHeight.HumanPlayer, false,
+                                false));
 
                 /**
                  * [operator] Schedule RotateArmToScoreHeight when B is pressed, cancel when
                  * released
                  */
                 new JoystickButton(operator, Button.kB.value)
-                                .whileTrue(new RotateArmToAngle(arm));
+                        .whileTrue(new RotateArmToAngle(arm));
 
                 /**
                  * [operator] Schedule SpinIntakeWheels when X is pressed, cancel when
                  * released. This is for dispensing using intake wheels
                  */
                 new JoystickButton(operator, Button.kX.value)
-                                .whileTrue(new SpinIntakeWheels(claw, false));
+                        .whileTrue(new SpinIntakeWheels(claw, false));
 
                 /** [operator] Signal lights for cube */
                 new JoystickButton(operator, Button.kBack.value)
-                                .onTrue(new InstantCommand(() -> lightStrip.signalForCube()));
+                        .onTrue(new InstantCommand(() -> lightStrip.signalForCube()));
 
                 /** [operator] Signal lights for cone */
                 new JoystickButton(operator, Button.kStart.value)
-                                .onTrue(new InstantCommand(() -> lightStrip.signalForCone()));
+                        .onTrue(new InstantCommand(() -> lightStrip.signalForCone()));
         }
 
         /**

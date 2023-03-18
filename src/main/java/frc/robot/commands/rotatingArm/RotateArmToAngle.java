@@ -35,7 +35,7 @@ public class RotateArmToAngle extends CommandBase {
     if (useSelectedHeight)
       targetAngle = scoreHeightToAngle(selectedScoreHeight);
       
-    arm.setSetpoint(targetAngle);
+    arm.setGoal(targetAngle);
     SmartDashboard.putBoolean("Command Running", true);
   }
 
@@ -47,7 +47,7 @@ public class RotateArmToAngle extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    return arm.atSetpoint();
+    return arm.atGoal();
   }
 
   public enum ArmHeight {

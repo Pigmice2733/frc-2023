@@ -7,35 +7,31 @@ package frc.robot.commands.drivetrain.balance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drivetrain;
 
-public class DriveOntoChargeStation extends CommandBase {
+public class AutoBalanceNew extends CommandBase {
+  private boolean hasTipped = false;
   private final Drivetrain drivetrain;
-  private boolean backwards = false;
-
-  public DriveOntoChargeStation(Drivetrain drivetrain, boolean backwards) {
+  public AutoBalanceNew(Drivetrain drivetrain) {
     this.drivetrain = drivetrain;
-    this.backwards = backwards;
-    addRequirements(drivetrain);
-  }
-
-  public DriveOntoChargeStation(Drivetrain drivetrain) {
-    this(drivetrain, false);
   }
 
   @Override
-  public void initialize() {
-  }
+  public void initialize() {}
 
   @Override
   public void execute() {
-    drivetrain.arcadeDrive((backwards ? -1 : 1) * 1.0, 0);
+    if (!hasTipped) {
+      drivetrain.arcadeDrive(0.35, 0);
+      hasTipped = Math.abs(drivetrain.getPitch()) < 10;
+    }
   }
 
   @Override
   public void end(boolean interrupted) {
+    drivetrain.arcadeDrive(0, 0);
   }
 
   @Override
   public boolean isFinished() {
-    return Math.abs(drivetrain.getPitch()) > 14;
+    return hasTipped;
   }
 }

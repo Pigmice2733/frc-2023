@@ -18,7 +18,7 @@ public class AutoBalance extends CommandBase {
   public AutoBalance(Drivetrain drivetrain) {
     this.drivetrain = drivetrain;
 
-    this.balancePID.setTolerance(0.1, 0.1);
+    this.balancePID.setTolerance(12, 0.1);
     this.balancePID.setSetpoint(0);
 
     SmartDashboard.putData("balance/pid", balancePID);
@@ -46,6 +46,6 @@ public class AutoBalance extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    return false;
+    return balancePID.atSetpoint();
   }
 }

@@ -36,8 +36,8 @@ public class RotatingArm extends SubsystemBase {
       MotorType.kBrushed);
 
   private final ShuffleboardTab armTab;
-  private final GenericEntry /* topSwitchEntry, bottomSwitchEntry, */ angleEntry, targetOutputEntry, motorOutputEntry,
-      brakeEntry, setpointEntry;
+  private final GenericEntry angleEntry, targetOutputEntry, motorOutputEntry,
+      brakeEntry, setpointEntry, goalEntry, motorAmpEntry, motorTempEntry;
 
   // private final DoubleSolenoid brake = new DoubleSolenoid(20,
   // PneumaticsModuleType.REVPH,
@@ -46,60 +46,52 @@ public class RotatingArm extends SubsystemBase {
 
   private boolean brakeEnabled = false;
 
-  private double targetMotorOutput = 0;
-
   ProfiledPIDController armController = new ProfiledPIDController(RotatingArmConfig.kP, RotatingArmConfig.kI,
       RotatingArmConfig.kD,
       new TrapezoidProfile.Constraints(RotatingArmConfig.maxVelocity, RotatingArmConfig.maxAcceleration));
 
   public void changeSetpoint(double change) {
-    setSetpoint(armController.getGoal().position + change);
+    setGoal(armController.getGoal().position + change);
   }
 
-  public void setSetpoint(double setpoint) {
-    armController.setGoal(setpoint);
-    setpointEntry.setDouble(setpoint);
+  public void setGoal(double goal) {
+    armController.setGoal(goal);
+    if (goalEntry != null) goalEntry.setDouble(goal);
   }
 
-  public void setSetpoint(ArmHeight height) {
-    setSetpoint(RotateArmToAngle.scoreHeightToAngle(height));
+  public void setGoal(ArmHeight height) {
+    setGoal(RotateArmToAngle.scoreHeightToAngle(height));
+  }
+
+  public void resetSetpointAndGoal() {
+    setGoal(0);
+    armController.reset(0);
   }
 
   public Command setSetpointCommand(double setpoint) {
-    return new InstantCommand(() -> setSetpoint(setpoint));
+    return new InstantCommand(() -> setGoal(setpoint));
   }
 
   public Command setSetpointCommand(ArmHeight height) {
-    return new InstantCommand(() -> setSetpoint(height));
+    return new InstantCommand(() -> setGoal(height));
   }
 
-  public boolean atSetpoint() {
-    return armController.atSetpoint();
+  public boolean atGoal() {
+    return armController.atGoal();
   }
-
-  // private final DigitalInput topLimitSwitch;
-  // private final DigitalInput bottomLimitSwitch;
-
-  // public boolean getTopSwitch() {
-  // return !topLimitSwitch.get();
-  // }
-
-  // public boolean getBottomSwitch() {
-  // return !bottomLimitSwitch.get();
-  // }
 
   public RotatingArm() {
-    armController.setTolerance(3, 3);
-    armController.setGoal(0);
-
-    // topLimitSwitch = new DigitalInput(RotatingArmConfig.topLimitSwitchID);
-    // bottomLimitSwitch = new DigitalInput(RotatingArmConfig.bottomLimitSwitchID);
+    armController.setTolerance(1, 3);
+    resetSetpointAndGoal();
 
     leftMotor.restoreFactoryDefaults();
     rightMotor.restoreFactoryDefaults();
 
-    leftMotor.setInverted(false); // wrong
+    leftMotor.setInverted(false);
     rightMotor.setInverted(false);
+
+    leftMotor.setSmartCurrentLimit(50);
+    rightMotor.setSmartCurrentLimit(50);
 
     setMotorIdleMode(IdleMode.kCoast);
 
@@ -108,31 +100,36 @@ public class RotatingArm extends SubsystemBase {
     resetEncoder();
 
     armTab = Shuffleboard.getTab("armTab");
-    // topSwitchEntry = armTab.add("Top Switch", false).getEntry();
-    // bottomSwitchEntry = armTab.add("Bottom Switch", false).getEntry();
+
     angleEntry = armTab.add("Arm Angle", 0).withWidget(BuiltInWidgets.kDial)
         .withProperties(Map.of("min", 0, "max", 180)).withPosition(0, 2).getEntry();
     setpointEntry = armTab.add("Setpoint", 0).withWidget(BuiltInWidgets.kDial)
         .withProperties(Map.of("min", 0, "max", 180)).withPosition(1, 2).withSize(1, 2).withSize(1, 1).getEntry();
-    brakeEntry = armTab.add("Brake Enabled", brakeEnabled).withPosition(5, 0).getEntry();
-    motorOutputEntry = armTab.add("Motor Output", 0).withWidget(BuiltInWidgets.kNumberSlider)
+    goalEntry = armTab.add("Goal", 0).withWidget(BuiltInWidgets.kDial)
+        .withProperties(Map.of("min", 0, "max", 180)).withPosition(2, 2).withSize(1, 2).withSize(1, 1).getEntry();
+    
+
+    motorOutputEntry = armTab.add("Motor Output", 0).withWidget(BuiltInWidgets.kDial)
+        .withProperties(Map.of("min", 0, "max", 1)).withPosition(1, 0).getEntry();
+    targetOutputEntry = armTab.add("Target Output", 0).withWidget(BuiltInWidgets.kDial)
         .withProperties(Map.of("min", 0, "max", 1)).withPosition(0, 0).getEntry();
-    targetOutputEntry = armTab.add("Target Output", 0).withWidget(BuiltInWidgets.kNumberSlider)
-        .withProperties(Map.of("min", 0, "max", 1)).withPosition(0, 1).getEntry();
 
-    armTab.add(new InstantCommand(() -> setMotorIdleMode(IdleMode.kBrake)).withName("BRAKE MODE")).withPosition(4, 0);
-    armTab.add(new InstantCommand(() -> setMotorIdleMode(IdleMode.kCoast)).withName("COAST MODE")).withPosition(3, 0);
+    motorTempEntry = armTab.add("Avg Temp", 0).withWidget(BuiltInWidgets.kDial)
+        .withProperties(Map.of("min", 0, "max", 100)).withPosition(0, 4).getEntry();
+    motorAmpEntry = armTab.add("Avg Amp", 0).withWidget(BuiltInWidgets.kDial)
+        .withProperties(Map.of("min", 0, "max", 60)).withPosition(1, 4).getEntry();
 
-    armTab.add(new InstantCommand(() -> enableBrake()).withName("Enable Brake")).withPosition(3, 1);
-    armTab.add(new InstantCommand(() -> disableBrake()).withName("Disable Brake")).withPosition(4, 1);
+    armTab.add(new InstantCommand(() -> setMotorIdleMode(IdleMode.kBrake)).withName("BRAKE MODE")).withPosition(5, 0);
+    armTab.add(new InstantCommand(() -> setMotorIdleMode(IdleMode.kCoast)).withName("COAST MODE")).withPosition(4, 0);
 
-    armTab.add("Arm Rotation Controller", armController).withPosition(2, 0);
+    armTab.add(new InstantCommand(() -> enableBrake()).withName("Enable Brake")).withPosition(4, 2);
+    armTab.add(new InstantCommand(() -> disableBrake()).withName("Disable Brake")).withPosition(5, 2);
+    brakeEntry = armTab.add("Brake Enabled", brakeEnabled).withPosition(6, 2).getEntry();
   }
 
   @Override
   public void periodic() {
     updateShuffleboard();
-    // applyClawOutput();
     updateController();
 
     SmartDashboard.putNumber("Amps", leftMotor.getOutputCurrent());
@@ -144,7 +141,7 @@ public class RotatingArm extends SubsystemBase {
    * filter to work correctly
    */
   private void updateController() {
-    double motorOutput = armController.calculate(getAngle());
+    double controllerOutput = armController.calculate(getAngle());
 
     // if (getAngle() > RotatingArmConfig.maxArmAngleDegrees) // Upper software stop
     // motorOutput = Math.min(0, motorOutput);
@@ -157,65 +154,20 @@ public class RotatingArm extends SubsystemBase {
       disableBrake();
 
     if (brakeEnabled)
-      motorOutput = 0;
+      controllerOutput = 0;
 
-    motorOutput += (Math.sin(getAngle() * (Math.PI / 180)) / 2) * 0.35;
-    outputToMotor(motorOutput);
+    double gravityCompensation = (Math.sin(getAngle() * (Math.PI / 180)) / 2) * RotatingArmConfig.armGravCompensation;
+
+    controllerOutput += gravityCompensation;
+
+    outputToMotor(controllerOutput);
   }
-
-  private void applyClawOutput() {
-    double motorOutput = targetMotorOutput;
-
-    // if (getTopSwitch())
-    // motorOutput = Math.min(0, motorOutput);
-    // if (getBottomSwitch())
-    // motorOutput = Math.max(0, motorOutput);
-
-    if (getAngle() > RotatingArmConfig.maxArmAngleDegrees)
-      motorOutput = Math.min(0, motorOutput);
-
-    if (getAngle() < RotatingArmConfig.minArmAngleDegrees)
-      motorOutput = Math.max(0, motorOutput);
-
-    if (!brakeEnabled && Math.abs(motorOutput) < 0.001) {
-      enableBrake();
-      outputToMotor(0);
-      return;
-    }
-
-    if (brakeEnabled && Math.abs(motorOutput) > 0.001) {
-      disableBrake();
-      outputToMotor(0);
-      return;
-    }
-
-    if (brakeEnabled) {
-      outputToMotor(0);
-      return;
-    }
-
-    outputToMotor(motorOutput);
-  }
-
-  /**
-   * Rotate the arm.
-   * 
-   * @param speed the speed to rotate at
-   */
-  public void setTargetOutput(double speed) {
-    targetMotorOutput = speed;
-  }
-
-  private final LinearFilter outputFilter = LinearFilter.singlePoleIIR(0.3, 0.02);
 
   private void outputToMotor(double output) {
     targetOutputEntry.setDouble(output);
 
-    outputFilter.calculate(output);
+    output = Math.max(0.001, output); // 0.001 to make motors never completely stop when arm is lowering
 
-    output = Math.max(0, output);
-
-    output = MathUtil.clamp(output, -0.5, 0.5);
     motorOutputEntry.setDouble(output);
 
     leftMotor.set(-output);
@@ -238,8 +190,9 @@ public class RotatingArm extends SubsystemBase {
 
   private void updateShuffleboard() {
     angleEntry.setDouble(getAngle());
-    // topSwitchEntry.setBoolean(topLimitSwitch.get());
-    // bottomSwitchEntry.setBoolean(bottomLimitSwitch.get());
+    setpointEntry.setDouble(armController.getSetpoint().position);
+    motorTempEntry.setDouble((leftMotor.getMotorTemperature()+rightMotor.getMotorTemperature()) / 2d);
+    motorAmpEntry.setDouble((leftMotor.getOutputCurrent()+rightMotor.getOutputCurrent()) / 2d);
   }
 
   /** Get the current angle of the arm. */
@@ -277,7 +230,7 @@ public class RotatingArm extends SubsystemBase {
     rightMotor.setIdleMode(mode);
   }
 
-  public void setSetpointToCurrentAngle() {
-    setSetpoint(getAngle());
-  }
+  // public void setSetpointToCurrentAngle() {
+  //   setSetpoint(getAngle());
+  // }
 }

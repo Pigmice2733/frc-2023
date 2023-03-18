@@ -26,9 +26,10 @@ public class ScoreObject extends SequentialCommandGroup {
    */
   public ScoreObject(Drivetrain drivetrain, RotatingArm arm, Claw claw, ArmHeight height, boolean driveBackward,
       boolean lowerArm) {
+        if (driveBackward)
+          addCommands(new DriveDistancePID(drivetrain, -1).withTimeout(3));
 
-    if (driveBackward)
-      addCommands(new DriveDistancePID(drivetrain, -1).withTimeout(3));
+        addCommands(new RotateArmToAngle(arm, height));
 
     addCommands(
       new DriveDistancePID(drivetrain, 1).withTimeout(3),

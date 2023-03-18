@@ -28,19 +28,19 @@ public class FollowPath extends SequentialCommandGroup {
      */
     public FollowPath(Drivetrain drivetrain, PathPlannerTrajectory trajectory) {
         addCommands(
-                drivetrain.setOdometryPoseCommand(trajectory.getInitialPose()),
-                new PPRamseteCommand(
-                        trajectory,
-                        drivetrain::getPose,
-                        new RamseteController(),
-                        new SimpleMotorFeedforward(DrivetrainConfig.kS, DrivetrainConfig.kV),
-                        drivetrain.getKinematics(),
-                        drivetrain::getWheelSpeeds,
-                        new PIDController(DrivetrainConfig.pathP, DrivetrainConfig.pathI, DrivetrainConfig.pathD),
-                        new PIDController(DrivetrainConfig.pathP, DrivetrainConfig.pathI, DrivetrainConfig.pathD),
-                        drivetrain::driveVoltages,
-                        true,
-                        drivetrain));
+            drivetrain.setOdometryPoseCommand(trajectory.getInitialPose()),
+            new PPRamseteCommand(
+                trajectory,
+                drivetrain::getPose,
+                new RamseteController(),
+                new SimpleMotorFeedforward(DrivetrainConfig.kS, DrivetrainConfig.kV),
+                drivetrain.getKinematics(),
+                drivetrain::getWheelSpeeds,
+                new PIDController(DrivetrainConfig.pathP, DrivetrainConfig.pathI, DrivetrainConfig.pathD),
+                new PIDController(DrivetrainConfig.pathP, DrivetrainConfig.pathI, DrivetrainConfig.pathD),
+                drivetrain::driveVoltages,
+                true,
+                drivetrain));
         addRequirements(drivetrain);
     }
     public FollowPath(Drivetrain drivetrain, PathPlannerTrajectory trajectory, HashMap<String, Command> eventMap) {
@@ -60,8 +60,7 @@ public class FollowPath extends SequentialCommandGroup {
                     true, 
                     drivetrain), 
                 trajectory.getMarkers(), 
-                eventMap)
-        );
+                eventMap));
         addRequirements(drivetrain);
     }
 
@@ -73,18 +72,22 @@ public class FollowPath extends SequentialCommandGroup {
      * @param drivetrain a drivetrain subsystem
      * @param pathName   the name of a premade path to follow
      */
-    public FollowPath(Drivetrain drivetrain, String pathName) {
+    public FollowPath(Drivetrain drivetrain, String pathName, boolean reversed) {
         this(
-                drivetrain,
-                PathPlanner.loadPath(pathName,
-                        new PathConstraints(DrivetrainConfig.maxTrajectoryVel, DrivetrainConfig.maxTrajectoryAcc),
-                        true));
+            drivetrain,
+            PathPlanner.loadPath(
+                pathName,
+                new PathConstraints(DrivetrainConfig.maxTrajectoryVel, DrivetrainConfig.maxTrajectoryAcc), 
+                reversed));
     }
 
-    public FollowPath(Drivetrain drivetrain, String pathName, HashMap<String, Command> eventMap) {
+    public FollowPath(Drivetrain drivetrain, String pathName, HashMap<String, Command> eventMap, boolean reversed) {
         this(
             drivetrain, 
-            PathPlanner.loadPath(pathName, new PathConstraints(DrivetrainConfig.maxTrajectoryVel, DrivetrainConfig.maxTrajectoryAcc)),
+            PathPlanner.loadPath(
+                pathName,
+                new PathConstraints(DrivetrainConfig.maxTrajectoryVel, DrivetrainConfig.maxTrajectoryAcc), 
+                reversed),
             eventMap
         );
     }

@@ -5,7 +5,7 @@
 package frc.robot.commands.routines;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.drivetrain.balance.AutoBalance;
+import frc.robot.commands.drivetrain.balance.AutoBalanceNew;
 import frc.robot.commands.drivetrain.balance.DriveOntoChargeStation;
 import frc.robot.subsystems.Drivetrain;
 
@@ -18,6 +18,6 @@ public class BalanceRoutine extends SequentialCommandGroup {
   public BalanceRoutine(Drivetrain drivetrain, boolean backwards) {
     addCommands(
         new DriveOntoChargeStation(drivetrain, backwards),
-        new AutoBalance(drivetrain));
+        new AutoBalanceNew(drivetrain));
   }
 }
