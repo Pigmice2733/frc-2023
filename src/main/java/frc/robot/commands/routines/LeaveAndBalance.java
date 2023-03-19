@@ -37,7 +37,7 @@ public class LeaveAndBalance extends SequentialCommandGroup {
     }
 
     // (2) Balance
-    addCommands(new BalanceRoutine(drivetrain, false));
+    addCommands(new BalanceRoutine(drivetrain, true));
     addRequirements(drivetrain);
   }
 }

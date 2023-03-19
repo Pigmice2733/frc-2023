@@ -90,8 +90,8 @@ public class RotatingArm extends SubsystemBase {
     leftMotor.setInverted(false);
     rightMotor.setInverted(false);
 
-    leftMotor.setSmartCurrentLimit(50);
-    rightMotor.setSmartCurrentLimit(50);
+    leftMotor.setSmartCurrentLimit(60);
+    rightMotor.setSmartCurrentLimit(60);
 
     setMotorIdleMode(IdleMode.kCoast);
 
@@ -156,7 +156,8 @@ public class RotatingArm extends SubsystemBase {
     if (brakeEnabled)
       controllerOutput = 0;
 
-    double gravityCompensation = (Math.sin(getAngle() * (Math.PI / 180)) / 2) * RotatingArmConfig.armGravCompensation;
+    double gravityCompensation = (Math.sin((getAngle() + 15) * (Math.PI / 180)) / 2) * RotatingArmConfig.armGravCompensation;
+    //double gravityCompensation = (Math.sin(getAngle() * (Math.PI / 180)) / 2) * RotatingArmConfig.armGravCompensation;
 
     controllerOutput += gravityCompensation;
 

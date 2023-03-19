@@ -30,7 +30,7 @@ public class ScoreLeaveIntakeBalance extends SequentialCommandGroup {
       new ScoreObject(drivetrain, arm, claw, ArmHeight.High, false, false),
       arm.setSetpointCommand(ArmHeight.Zero),
       new FollowPath(drivetrain, "ScoreLeaveIntakeBalanceDriverLeft", eventMap, true),
-      new BalanceRoutine(drivetrain));
+      new BalanceRoutine(drivetrain, true));
 
     
     addRequirements(drivetrain, arm, claw);

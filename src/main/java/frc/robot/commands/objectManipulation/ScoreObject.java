@@ -29,7 +29,7 @@ public class ScoreObject extends SequentialCommandGroup {
         if (driveBackward)
           addCommands(new DriveDistancePID(drivetrain, -1).withTimeout(3));
 
-        addCommands(new RotateArmToAngle(arm, height));
+        addCommands(new RotateArmToAngle(arm, height).withTimeout(2));
 
     addCommands(
       new DriveDistancePID(drivetrain, 1).withTimeout(3),

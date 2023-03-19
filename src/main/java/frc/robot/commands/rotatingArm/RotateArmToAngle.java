@@ -67,9 +67,9 @@ public class RotateArmToAngle extends CommandBase {
       case Mid:
         return 65;
       case High:
-        return 82;
+        return 84;
       case HumanPlayer:
-        return 65;
+        return 67;
       default:
         return 20;
     }

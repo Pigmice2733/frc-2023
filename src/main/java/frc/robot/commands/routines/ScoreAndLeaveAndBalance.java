@@ -42,7 +42,7 @@ public class ScoreAndLeaveAndBalance extends SequentialCommandGroup {
     }
 
     // (3) Balance
-    addCommands(new BalanceRoutine(drivetrain, false));
+    addCommands(new BalanceRoutine(drivetrain, true));
     addRequirements(drivetrain, arm, claw);
   }
 }

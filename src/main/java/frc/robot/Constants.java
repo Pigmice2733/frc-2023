@@ -22,7 +22,7 @@ public final class Constants {
     public final static class DrivetrainConfig {
         public static final double axisThreshold = 0.25;
 
-        public static final double maxAccelerationMetersPerSecondSquared = 8.0;
+        public static final double maxAccelerationMetersPerSecondSquared = 10.0;
         public static final double maxAngularAccelerationRadiansPerSecondSquared = 15;
 
         public static final int leftDrivePort = 4;
@@ -30,14 +30,15 @@ public final class Constants {
         public static final int leftFollowPort = 3;
         public static final int rightFollowPort = 1;
 
-        public static final double driveSpeed = 2.0;
+        public static final double driveSpeed = 3.0;
         public static final double turnSpeed = .8;
 
         // Multiplied by drive speed when in slow mode
-        public static final double slowMultiplier = 0.2;
+        public static final double slowMultiplier = 0.5;
+        public static final double boostMultiplier = 1.2;
 
         // Multiplied by drive speed when arm is above 45 degrees
-        public static final double armUpSlower = 0.6;
+        public static final double armUpSlower = 0.8;
 
         public static final double gearRatio = 1.0 / 8.45; // Times motor has to rotate for wheel to rotate once
         public static final double wheelDiameterMeters = Units.inchesToMeters(6);
@@ -59,7 +60,7 @@ public final class Constants {
         public static final double pathD = 0;
 
         // Drive distance PID
-        public static final double driveDistP = 0.43;
+        public static final double driveDistP = 0.6;
         public static final double driveDistI = 0;
         public static final double driveDistD = 0;
 
@@ -95,9 +96,9 @@ public final class Constants {
         public static final double autoBalanceSpeed = 0.3;
         public static final double autoBalanceProportional = 0.5;
 
-        public static final double maxTrajectoryVel = 1.2;
+        public static final double maxTrajectoryVel = 1.5;
         //public static final double maxTrajectoryVel = 2;
-        public static final double maxTrajectoryAcc = 1;
+        public static final double maxTrajectoryAcc = 2;
 
         // drivetrainModel
         public static class Feedforward {
@@ -136,14 +137,16 @@ public final class Constants {
         public static final double armHeightMeters = Units.inchesToMeters(1.0); // height of arm mount on robot from
                                                                                 // ground
 
-        public static final double kP = 0.007;
-        public static final double kI = 0.001;
-        public static final double kD = 0.0001;
+        public static final double kP = 0.01;
+        //public static final double kI = 0.001;
+        public static final double kI = 0.00;
+        //public static final double kD = 0.0001;
+        public static final double kD = 0.00;
         public static final double maxVelocity = 120;
         public static final double maxAcceleration = 150;
 
         //public static final double armGravCompensation = 0.3;
-        public static final double armGravCompensation = 0.23;
+        public static final double armGravCompensation = 0.22;
 
         public static final int topLimitSwitchID = 0;
         public static final int bottomLimitSwitchID = 1;
@@ -156,7 +159,7 @@ public final class Constants {
         public static final int leftMotorPort = 10;
         public static final int rightMotorPort = 11;
 
-        public static final double motorSpeed = 0.1;
+        public static final double motorSpeed = 0.25;
 
     }
 }

@@ -39,8 +39,9 @@ public class FollowPath extends SequentialCommandGroup {
                 new PIDController(DrivetrainConfig.pathP, DrivetrainConfig.pathI, DrivetrainConfig.pathD),
                 new PIDController(DrivetrainConfig.pathP, DrivetrainConfig.pathI, DrivetrainConfig.pathD),
                 drivetrain::driveVoltages,
-                true,
+                false,
                 drivetrain));
+
         addRequirements(drivetrain);
     }
     public FollowPath(Drivetrain drivetrain, PathPlannerTrajectory trajectory, HashMap<String, Command> eventMap) {
@@ -57,10 +58,11 @@ public class FollowPath extends SequentialCommandGroup {
                     new PIDController(DrivetrainConfig.pathP, DrivetrainConfig.pathI, DrivetrainConfig.pathD),
                     new PIDController(DrivetrainConfig.pathP, DrivetrainConfig.pathI, DrivetrainConfig.pathD),
                     drivetrain::driveVoltages, 
-                    true, 
+                    false, 
                     drivetrain), 
                 trajectory.getMarkers(), 
                 eventMap));
+
         addRequirements(drivetrain);
     }
 

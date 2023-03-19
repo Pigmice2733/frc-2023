@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DrivetrainConfig;
 import frc.robot.Constants.RotatingArmConfig;
+import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.RotatingArm;
 
 public class Controls {
@@ -15,12 +16,14 @@ public class Controls {
     private double threshold = DrivetrainConfig.axisThreshold;
 
     private RotatingArm arm;
+    private Drivetrain drivetrain;
 
     // Create a new Controls
-    public Controls(XboxController driver, XboxController operator, RotatingArm arm) {
+    public Controls(XboxController driver, XboxController operator, RotatingArm arm, Drivetrain drivetrain) {
         this.driver = driver;
         this.operator = operator;
         this.arm = arm;
+        this.drivetrain = drivetrain;
     }
 
     LinearFilter driveSpeedFilter = LinearFilter.singlePoleIIR(0.2, 0.02);
@@ -54,6 +57,8 @@ public class Controls {
     }
 
     private double calcArmAngleMultiplier() {
+        if (drivetrain.isSlow())
+            return 1;
         double minSpeed = DrivetrainConfig.armUpSlower;
         double angle = arm.getAngle();
         if(angle < 30) {

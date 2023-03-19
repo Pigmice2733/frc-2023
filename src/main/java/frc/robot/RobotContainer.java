@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.pathplanner.lib.commands.FollowPathWithEvents;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -34,10 +35,12 @@ import frc.robot.commands.rotatingArm.RotateArmToAngle;
 import frc.robot.commands.rotatingArm.RotateArmToAngle.ArmHeight;
 import frc.robot.commands.routines.BalanceRoutine;
 import frc.robot.commands.routines.LeaveAndBalance;
+import frc.robot.commands.routines.RunAutoRoutineWithNavxCheck;
 import frc.robot.commands.routines.ScoreAndBalance;
 import frc.robot.commands.routines.ScoreAndLeave;
 import frc.robot.commands.routines.ScoreAndLeaveAndBalance;
 import frc.robot.commands.routines.ScoreLeaveIntakeBalance;
+import frc.robot.commands.routines.ShakeClaw;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.LightStrip;
@@ -60,9 +63,9 @@ public class RobotContainer {
 
         private final XboxController driver = new XboxController(0);
         private final XboxController operator = new XboxController(1);
-        private final Controls controls = new Controls(driver, operator, arm);
+        private final Controls controls = new Controls(driver, operator, arm, drivetrain);
 
-        private static final ShuffleboardTab driverTab = Shuffleboard.getTab("Drive Info");
+        public static final ShuffleboardTab driverTab = Shuffleboard.getTab("Drive Info");
 
         public static GenericEntry addToDriverTab(String name, Object defaultValue, int xPos, int yPos) {
                 return driverTab.add(name, defaultValue).withPosition(xPos, yPos).getEntry();
@@ -108,7 +111,9 @@ public class RobotContainer {
 
                 var testEventMap = new HashMap<String, Command>();
                 SmartDashboard.putBoolean("Test Called", false);
-                testEventMap.put("TestPoint", new InstantCommand(() -> SmartDashboard.putBoolean("Test Called", true)));
+                testEventMap.put("Open", claw.openClawCommand(true));
+                testEventMap.put("Close", claw.closeClawCommand(true));
+                
                 List<Command> autoCommands = List.of(
                         new DriveDistancePID(drivetrain, -4)
                                 .withName("Only Leave Community [Driver Left or Right]"),
@@ -116,26 +121,21 @@ public class RobotContainer {
                                 .withName("Only Balance [Center]"),
                         new ScoreAndLeave(drivetrain, arm, claw)
                                 .withName("Score and Leave [Driver Left or Right]"),
-                        new ScoreAndBalance(drivetrain, arm, claw, true)
-                                .withName("Score and Balance[Center]"),
-                        new LeaveAndBalance(drivetrain, TargetLocation.Center, arm)
-                                .withName("Leave and Balance [Center]"),
-                        new LeaveAndBalance(drivetrain, TargetLocation.Left, arm)
-                                .withName("Leave and Balance [Driver Left]"),
-                        new LeaveAndBalance(drivetrain, TargetLocation.Right, arm)
-                                .withName("Leave and Balance [Driver Right]"),
-                        new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Center)
-                                .withName("Score, Leave, and Balance [Center]"),
-                        new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Left)
-                                .withName("Score, Leave, and Balance [Driver Left]"),
-                        new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Right)
-                                .withName("Score, Leave, and Balance [Driver Right]"),
-                        new ScoreLeaveIntakeBalance(drivetrain, arm, claw)
-                                .withName("Score, Leave, Intake, Balance [Driver Left]"),
+                        new ScoreAndBalance(drivetrain, arm, claw, false)
+                                .withName("Score and Balance [Center]"),
+                        new RunAutoRoutineWithNavxCheck(new LeaveAndBalance(drivetrain, TargetLocation.Left, arm),
+                                drivetrain).withName("Leave and Balance [Field Outside]"),
+                        new RunAutoRoutineWithNavxCheck(new LeaveAndBalance(drivetrain, TargetLocation.Right, arm),
+                                drivetrain).withName("Leave and Balance [Field Inside]"),
+                        new RunAutoRoutineWithNavxCheck(new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Left),
+                                drivetrain).withName("Score, Leave, and Balance [Field Outside]"),
+                        new RunAutoRoutineWithNavxCheck(new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Right),
+                                drivetrain).withName("Score, Leave, and Balance [Field Inside]"),
                         new ScoreObject(drivetrain, arm, claw, ArmHeight.High, false, false)
-                                .withName("Score Object Test"),
-                        new FollowPath(drivetrain, "EventTest", testEventMap, false)
-                                .withName("Path follow event test"));
+                                .withName("Score Cube"),
+                        new RunAutoRoutineWithNavxCheck(new FollowPath(drivetrain, "EventTest", testEventMap, false), 
+                                drivetrain).withName("Path follow event test")
+                );
 
                 autoChooser = new SendableChooser<Command>();
                 driverTab.add("Auto Chooser", autoChooser).withPosition(3, 0);
@@ -169,6 +169,10 @@ public class RobotContainer {
                         .onTrue(new InstantCommand(drivetrain::enableSlow))
                         .onFalse(new InstantCommand(drivetrain::disableSlow));
 
+                // new JoystickButton(driver, Button.kLeftBumper.value)
+                //         .onTrue(new InstantCommand(drivetrain::enableBoost))
+                //         .onFalse(new InstantCommand(drivetrain::diableBoost));
+
                 // /** [driver] Schedule AlignToScore when A is pressed, cancel when released */
                 // new JoystickButton(driver, Button.kA.value)
                 // .whileTrue(new FullyAlign(drivetrain, vision));
@@ -182,7 +186,7 @@ public class RobotContainer {
                 
                 /** [driver] Schedule BalanceRoutine when B is pressed, cancel when released */
                 new JoystickButton(driver, Button.kB.value)
-                        .whileTrue(new BalanceRoutine(drivetrain, false));
+                        .whileTrue(new BalanceRoutine(drivetrain, true));
 
                 /** [driver] Set the TargetType in RuntimeTrajectoryGenerator with D-pad */
                 new POVButton(driver, 0) // up
@@ -203,13 +207,13 @@ public class RobotContainer {
                                 () -> RotateArmToAngle.setScoreHeight(ArmHeight.High)));
                 new POVButton(operator, 90) // right
                         .onTrue(new InstantCommand(
-                                () -> RotateArmToAngle.setScoreHeight(ArmHeight.Mid)));
+                                () -> RotateArmToAngle.setScoreHeight(ArmHeight.HumanPlayer)));
                 new POVButton(operator, 270) // left
                         .onTrue(new InstantCommand(
-                                () -> RotateArmToAngle.setScoreHeight(ArmHeight.HumanPlayer)));
+                                () -> RotateArmToAngle.setScoreHeight(ArmHeight.Floor)));
                 new POVButton(operator, 180) // down
                         .onTrue(new InstantCommand(
-                                () -> RotateArmToAngle.setScoreHeight(ArmHeight.Floor)));
+                                () -> RotateArmToAngle.setScoreHeight(ArmHeight.Zero)));
 
                 /** [operator] Open Claw */
                 new JoystickButton(operator, Button.kRightBumper.value)

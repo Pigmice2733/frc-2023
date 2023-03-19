@@ -12,36 +12,37 @@ import frc.robot.subsystems.Drivetrain;
 
 public class AutoBalance extends CommandBase {
   private Drivetrain drivetrain;
-  private PIDController balancePID = new PIDController(0.033, 0, 0.0007);
+  private PIDController balancePID = new PIDController(0.033, 0, 0.004);
 
   /** Robot must be lined up with the charge station. */
   public AutoBalance(Drivetrain drivetrain) {
     this.drivetrain = drivetrain;
 
-    this.balancePID.setTolerance(12, 0.1);
+    this.balancePID.setTolerance(3, 0.1);
     this.balancePID.setSetpoint(0);
 
     SmartDashboard.putData("balance/pid", balancePID);
-
     addRequirements(drivetrain);
   }
 
   @Override
+  public void initialize() {
+    SmartDashboard.putBoolean("Balance Running", true);
+  }
+
+  @Override
   public void execute() {
-    // double pitch = MathUtil.applyDeadband(drivetrain.getPitch(), 1);
-
-    // double proportional = pitch / 15.0;
-
-    // double speed = proportional * DrivetrainConfig.autoBalanceProportional +
-    // 0.075 * Math.signum(pitch); // was 0.1,
-    // 0.07
-
     double speed = balancePID.calculate(drivetrain.getPitch());
     SmartDashboard.putNumber("balance/output", speed);
 
     speed = MathUtil.clamp(speed, -6.0, 6.0);
 
     drivetrain.arcadeDrive(speed, 0);
+  }
+
+  @Override
+  public void end(boolean canceled) {
+    SmartDashboard.putBoolean("Balance Running", false);
   }
 
   @Override

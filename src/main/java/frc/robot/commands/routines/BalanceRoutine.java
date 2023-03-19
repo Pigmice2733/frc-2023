@@ -4,8 +4,12 @@
 
 package frc.robot.commands.routines;
 
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.commands.drivetrain.balance.AutoBalance;
 import frc.robot.commands.drivetrain.balance.AutoBalanceNew;
+import frc.robot.commands.drivetrain.balance.AutoBalanceProfiled;
 import frc.robot.commands.drivetrain.balance.DriveOntoChargeStation;
 import frc.robot.subsystems.Drivetrain;
 
@@ -16,8 +20,11 @@ public class BalanceRoutine extends SequentialCommandGroup {
   }
 
   public BalanceRoutine(Drivetrain drivetrain, boolean backwards) {
+    double driveSpeed = 2.5 * (backwards ? -1 : 1);
     addCommands(
         new DriveOntoChargeStation(drivetrain, backwards),
-        new AutoBalanceNew(drivetrain));
+        new InstantCommand(() -> drivetrain.driveVoltages(driveSpeed, driveSpeed)),
+        new WaitCommand(0.5),
+        new AutoBalance(drivetrain));
   }
 }

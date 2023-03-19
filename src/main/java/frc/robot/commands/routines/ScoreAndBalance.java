@@ -21,10 +21,10 @@ public class ScoreAndBalance extends SequentialCommandGroup {
       arm.setSetpointCommand(ArmHeight.Floor));
 
     if (turnAround)
-      addCommands(new DriveDistancePID(drivetrain, -0.5).withTimeout(3),
+      addCommands(new DriveDistancePID(drivetrain, -1).withTimeout(2),
         new TurnDegreesPID(drivetrain, 180));
 
-    addCommands(new BalanceRoutine(drivetrain));
+    addCommands(new BalanceRoutine(drivetrain, true));
     addRequirements(drivetrain, arm, claw);
   }
 
