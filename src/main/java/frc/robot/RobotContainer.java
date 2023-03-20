@@ -188,17 +188,13 @@ public class RobotContainer {
 
                 /** [operator] Set the ScoreHeight in ScoreObject with D-pad */
                 new POVButton(operator, 0) // up
-                        .onTrue(new InstantCommand(
-                                () -> RotateArmToAngle.setScoreHeight(ArmHeight.High)));
+                        .onTrue(arm.setSetpointCommand(ArmHeight.High));
                 new POVButton(operator, 90) // right
-                        .onTrue(new InstantCommand(
-                                () -> RotateArmToAngle.setScoreHeight(ArmHeight.HumanPlayer)));
+                        .onTrue(arm.setSetpointCommand(ArmHeight.HumanPlayer));
                 new POVButton(operator, 270) // left
-                        .onTrue(new InstantCommand(
-                                () -> RotateArmToAngle.setScoreHeight(ArmHeight.Floor)));
+                        .onTrue(arm.setSetpointCommand(ArmHeight.Floor));
                 new POVButton(operator, 180) // down
-                        .onTrue(new InstantCommand(
-                                () -> RotateArmToAngle.setScoreHeight(ArmHeight.Zero)));
+                        .onTrue(arm.setSetpointCommand(ArmHeight.Zero));
 
                 /** [operator] Open Claw */
                 new JoystickButton(operator, Button.kRightBumper.value)
@@ -227,8 +223,8 @@ public class RobotContainer {
                  * [operator] Schedule RotateArmToScoreHeight when B is pressed, cancel when
                  * released
                  */
-                new JoystickButton(operator, Button.kB.value)
-                        .whileTrue(new RotateArmToAngle(arm));
+                // new JoystickButton(operator, Button.kB.value)
+                //         .whileTrue(new RotateArmToAngle(arm));
 
                 /**
                  * [operator] Schedule SpinIntakeWheels when X is pressed, cancel when
