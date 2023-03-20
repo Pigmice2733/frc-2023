@@ -108,11 +108,6 @@ public class RobotContainer {
                 driverTab.addString("1", () -> "Select Auto Command").withPosition(0, 0).withSize(3, 1);
                 driverTab.addString("2", () -> "Face Robot Towards Grid").withPosition(0, 1).withSize(3, 1);
                 driverTab.addString("3", () -> "Check Controllers").withPosition(0, 2).withSize(3, 1);
-
-                var testEventMap = new HashMap<String, Command>();
-                SmartDashboard.putBoolean("Test Called", false);
-                testEventMap.put("Open", claw.openClawCommand(true));
-                testEventMap.put("Close", claw.closeClawCommand(true));
                 
                 List<Command> autoCommands = List.of(
                         new DriveDistancePID(drivetrain, -4)
@@ -132,9 +127,7 @@ public class RobotContainer {
                         new RunAutoRoutineWithNavxCheck(new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Right),
                                 drivetrain).withName("Score, Leave, and Balance [Field Inside]"),
                         new ScoreObject(drivetrain, arm, claw, ArmHeight.High, false, false)
-                                .withName("Score Cube"),
-                        new RunAutoRoutineWithNavxCheck(new FollowPath(drivetrain, "EventTest", testEventMap, false), 
-                                drivetrain).withName("Path follow event test")
+                                .withName("Score Object [Cube Node]")
                 );
 
                 autoChooser = new SendableChooser<Command>();
