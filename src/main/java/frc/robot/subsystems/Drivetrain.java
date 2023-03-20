@@ -84,7 +84,6 @@ public class Drivetrain extends SubsystemBase {
   private Pose2d pose = new Pose2d();
 
   private boolean slowEnabled = false;
-  private boolean boostEnabled = false;
   private boolean backwards = false;
   public double outputFactor = 1;
 
@@ -149,36 +148,23 @@ public class Drivetrain extends SubsystemBase {
    */
   public void setSlow(boolean slowEnabled) {
     this.slowEnabled = slowEnabled;
-    //outputFactor = slowEnabled ? DrivetrainConfig.slowMultiplier : 1;
+    outputFactor = slowEnabled ? DrivetrainConfig.slowMultiplier : 1;
   }
+
   public void enableSlow() {
     setSlow(true);
   }
+
   public void disableSlow() {
     setSlow(false);
   }
+
   public void toggleSlow() {
     setSlow(!this.slowEnabled);
   }
+
   public boolean isSlow() {
     return slowEnabled;
-  }
-
-  public void setBoost(boolean boostEnabled) {
-    this.boostEnabled = boostEnabled;
-    outputFactor = boostEnabled ? DrivetrainConfig.boostMultiplier : 1;
-  }
-  public void enableBoost() {
-    setBoost(true);
-  }
-  public void diableBoost() {
-    setBoost(false);
-  }
-  public void toggleBoost() {
-    setBoost(!this.boostEnabled);
-  }
-  public boolean isBoost() {
-    return boostEnabled;
   }
 
   public void setBackwards(boolean backwards) {
@@ -300,7 +286,6 @@ public class Drivetrain extends SubsystemBase {
    * @param turn    turn speed (clockwise is positive)
    */
   public void arcadeDrive(double forward, double turn) {
-    forward *= outputFactor;
     driveLimitedChassisSpeeds(new ChassisSpeeds(forward, 0, -turn));
   }
 
@@ -340,8 +325,8 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void driveVoltages(double left, double right) {
-    leftGroup.setVoltage(left);
-    rightGroup.setVoltage(right);
+    leftGroup.setVoltage(left * outputFactor);
+    rightGroup.setVoltage(right * outputFactor);
 
     if (ShuffleboardConfig.drivetrainPrintsEnabled) {
       leftVoltageEntry.setDouble(left);

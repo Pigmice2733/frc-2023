@@ -22,7 +22,7 @@ public final class Constants {
     public final static class DrivetrainConfig {
         public static final double axisThreshold = 0.25;
 
-        public static final double maxAccelerationMetersPerSecondSquared = 10.0;
+        public static final double maxAccelerationMetersPerSecondSquared = 8.0;
         public static final double maxAngularAccelerationRadiansPerSecondSquared = 15;
 
         public static final int leftDrivePort = 4;

@@ -14,7 +14,7 @@ public class RotatingPanelSequence extends SequentialCommandGroup {
         addCommands(
                 new ScrollSponsors(lights).withTimeout(TIMEOUT),
                 new CGOLLights(lights).withTimeout(TIMEOUT),
-                new ShowImage(lights, Images.PIGMICE).withTimeout(TIMEOUT),
+                new ShowImage(lights, Images.CASCADIA_FLAG).withTimeout(TIMEOUT),
                 new RainbowLights(lights).withTimeout(TIMEOUT),
                 // new SnakeGame(lights).withTimeout(TIMEOUT),
                 new ShowImage(lights, Images.IZZY_PIGMICE).withTimeout(TIMEOUT));
