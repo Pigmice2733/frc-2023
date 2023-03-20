@@ -45,18 +45,5 @@
       }
     }
   ],
-  "markers": [
-    {
-      "position": 0.33,
-      "names": [
-        "Open"
-      ]
-    },
-    {
-      "position": 0.66,
-      "names": [
-        "event"
-      ]
-    }
-  ]
+  "markers": []
 }

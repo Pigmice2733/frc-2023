@@ -39,7 +39,8 @@
       "/SmartDashboard/PIDController[37]": "PIDController",
       "/SmartDashboard/PIDController[38]": "PIDController",
       "/SmartDashboard/PIDController[39]": "PIDController",
-      "/SmartDashboard/PIDController[3]": "PIDController"
+      "/SmartDashboard/PIDController[3]": "PIDController",
+      "/SmartDashboard/balance/pid": "PIDController"
     }
   },
   "NetworkTables": {

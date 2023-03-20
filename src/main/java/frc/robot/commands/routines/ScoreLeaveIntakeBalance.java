@@ -27,7 +27,7 @@ public class ScoreLeaveIntakeBalance extends SequentialCommandGroup {
     eventMap.put("closeClaw", new ParallelCommandGroup(claw.closeClawCommand(true), arm.setSetpointCommand(ArmHeight.Floor)));
 
     addCommands(
-      new ScoreObject(drivetrain, arm, claw, ArmHeight.High, false, false),
+      new ScoreObject(drivetrain, arm, claw, ArmHeight.High, false),
       arm.setSetpointCommand(ArmHeight.Zero),
       new FollowPath(drivetrain, "ScoreLeaveIntakeBalanceDriverLeft", eventMap, true),
       new BalanceRoutine(drivetrain, true));
