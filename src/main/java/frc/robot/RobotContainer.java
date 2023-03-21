@@ -93,34 +93,38 @@ public class RobotContainer {
                                 new ArcadeDrive(drivetrain, controls::getDriveSpeed, controls::getTurnSpeed));
                 arm.setDefaultCommand(new RotateArmManual(arm, controls::getArmRotationSpeed));
                 lightStrip.setDefaultCommand(new RunningColor(lightStrip));
-                lightPanel.setDefaultCommand(new RotatingPanelSequence(lightPanel).repeatedly());
+                lightPanel.setDefaultCommand(new RotatingPanelSequence(lightPanel));
         }
 
         private void configureAutoChooser() {
                 driverTab.addString("1", () -> "Select Auto Command").withPosition(0, 0).withSize(3, 1);
                 driverTab.addString("2", () -> "Face Robot Towards Grid ~1m Away").withPosition(0, 1).withSize(3, 1);
                 driverTab.addString("3", () -> "Check Controllers").withPosition(0, 2).withSize(3, 1);
-                
+
                 List<Command> autoCommands = List.of(
-                        new DriveDistancePID(drivetrain, -4)
-                                .withName("Only Leave Community [Driver Left or Right]"),
-                        new BalanceRoutine(drivetrain, true)
-                                .withName("Only Balance [Center]"),
-                        new ScoreAndLeave(drivetrain, arm, claw)
-                                .withName("Score and Leave [Driver Left or Right]"),
-                        new ScoreAndBalance(drivetrain, arm, claw, false)
-                                .withName("Score and Balance [Center]"),
-                        new RunAutoRoutineWithNavxCheck(new LeaveAndBalance(drivetrain, TargetLocation.Left, arm),
-                                drivetrain).withName("Leave and Balance [Field Outside]"),
-                        new RunAutoRoutineWithNavxCheck(new LeaveAndBalance(drivetrain, TargetLocation.Right, arm),
-                                drivetrain).withName("Leave and Balance [Field Inside]"),
-                        new RunAutoRoutineWithNavxCheck(new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Left),
-                                drivetrain).withName("Score, Leave, and Balance [Field Outside]"),
-                        new RunAutoRoutineWithNavxCheck(new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Right),
-                                drivetrain).withName("Score, Leave, and Balance [Field Inside]"),
-                        new ScoreObject(drivetrain, arm, claw, ArmHeight.High, false)
-                                .withName("Score Cube")
-                );
+                                new DriveDistancePID(drivetrain, -4)
+                                                .withName("Only Leave Community [Driver Left or Right]"),
+                                new BalanceRoutine(drivetrain, true)
+                                                .withName("Only Balance [Center]"),
+                                new ScoreAndLeave(drivetrain, arm, claw)
+                                                .withName("Score and Leave [Driver Left or Right]"),
+                                new ScoreAndBalance(drivetrain, arm, claw, false)
+                                                .withName("Score and Balance [Center]"),
+                                new RunAutoRoutineWithNavxCheck(
+                                                new LeaveAndBalance(drivetrain, TargetLocation.Left, arm),
+                                                drivetrain).withName("Leave and Balance [Field Outside]"),
+                                new RunAutoRoutineWithNavxCheck(
+                                                new LeaveAndBalance(drivetrain, TargetLocation.Right, arm),
+                                                drivetrain).withName("Leave and Balance [Field Inside]"),
+                                new RunAutoRoutineWithNavxCheck(
+                                                new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Left),
+                                                drivetrain).withName("Score, Leave, and Balance [Field Outside]"),
+                                new RunAutoRoutineWithNavxCheck(
+                                                new ScoreAndLeaveAndBalance(drivetrain, arm, claw,
+                                                                TargetLocation.Right),
+                                                drivetrain).withName("Score, Leave, and Balance [Field Inside]"),
+                                new ScoreObject(drivetrain, arm, claw, ArmHeight.High, false)
+                                                .withName("Score Cube"));
 
                 autoChooser = new SendableChooser<Command>();
                 driverTab.add("Auto Chooser", autoChooser).withPosition(3, 0);
@@ -148,15 +152,15 @@ public class RobotContainer {
                  * released
                  */
                 new JoystickButton(driver, Button.kY.value)
-                        .onTrue(new InstantCommand(drivetrain::enableSlow))
-                        .onFalse(new InstantCommand(drivetrain::disableSlow));
+                                .onTrue(new InstantCommand(drivetrain::enableSlow))
+                                .onFalse(new InstantCommand(drivetrain::disableSlow));
                 new JoystickButton(driver, Button.kRightBumper.value)
-                        .onTrue(new InstantCommand(drivetrain::enableSlow))
-                        .onFalse(new InstantCommand(drivetrain::disableSlow));
+                                .onTrue(new InstantCommand(drivetrain::enableSlow))
+                                .onFalse(new InstantCommand(drivetrain::disableSlow));
 
                 // new JoystickButton(driver, Button.kLeftBumper.value)
-                //         .onTrue(new InstantCommand(drivetrain::enableBoost))
-                //         .onFalse(new InstantCommand(drivetrain::diableBoost));
+                // .onTrue(new InstantCommand(drivetrain::enableBoost))
+                // .onFalse(new InstantCommand(drivetrain::diableBoost));
 
                 // /** [driver] Schedule AlignToScore when A is pressed, cancel when released */
                 // new JoystickButton(driver, Button.kA.value)
@@ -166,49 +170,48 @@ public class RobotContainer {
                  * [driver] Schedule AlignAndScore when X is pressed, cancel when released
                  */
                 // new JoystickButton(driver, Button.kX.value)
-                //         .whileTrue(new HoldPosition(drivetrain));
+                // .whileTrue(new HoldPosition(drivetrain));
 
-                
                 /** [driver] Schedule BalanceRoutine when B is pressed, cancel when released */
                 // new JoystickButton(driver, Button.kB.value)
-                //         .whileTrue(new BalanceRoutine(drivetrain, true));
+                // .whileTrue(new BalanceRoutine(drivetrain, true));
 
                 /** [driver] Set the TargetType in RuntimeTrajectoryGenerator with D-pad */
                 // new POVButton(driver, 0) // up
-                //         .onTrue(new InstantCommand(
-                //                 () -> RuntimeTrajectoryGenerator.setTargetType(TargetLocation.Center)));
+                // .onTrue(new InstantCommand(
+                // () -> RuntimeTrajectoryGenerator.setTargetType(TargetLocation.Center)));
                 // new POVButton(driver, 90) // right
-                //         .onTrue(new InstantCommand(
-                //                 () -> RuntimeTrajectoryGenerator.setTargetType(TargetLocation.Right)));
+                // .onTrue(new InstantCommand(
+                // () -> RuntimeTrajectoryGenerator.setTargetType(TargetLocation.Right)));
                 // new POVButton(driver, 270) // left
-                //         .onTrue(new InstantCommand(
-                //                 () -> RuntimeTrajectoryGenerator.setTargetType(TargetLocation.Left)));
+                // .onTrue(new InstantCommand(
+                // () -> RuntimeTrajectoryGenerator.setTargetType(TargetLocation.Left)));
 
                 // OPERATOR
 
                 /** [operator] Set the ScoreHeight in ScoreObject with D-pad */
                 new POVButton(operator, 0) // up
-                        .onTrue(arm.setSetpointCommand(ArmHeight.High));
+                                .onTrue(arm.setSetpointCommand(ArmHeight.High));
                 new POVButton(operator, 90) // right
-                        .onTrue(arm.setSetpointCommand(ArmHeight.HumanPlayer));
+                                .onTrue(arm.setSetpointCommand(ArmHeight.HumanPlayer));
                 new POVButton(operator, 270) // left
-                        .onTrue(arm.setSetpointCommand(ArmHeight.Floor));
+                                .onTrue(arm.setSetpointCommand(ArmHeight.Floor));
                 new POVButton(operator, 180) // down
-                        .onTrue(arm.setSetpointCommand(ArmHeight.Zero));
+                                .onTrue(arm.setSetpointCommand(ArmHeight.Zero));
 
                 /** [operator] Open Claw */
                 new JoystickButton(operator, Button.kRightBumper.value)
-                        .onTrue(claw.openClawCommand(true));
+                                .onTrue(claw.openClawCommand(true));
 
                 /** [operator] Close Claw */
                 new JoystickButton(operator, Button.kLeftBumper.value)
-                        .onTrue(claw.closeClawCommand(true));
+                                .onTrue(claw.closeClawCommand(true));
 
                 /**
                  * [operator] Schedule ScoreObject when Y is pressed, cancel when released
                  */
                 // new JoystickButton(operator, Button.kY.value)
-                //         .whileTrue(new ScoreObject(drivetrain, arm, claw, false));
+                // .whileTrue(new ScoreObject(drivetrain, arm, claw, false));
 
                 /**
                  * [operator] Schedule PickUpObject with HumanPlayer height when A is pressed,
@@ -216,30 +219,31 @@ public class RobotContainer {
                  * released
                  */
                 // new JoystickButton(operator, Button.kA.value)
-                //         .whileTrue(new PickUpObject(drivetrain, arm, claw, ArmHeight.HumanPlayer, false,
-                //                 false));
+                // .whileTrue(new PickUpObject(drivetrain, arm, claw, ArmHeight.HumanPlayer,
+                // false,
+                // false));
 
                 /**
                  * [operator] Schedule RotateArmToScoreHeight when B is pressed, cancel when
                  * released
                  */
                 // new JoystickButton(operator, Button.kB.value)
-                //         .whileTrue(new RotateArmToAngle(arm));
+                // .whileTrue(new RotateArmToAngle(arm));
 
                 /**
                  * [operator] Schedule SpinIntakeWheels when X is pressed, cancel when
                  * released. This is for dispensing using intake wheels
                  */
                 // new JoystickButton(operator, Button.kX.value)
-                //         .whileTrue(new SpinIntakeWheels(claw, false));
+                // .whileTrue(new SpinIntakeWheels(claw, false));
 
                 /** [operator] Signal lights for cube */
                 new JoystickButton(operator, Button.kBack.value)
-                        .onTrue(new InstantCommand(() -> lightStrip.signalForCube()));
+                                .onTrue(new InstantCommand(() -> lightStrip.signalForCube()));
 
                 /** [operator] Signal lights for cone */
                 new JoystickButton(operator, Button.kStart.value)
-                        .onTrue(new InstantCommand(() -> lightStrip.signalForCone()));
+                                .onTrue(new InstantCommand(() -> lightStrip.signalForCone()));
         }
 
         /**

@@ -18,7 +18,6 @@ public class RainbowLights extends CommandBase {
     @Override
     public void execute() {
         lights.displayRainbow(HUE_OFFSET, HUE_STEP);
-        // lights.displayHeart();
 
         HUE_OFFSET += HUE_STEP;
         HUE_OFFSET %= 180;
@@ -26,7 +25,6 @@ public class RainbowLights extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        System.out.println("ENDING RAINBOW");
         this.lights.clearPanel();
     }
 

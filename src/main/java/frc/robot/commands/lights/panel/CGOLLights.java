@@ -3,6 +3,8 @@ package frc.robot.commands.lights.panel;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.lights.Colors;
+import frc.robot.lights.Image;
+import frc.robot.lights.Images;
 import frc.robot.subsystems.LightsPanel;
 
 public class CGOLLights extends CommandBase {
@@ -25,24 +27,43 @@ public class CGOLLights extends CommandBase {
             { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
     };
 
+    private byte[][] baseImage;
+
     private LightsPanel lights;
     private double lastFrameTimestamp = 0;
+    private double initializeTimestamp = 0;
 
     public CGOLLights(LightsPanel lights) {
+        this(lights,
+                new byte[][][] {
+                        Images.PIGMICE.getBuffer(),
+                        Images.IZZY_PIGMICE.getBuffer(),
+                        Images.OWEN_PIGMICE.getBuffer()
+                }[(int) Math.floor(Math.random() * 3)]);
+    }
+
+    public CGOLLights(LightsPanel lights, byte[][] img) {
         this.lights = lights;
 
-        for (int y = 0; y < board.length; y++) {
-            for (int x = 0; x < board[0].length; x++) {
-                board[y][x] = (byte) (Math.round(Math.random()) * Colors.PURPLE);
-            }
-        }
+        this.baseImage = img;
+
+        // for (int y = 0; y < board.length; y++) {
+        // for (int x = 0; x < board[0].length; x++) {
+        // board[y][x] = (byte) (Math.round(Math.random()) * Colors.PURPLE);
+        // }
+        // }
 
         addRequirements(this.lights);
     }
 
     @Override
     public void initialize() {
-        lights.displayGrid(board);
+        initializeTimestamp = Timer.getFPGATimestamp();
+        for (int y = 0; y < baseImage.length; y++) {
+            for (int x = 0; x < baseImage[y].length; x++) {
+                board[y][x] = baseImage[y][x];
+            }
+        }
     }
 
     private int count_neighbors(int x, int y) {
@@ -110,6 +131,10 @@ public class CGOLLights extends CommandBase {
     @Override
     public void execute() {
         double currentTimestamp = Timer.getFPGATimestamp();
+        if (currentTimestamp - initializeTimestamp < 1) {
+            lights.displayGrid(board);
+            return;
+        }
         if (currentTimestamp - lastFrameTimestamp < 0.5)
             return;
         lastFrameTimestamp = currentTimestamp;

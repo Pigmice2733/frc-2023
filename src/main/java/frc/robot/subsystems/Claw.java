@@ -17,8 +17,10 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class Claw extends SubsystemBase {
   private final Compressor compressor = new Compressor(20, PneumaticsModuleType.REVPH);
@@ -67,7 +69,11 @@ public class Claw extends SubsystemBase {
   }
 
   public Command openClawCommand(boolean startMotors) {
-    return new InstantCommand(() -> openClaw(startMotors));
+    return Commands.sequence(
+        new InstantCommand(() -> openClaw(false)),
+        new InstantCommand(() -> outputToMotors(-0.1)),
+        new WaitCommand(0.2),
+        new InstantCommand(() -> openClaw(startMotors)));
   }
 
   private void outputToMotors(double output) {
