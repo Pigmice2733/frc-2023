@@ -6,7 +6,7 @@ import frc.robot.subsystems.LightsPanel;
 
 public class RotatingPanelSequence extends SequentialCommandGroup {
     private LightsPanel lights;
-    private final int TIMEOUT = 5;
+    private final int TIMEOUT = 20;
 
     public RotatingPanelSequence(LightsPanel lights) {
         this.lights = lights;
