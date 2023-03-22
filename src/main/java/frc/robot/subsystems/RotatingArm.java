@@ -56,7 +56,8 @@ public class RotatingArm extends SubsystemBase {
 
   public void setGoal(double goal) {
     armController.setGoal(goal);
-    if (goalEntry != null) goalEntry.setDouble(goal);
+    if (goalEntry != null)
+      goalEntry.setDouble(goal);
   }
 
   public void setGoal(ArmHeight height) {
@@ -107,7 +108,6 @@ public class RotatingArm extends SubsystemBase {
         .withProperties(Map.of("min", 0, "max", 180)).withPosition(1, 2).withSize(1, 2).withSize(1, 1).getEntry();
     goalEntry = armTab.add("Goal", 0).withWidget(BuiltInWidgets.kDial)
         .withProperties(Map.of("min", 0, "max", 180)).withPosition(2, 2).withSize(1, 2).withSize(1, 1).getEntry();
-    
 
     motorOutputEntry = armTab.add("Motor Output", 0).withWidget(BuiltInWidgets.kDial)
         .withProperties(Map.of("min", 0, "max", 1)).withPosition(1, 0).getEntry();
@@ -156,8 +156,10 @@ public class RotatingArm extends SubsystemBase {
     if (brakeEnabled)
       controllerOutput = 0;
 
-    double gravityCompensation = (Math.sin((getAngle() + 15) * (Math.PI / 180)) / 2) * RotatingArmConfig.armGravCompensation;
-    //double gravityCompensation = (Math.sin(getAngle() * (Math.PI / 180)) / 2) * RotatingArmConfig.armGravCompensation;
+    double gravityCompensation = (Math.sin((getAngle() + 15) * (Math.PI / 180)) / 2)
+        * RotatingArmConfig.armGravCompensation;
+    // double gravityCompensation = (Math.sin(getAngle() * (Math.PI / 180)) / 2) *
+    // RotatingArmConfig.armGravCompensation;
 
     controllerOutput += gravityCompensation;
 
@@ -192,8 +194,8 @@ public class RotatingArm extends SubsystemBase {
   private void updateShuffleboard() {
     angleEntry.setDouble(getAngle());
     setpointEntry.setDouble(armController.getSetpoint().position);
-    motorTempEntry.setDouble((leftMotor.getMotorTemperature()+rightMotor.getMotorTemperature()) / 2d);
-    motorAmpEntry.setDouble((leftMotor.getOutputCurrent()+rightMotor.getOutputCurrent()) / 2d);
+    motorTempEntry.setDouble((leftMotor.getMotorTemperature() + rightMotor.getMotorTemperature()) / 2d);
+    motorAmpEntry.setDouble((leftMotor.getOutputCurrent() + rightMotor.getOutputCurrent()) / 2d);
   }
 
   /** Get the current angle of the arm. */
@@ -232,6 +234,6 @@ public class RotatingArm extends SubsystemBase {
   }
 
   // public void setSetpointToCurrentAngle() {
-  //   setSetpoint(getAngle());
+  // setSetpoint(getAngle());
   // }
 }

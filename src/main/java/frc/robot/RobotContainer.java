@@ -2,10 +2,17 @@ package frc.robot;
 
 import java.util.List;
 
+import com.revrobotics.Rev2mDistanceSensor;
+import com.revrobotics.Rev2mDistanceSensor.Port;
+
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -66,9 +73,18 @@ public class RobotContainer {
         private final GenericEntry driverControllerEntry;
         private final GenericEntry operatorControllerEntry;
 
-        public void updateControllerEntries() { // Called in Robot.robotPeriodic()
+        private void updateControllerEntries() { // Called in Robot.robotPeriodic()
                 driverControllerEntry.setBoolean(driver.isConnected());
                 operatorControllerEntry.setBoolean(operator.isConnected());
+        }
+
+        public void periodic() {
+                this.updateControllerEntries();
+                if (claw.isOpen() && claw.canGrabGamepiece()) {
+                        operator.setRumble(RumbleType.kLeftRumble, 0.5);
+                } else {
+                        operator.setRumble(RumbleType.kLeftRumble, 0);
+                }
         }
 
         private SendableChooser<Command> autoChooser;

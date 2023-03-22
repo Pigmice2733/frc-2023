@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import frc.robot.RobotContainer;
 import frc.robot.Constants.ClawConfig;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -11,8 +12,10 @@ import javax.management.InstanceAlreadyExistsException;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -33,6 +36,11 @@ public class Claw extends SubsystemBase {
   private final CANSparkMax leftMotor = new CANSparkMax(ClawConfig.leftMotorPort, MotorType.kBrushless);
   private final CANSparkMax rightMotor = new CANSparkMax(ClawConfig.rightMotorPort, MotorType.kBrushless);
 
+  public AnalogPotentiometer distanceSensor = new AnalogPotentiometer(0);
+
+  private static final double DISTANCE_THRESHOLD = 0.6;
+  private boolean isOpen = false;
+
   public Claw() {
     // compressor.disable();
     // compressor.close();
@@ -48,9 +56,25 @@ public class Claw extends SubsystemBase {
     SmartDashboard.putNumber("Output multiplier", 1);
   }
 
+  private double getDistance() {
+    return this.distanceSensor.get();
+  }
+
+  // called in RobotContainer::periodic
+  public boolean canGrabGamepiece() {
+    return this.getDistance() > DISTANCE_THRESHOLD;
+  }
+
+  // called in RobotContainer::periodic
+  public boolean isOpen() {
+    return this.isOpen;
+  }
+
   public void closeClaw(boolean stopMotors) {
     leftPiston.set(Value.kForward);
     rightPiston.set(Value.kReverse);
+
+    isOpen = false;
 
     if (stopMotors)
       stopMotors();
@@ -63,6 +87,8 @@ public class Claw extends SubsystemBase {
   public void openClaw(boolean startMotors) {
     leftPiston.set(Value.kReverse);
     rightPiston.set(Value.kForward);
+
+    isOpen = true;
 
     if (startMotors)
       startMotors(false);
