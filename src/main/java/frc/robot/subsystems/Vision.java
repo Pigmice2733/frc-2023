@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.ShuffleboardConfig;
 
 public class Vision extends SubsystemBase {
 
@@ -88,6 +89,9 @@ public class Vision extends SubsystemBase {
   }
 
   private void updateShuffleboard() {
+    if (ShuffleboardConfig.debugPrintsEnabled)
+      return;
+
     if (estimatedRobotPose == null || recentTagPose == null || Double.isNaN(estimatedRobotPose.getX())) {
       return;
     }

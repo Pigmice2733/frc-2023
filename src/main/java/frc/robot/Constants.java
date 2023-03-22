@@ -97,7 +97,7 @@ public final class Constants {
         public static final double autoBalanceProportional = 0.5;
 
         public static final double maxTrajectoryVel = 1.5;
-        //public static final double maxTrajectoryVel = 2;
+        // public static final double maxTrajectoryVel = 2;
         public static final double maxTrajectoryAcc = 2;
 
         // drivetrainModel
@@ -116,7 +116,7 @@ public final class Constants {
     }
 
     public final static class ShuffleboardConfig {
-        public static final boolean drivetrainPrintsEnabled = true;
+        public static final boolean debugPrintsEnabled = true;
     }
 
     public final static class RotatingArmConfig {
@@ -138,14 +138,14 @@ public final class Constants {
                                                                                 // ground
 
         public static final double kP = 0.01;
-        //public static final double kI = 0.001;
+        // public static final double kI = 0.001;
         public static final double kI = 0.00;
-        //public static final double kD = 0.0001;
+        // public static final double kD = 0.0001;
         public static final double kD = 0.00;
         public static final double maxVelocity = 120;
         public static final double maxAcceleration = 150;
 
-        //public static final double armGravCompensation = 0.3;
+        // public static final double armGravCompensation = 0.3;
         public static final double armGravCompensation = 0.22;
 
         public static final int topLimitSwitchID = 0;

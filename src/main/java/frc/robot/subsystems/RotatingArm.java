@@ -19,12 +19,14 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardComponent;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RotatingArmConfig;
+import frc.robot.Constants.ShuffleboardConfig;
 import frc.robot.commands.rotatingArm.RotateArmToAngle;
 import frc.robot.commands.rotatingArm.RotateArmToAngle.ArmHeight;
 
@@ -131,9 +133,6 @@ public class RotatingArm extends SubsystemBase {
   public void periodic() {
     updateShuffleboard();
     updateController();
-
-    SmartDashboard.putNumber("Amps", leftMotor.getOutputCurrent());
-    SmartDashboard.putNumber("Temp", leftMotor.getMotorTemperature());
   }
 
   /**
@@ -167,7 +166,8 @@ public class RotatingArm extends SubsystemBase {
   }
 
   private void outputToMotor(double output) {
-    targetOutputEntry.setDouble(output);
+    if (ShuffleboardConfig.debugPrintsEnabled)
+      targetOutputEntry.setDouble(output);
 
     output = Math.max(0.001, output); // 0.001 to make motors never completely stop when arm is lowering
 
@@ -192,6 +192,9 @@ public class RotatingArm extends SubsystemBase {
   }
 
   private void updateShuffleboard() {
+    if (!ShuffleboardConfig.debugPrintsEnabled)
+      return;
+
     angleEntry.setDouble(getAngle());
     setpointEntry.setDouble(armController.getSetpoint().position);
     motorTempEntry.setDouble((leftMotor.getMotorTemperature() + rightMotor.getMotorTemperature()) / 2d);

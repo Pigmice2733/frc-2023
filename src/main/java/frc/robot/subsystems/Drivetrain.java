@@ -188,14 +188,12 @@ public class Drivetrain extends SubsystemBase {
     pose = odometry.update(getHeading(), (leftGroup.getInverted() ? -1 : 1) * leftDrive.getEncoder().getPosition(),
         (rightGroup.getInverted() ? -1 : 1) * rightDrive.getEncoder().getPosition());
 
-    if (ShuffleboardConfig.drivetrainPrintsEnabled) {
+    if (ShuffleboardConfig.debugPrintsEnabled) {
       xPosEntry.setDouble(pose.getX());
       yPosEntry.setDouble(pose.getY());
+      field.setRobotPose(getPose());
+      SmartDashboard.putNumber("Pitch", this.getPitch());
     }
-
-    SmartDashboard.putNumber("Pitch", this.getPitch());
-
-    field.setRobotPose(getPose());
   }
 
   /** Returns the robot's current yaw as a Rotation2d object (in radians). */
@@ -312,13 +310,16 @@ public class Drivetrain extends SubsystemBase {
     voltages = accelerationLimiter.calculate(speeds.leftMetersPerSecond,
         speeds.rightMetersPerSecond, voltages.left,
         voltages.right);
-    motorVeloEntry
-        .setDouble(
-            (Math.abs(speeds.leftMetersPerSecond) +
-                Math.abs(speeds.rightMetersPerSecond)) / 2d);
-    navXVeloEntry.setDouble(this.gyro.getVelocityY());
-    leftVoltageEntry.setDouble(voltages.left);
-    rightVoltageEntry.setDouble(voltages.right);
+
+    if (ShuffleboardConfig.debugPrintsEnabled) {
+      motorVeloEntry
+          .setDouble(
+              (Math.abs(speeds.leftMetersPerSecond) +
+                  Math.abs(speeds.rightMetersPerSecond)) / 2d);
+      navXVeloEntry.setDouble(this.gyro.getVelocityY());
+      leftVoltageEntry.setDouble(voltages.left);
+      rightVoltageEntry.setDouble(voltages.right);
+    }
     // System.out.println("AFTER VOLTAGES: " + voltages.left + " | " +
     // voltages.right);
     driveVoltages(voltages);
@@ -328,7 +329,7 @@ public class Drivetrain extends SubsystemBase {
     leftGroup.setVoltage(left * outputFactor);
     rightGroup.setVoltage(right * outputFactor);
 
-    if (ShuffleboardConfig.drivetrainPrintsEnabled) {
+    if (ShuffleboardConfig.debugPrintsEnabled) {
       leftVoltageEntry.setDouble(left);
       rightVoltageEntry.setDouble(right);
     }
