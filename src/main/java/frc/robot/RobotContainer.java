@@ -255,6 +255,10 @@ public class RobotContainer {
                 /** [operator] Signal lights for cone */
                 new JoystickButton(operator, Button.kStart.value)
                                 .onTrue(new InstantCommand(() -> lightStrip.signalForCone()));
+
+                /** [operator] Toggle Brake */
+                new JoystickButton(operator, Button.kY.value)
+                                .onTrue(new InstantCommand(() -> arm.toggleBrake()));
         }
 
         /**
