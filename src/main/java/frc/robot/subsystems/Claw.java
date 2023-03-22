@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -38,8 +39,9 @@ public class Claw extends SubsystemBase {
 
   public AnalogPotentiometer distanceSensor = new AnalogPotentiometer(0);
 
-  private static final double DISTANCE_THRESHOLD = 0.6;
+  private static final double DISTANCE_THRESHOLD = 0.5; // higher = closer but only up to a point
   private boolean isOpen = false;
+  private double openTimestamp = 0;
 
   public Claw() {
     // compressor.disable();
@@ -56,13 +58,30 @@ public class Claw extends SubsystemBase {
     SmartDashboard.putNumber("Output multiplier", 1);
   }
 
+  @Override
+  public void periodic() {
+    double currentTime = Timer.getFPGATimestamp();
+    if (this.isOpen() && (currentTime - openTimestamp) > 1 && hasCubeWhileOpen()) {
+      this.stopMotors();
+    }
+  }
+
   private double getDistance() {
     return this.distanceSensor.get();
   }
 
+  public boolean hasCubeWhileOpen() {
+    double averageVelocity = Math.abs(leftMotor.getEncoder().getVelocity() + rightMotor.getEncoder().getVelocity())
+        / 2d;
+    SmartDashboard.putNumber("Average Velocity", averageVelocity);
+    return averageVelocity < 10;
+  }
+
   // called in RobotContainer::periodic
   public boolean canGrabGamepiece() {
-    return this.getDistance() > DISTANCE_THRESHOLD;
+
+    return (this.getDistance() > DISTANCE_THRESHOLD || (this.isOpen()
+        && hasCubeWhileOpen()));
   }
 
   // called in RobotContainer::periodic
@@ -88,6 +107,8 @@ public class Claw extends SubsystemBase {
     leftPiston.set(Value.kReverse);
     rightPiston.set(Value.kForward);
 
+    openTimestamp = Timer.getFPGATimestamp();
+
     isOpen = true;
 
     if (startMotors)
@@ -98,6 +119,14 @@ public class Claw extends SubsystemBase {
     return Commands.sequence(
         new InstantCommand(() -> openClaw(false)),
         new InstantCommand(() -> outputToMotors(-0.1)),
+        new WaitCommand(0.2),
+        new InstantCommand(() -> openClaw(startMotors)));
+  }
+
+  public Command superEjectCommand(boolean startMotors) {
+    return Commands.sequence(
+        new InstantCommand(() -> openClaw(false)),
+        new InstantCommand(() -> outputToMotors(-0.8)),
         new WaitCommand(0.2),
         new InstantCommand(() -> openClaw(startMotors)));
   }

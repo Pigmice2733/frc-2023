@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -85,6 +86,7 @@ public class RobotContainer {
                 } else {
                         operator.setRumble(RumbleType.kLeftRumble, 0);
                 }
+                SmartDashboard.putNumber("Distance", claw.distanceSensor.get());
         }
 
         private SendableChooser<Command> autoChooser;
@@ -222,6 +224,9 @@ public class RobotContainer {
                 /** [operator] Close Claw */
                 new JoystickButton(operator, Button.kLeftBumper.value)
                                 .onTrue(claw.closeClawCommand(true));
+
+                new JoystickButton(operator, Button.kX.value)
+                                .onTrue(claw.superEjectCommand(true));
 
                 /**
                  * [operator] Schedule ScoreObject when Y is pressed, cancel when released
