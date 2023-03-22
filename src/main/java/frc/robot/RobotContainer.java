@@ -2,38 +2,29 @@ package frc.robot;
 
 import java.util.List;
 
-import com.revrobotics.Rev2mDistanceSensor;
-import com.revrobotics.Rev2mDistanceSensor.Port;
-
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Ultrasonic;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.RuntimeTrajectoryGenerator.TargetLocation;
-import frc.robot.commands.claw.SpinIntakeWheels;
+import frc.robot.commands.RumbleController;
 import frc.robot.commands.drivetrain.autoDrive.DriveDistancePID;
-import frc.robot.commands.drivetrain.balance.HoldPosition;
 import frc.robot.commands.drivetrain.defaultCommands.ArcadeDrive;
 import frc.robot.commands.lights.panel.RotatingPanelSequence;
 import frc.robot.commands.lights.strip.RunningColor;
-import frc.robot.commands.objectManipulation.PickUpObject;
 import frc.robot.commands.objectManipulation.ScoreObject;
 import frc.robot.commands.rotatingArm.RotateArmManual;
-import frc.robot.commands.rotatingArm.RotateArmToAngle;
 import frc.robot.commands.rotatingArm.RotateArmToAngle.ArmHeight;
 import frc.robot.commands.routines.BalanceRoutine;
 import frc.robot.commands.routines.LeaveAndBalance;
@@ -81,12 +72,14 @@ public class RobotContainer {
 
         public void periodic() {
                 this.updateControllerEntries();
-                if (claw.isOpen() && claw.canGrabGamepiece()) {
-                        operator.setRumble(RumbleType.kLeftRumble, 0.5);
-                } else {
-                        operator.setRumble(RumbleType.kLeftRumble, 0);
+                if (claw.isOpen() && !claw.didJustOpen() && claw.canGrabGamepiece()) {
+                        CommandScheduler.getInstance().schedule(new RumbleController(operator, RumbleType.kLeftRumble));
                 }
-                SmartDashboard.putNumber("Distance", claw.distanceSensor.get());
+        }
+
+        public void disable() {
+                this.driver.setRumble(RumbleType.kBothRumble, 0);
+                this.operator.setRumble(RumbleType.kBothRumble, 0);
         }
 
         private SendableChooser<Command> autoChooser;
@@ -224,9 +217,6 @@ public class RobotContainer {
                 /** [operator] Close Claw */
                 new JoystickButton(operator, Button.kLeftBumper.value)
                                 .onTrue(claw.closeClawCommand(true));
-
-                new JoystickButton(operator, Button.kX.value)
-                                .onTrue(claw.superEjectCommand(true));
 
                 /**
                  * [operator] Schedule ScoreObject when Y is pressed, cancel when released

@@ -60,14 +60,18 @@ public class Claw extends SubsystemBase {
 
   @Override
   public void periodic() {
-    double currentTime = Timer.getFPGATimestamp();
-    if (this.isOpen() && (currentTime - openTimestamp) > 1 && hasCubeWhileOpen()) {
+    if (this.isOpen() && !didJustOpen() && hasCubeWhileOpen()) {
       this.stopMotors();
     }
   }
 
   private double getDistance() {
     return this.distanceSensor.get();
+  }
+
+  public boolean didJustOpen() {
+    double currentTime = Timer.getFPGATimestamp();
+    return (currentTime - openTimestamp) < 1;
   }
 
   public boolean hasCubeWhileOpen() {
@@ -79,7 +83,6 @@ public class Claw extends SubsystemBase {
 
   // called in RobotContainer::periodic
   public boolean canGrabGamepiece() {
-
     return (this.getDistance() > DISTANCE_THRESHOLD || (this.isOpen()
         && hasCubeWhileOpen()));
   }
@@ -119,14 +122,6 @@ public class Claw extends SubsystemBase {
     return Commands.sequence(
         new InstantCommand(() -> openClaw(false)),
         new InstantCommand(() -> outputToMotors(-0.1)),
-        new WaitCommand(0.2),
-        new InstantCommand(() -> openClaw(startMotors)));
-  }
-
-  public Command superEjectCommand(boolean startMotors) {
-    return Commands.sequence(
-        new InstantCommand(() -> openClaw(false)),
-        new InstantCommand(() -> outputToMotors(-0.8)),
         new WaitCommand(0.2),
         new InstantCommand(() -> openClaw(startMotors)));
   }

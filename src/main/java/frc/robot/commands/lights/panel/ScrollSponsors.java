@@ -20,7 +20,7 @@ public class ScrollSponsors extends CommandBase {
     private static Image background = new Image();
 
     static {
-        background.imposeText("WE", 0, 0, Colors.BLUE);
+        background.imposeText("WE", 0, 0, Colors.PURPLE);
         background.imposeImage(Images.SMALL_HEART, 11, 1);
     }
 
@@ -31,7 +31,7 @@ public class ScrollSponsors extends CommandBase {
     }
 
     private void scrollSponsors() {
-        lights.scrollText(SPONSORS.get(lastIndex) + "!", background, TextScrollDirection.LEFT, 8, Colors.BLUE, 1, 10);
+        lights.scrollText(SPONSORS.get(lastIndex) + "!", background, TextScrollDirection.LEFT, 8, Colors.PURPLE, 1, 10);
         lastIndex = (lastIndex + 1) % SPONSORS.size();
     }
 
