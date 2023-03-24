@@ -125,17 +125,17 @@ public class RobotContainer {
                                                 .withName("Score and Balance [Center]"),
                                 new RunAutoRoutineWithNavxCheck(
                                                 new LeaveAndBalance(drivetrain, TargetLocation.Left, arm),
-                                                drivetrain).withName("Leave and Balance [Field Outside]"),
+                                                drivetrain).withName("Leave and Balance [Driver Left]"),
                                 new RunAutoRoutineWithNavxCheck(
                                                 new LeaveAndBalance(drivetrain, TargetLocation.Right, arm),
-                                                drivetrain).withName("Leave and Balance [Field Inside]"),
+                                                drivetrain).withName("Leave and Balance [Driver Right]"),
                                 new RunAutoRoutineWithNavxCheck(
                                                 new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Left),
-                                                drivetrain).withName("Score, Leave, and Balance [Field Outside]"),
+                                                drivetrain).withName("Score, Leave, and Balance [Driver Left]"),
                                 new RunAutoRoutineWithNavxCheck(
                                                 new ScoreAndLeaveAndBalance(drivetrain, arm, claw,
                                                                 TargetLocation.Right),
-                                                drivetrain).withName("Score, Leave, and Balance [Field Inside]"),
+                                                drivetrain).withName("Score, Leave, and Balance [Driver Right]"),
                                 new ScoreObject(drivetrain, arm, claw, ArmHeight.High, false)
                                                 .withName("Score Cube"));
 
@@ -186,8 +186,8 @@ public class RobotContainer {
                 // .whileTrue(new HoldPosition(drivetrain));
 
                 /** [driver] Schedule BalanceRoutine when B is pressed, cancel when released */
-                // new JoystickButton(driver, Button.kB.value)
-                // .whileTrue(new BalanceRoutine(drivetrain, true));
+                new JoystickButton(driver, Button.kB.value)
+                                .whileTrue(new BalanceRoutine(drivetrain, true));
 
                 /** [driver] Set the TargetType in RuntimeTrajectoryGenerator with D-pad */
                 // new POVButton(driver, 0) // up
