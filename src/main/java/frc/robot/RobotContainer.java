@@ -24,6 +24,7 @@ import frc.robot.commands.drivetrain.autoDrive.FollowPath;
 import frc.robot.commands.drivetrain.balance.AutoBalance;
 import frc.robot.commands.drivetrain.balance.AutoBalanceNew;
 import frc.robot.commands.drivetrain.defaultCommands.ArcadeDrive;
+import frc.robot.commands.drivetrain.defaultCommands.HoldMotors;
 import frc.robot.commands.lights.panel.RotatingPanelSequence;
 import frc.robot.commands.lights.panel.ShowImage;
 import frc.robot.commands.lights.strip.RunningColor;
@@ -149,7 +150,8 @@ public class RobotContainer {
                         autoChooser.addOption(command.getName(), command);
                 });
 
-                autoChooser.setDefaultOption("None", new WaitCommand(1));
+                // autoChooser.setDefaultOption("None", new WaitCommand(1));
+                autoChooser.setDefaultOption("None", new HoldMotors(drivetrain));
         }
 
         /**

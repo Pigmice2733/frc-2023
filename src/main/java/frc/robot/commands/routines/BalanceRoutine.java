@@ -21,6 +21,7 @@ public class BalanceRoutine extends SequentialCommandGroup {
 
   public BalanceRoutine(Drivetrain drivetrain, boolean backwards) {
     addCommands(
+        drivetrain.resetOdometryCommand(),
         new DriveOntoChargeStation(drivetrain, backwards),
         new AutoBalance(drivetrain));
   }
