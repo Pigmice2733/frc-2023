@@ -20,6 +20,7 @@ public class Colors {
     public static byte DARK_GRAY = 15;
 
     private static byte MAX_COLOR = 15;
+    private static final double BRIGHTNESS_FACTOR = 0.25;
 
     static {
         COLORS = new RGB[] {
@@ -40,6 +41,12 @@ public class Colors {
                 new RGB(128, 128, 128),
                 new RGB(47, 79, 79)
         };
+
+        for (int i = 0; i < COLORS.length; i++) {
+            RGB rgb = COLORS[i];
+            COLORS[i] = new RGB(rgb.getR() * BRIGHTNESS_FACTOR, rgb.getG() * BRIGHTNESS_FACTOR,
+                    rgb.getB() * BRIGHTNESS_FACTOR);
+        }
 
         // int numColors = 14;
         // for (int i = 0; i < numColors; i++) {

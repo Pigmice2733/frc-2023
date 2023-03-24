@@ -22,6 +22,7 @@ import frc.robot.commands.RumbleController;
 import frc.robot.commands.drivetrain.autoDrive.DriveDistancePID;
 import frc.robot.commands.drivetrain.defaultCommands.ArcadeDrive;
 import frc.robot.commands.lights.panel.RotatingPanelSequence;
+import frc.robot.commands.lights.panel.ShowImage;
 import frc.robot.commands.lights.strip.RunningColor;
 import frc.robot.commands.objectManipulation.ScoreObject;
 import frc.robot.commands.rotatingArm.RotateArmManual;
@@ -32,6 +33,7 @@ import frc.robot.commands.routines.RunAutoRoutineWithNavxCheck;
 import frc.robot.commands.routines.ScoreAndBalance;
 import frc.robot.commands.routines.ScoreAndLeave;
 import frc.robot.commands.routines.ScoreAndLeaveAndBalance;
+import frc.robot.lights.Images;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.LightStrip;
@@ -257,8 +259,8 @@ public class RobotContainer {
                                 .onTrue(new InstantCommand(() -> lightStrip.signalForCone()));
 
                 /** [operator] Toggle Brake */
-                new JoystickButton(operator, Button.kY.value)
-                                .onTrue(new InstantCommand(() -> arm.toggleBrake()));
+                // new JoystickButton(operator, Button.kY.value)
+                // .onTrue(new InstantCommand(() -> arm.toggleBrake()));
         }
 
         /**

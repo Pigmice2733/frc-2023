@@ -3,7 +3,6 @@ package frc.robot.commands.lights.panel;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.lights.Colors;
-import frc.robot.lights.Image;
 import frc.robot.lights.Images;
 import frc.robot.subsystems.LightsPanel;
 

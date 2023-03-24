@@ -7,7 +7,6 @@ import java.util.Queue;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.lights.Colors;
-import frc.robot.lights.Images;
 import frc.robot.lights.Text.TextScrollDirection;
 import frc.robot.subsystems.LightsPanel;
 

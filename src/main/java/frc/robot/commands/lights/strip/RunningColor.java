@@ -20,8 +20,8 @@ public class RunningColor extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        this.lightStrip.setCubeProgram(0.01);
-        this.lightStrip.setConeProgram(0.21);
+        this.lightStrip.setCubeProgram(0.31);
+        this.lightStrip.setConeProgram(0.11);
     }
 
     // Called every time the scheduler runs while the command is scheduled.

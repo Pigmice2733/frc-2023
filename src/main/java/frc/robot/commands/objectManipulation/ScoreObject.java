@@ -5,7 +5,6 @@
 package frc.robot.commands.objectManipulation;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.drivetrain.autoDrive.DriveDistancePID;
 import frc.robot.commands.drivetrain.autoDrive.FollowPath;
 import frc.robot.commands.rotatingArm.RotateArmToAngle;
 import frc.robot.commands.rotatingArm.RotateArmToAngle.ArmHeight;
@@ -26,15 +25,15 @@ public class ScoreObject extends SequentialCommandGroup {
    * Automatically scores a held object. Does not auto align.
    */
   public ScoreObject(Drivetrain drivetrain, RotatingArm arm, Claw claw, ArmHeight height, boolean lowerArm) {
-        addCommands(new RotateArmToAngle(arm, height).withTimeout(2));
+    addCommands(new RotateArmToAngle(arm, height).withTimeout(2));
 
     addCommands(
-      new FollowPath(drivetrain, "DriveAgainstGrid", false),
-      claw.openClawCommand(true));
-      
+        new FollowPath(drivetrain, "DriveAgainstGrid", false),
+        claw.openClawCommand(true));
+
     if (lowerArm) {
       addCommands(
-        new FollowPath(drivetrain, "DriveAgainstGrid", true),
+          new FollowPath(drivetrain, "DriveAgainstGrid", true),
           new RotateArmToAngle(arm, ArmHeight.Floor));
     }
 

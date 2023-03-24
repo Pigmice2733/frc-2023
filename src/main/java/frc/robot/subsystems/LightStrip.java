@@ -17,7 +17,6 @@ public class LightStrip extends SubsystemBase {
     }
 
     public void setBlinkinProgram(double program) {
-        System.out.println("SETTING BLINKIN PROGRAM TO " + program);
         this.blinkinController.set(program);
     }
 
@@ -34,12 +33,10 @@ public class LightStrip extends SubsystemBase {
     }
 
     public void signalForCube() {
-        System.out.println("SIGNALING FOR CUBE!!");
         signalForObject(SignaledObject.Cube);
     }
 
     public void signalForCone() {
-        System.out.println("SIGNALING FOR CONE!!");
         signalForObject(SignaledObject.Cone);
     }
 
