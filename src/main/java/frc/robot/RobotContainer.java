@@ -20,6 +20,9 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.RuntimeTrajectoryGenerator.TargetLocation;
 import frc.robot.commands.RumbleController;
 import frc.robot.commands.drivetrain.autoDrive.DriveDistancePID;
+import frc.robot.commands.drivetrain.autoDrive.FollowPath;
+import frc.robot.commands.drivetrain.balance.AutoBalance;
+import frc.robot.commands.drivetrain.balance.AutoBalanceNew;
 import frc.robot.commands.drivetrain.defaultCommands.ArcadeDrive;
 import frc.robot.commands.lights.panel.RotatingPanelSequence;
 import frc.robot.commands.lights.panel.ShowImage;
@@ -187,7 +190,7 @@ public class RobotContainer {
 
                 /** [driver] Schedule BalanceRoutine when B is pressed, cancel when released */
                 new JoystickButton(driver, Button.kB.value)
-                                .whileTrue(new BalanceRoutine(drivetrain, true));
+                                .whileTrue(new AutoBalance(drivetrain));
 
                 /** [driver] Set the TargetType in RuntimeTrajectoryGenerator with D-pad */
                 // new POVButton(driver, 0) // up

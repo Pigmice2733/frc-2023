@@ -116,7 +116,7 @@ public final class Constants {
     }
 
     public final static class ShuffleboardConfig {
-        public static final boolean debugPrintsEnabled = true;
+        public static final boolean debugPrintsEnabled = false;
     }
 
     public final static class RotatingArmConfig {
