@@ -116,8 +116,8 @@ public class Claw extends SubsystemBase {
   public Command openClawCommand(boolean startMotors) {
     return Commands.sequence(
         new InstantCommand(() -> openClaw(false)),
-        new InstantCommand(() -> outputToMotors(-0.1)),
-        new WaitCommand(0.2),
+        new InstantCommand(() -> outputToMotors(-ClawConfig.outtakeMotorSpeed)),
+        new WaitCommand(1.0),
         new InstantCommand(() -> openClaw(startMotors)));
   }
 
