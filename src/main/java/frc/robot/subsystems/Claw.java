@@ -130,7 +130,7 @@ public class Claw extends SubsystemBase {
 
   public void startMotors(boolean intakeDirection) {
     SmartDashboard.putBoolean("Claw Motors", true);
-    outputToMotors(ClawConfig.motorSpeed * (intakeDirection ? -1.0 : 1.0));
+    outputToMotors(intakeDirection ? -ClawConfig.outtakeMotorSpeed : ClawConfig.intakeMotorSpeed);
   }
 
   public void stopMotors() {
