@@ -15,6 +15,7 @@ public class DriveOntoChargeStation extends CommandBase {
   private boolean backwards = false;
   private double onStationTimestamp = -1;
   private static final double EXTRA_DRIVE_SECONDS = 1.5;
+  private double initialPosition = -1;
   private double speedMultiplier = 2.0;
   private boolean onChargeStation = false;
 
@@ -47,11 +48,12 @@ public class DriveOntoChargeStation extends CommandBase {
       onChargeStation = true;
       onStationTimestamp = Timer.getFPGATimestamp();
       speedMultiplier = 1.0;
+      initialPosition = drivetrain.getAverageDistance();
       if (ShuffleboardConfig.debugPrintsEnabled) {
-
         SmartDashboard.putBoolean("OnStation", true);
         // timer.reset();
-        SmartDashboard.putNumber("On Station Time", onStationTimestamp);
+        // SmartDashboard.putNumber("On Station Time", onStationTimestamp);
+        SmartDashboard.putNumber("Initial Position", initialPosition);
       }
     }
   }
@@ -65,8 +67,12 @@ public class DriveOntoChargeStation extends CommandBase {
     // onStationTimestamp != -1 when angle has been > 12
     // only ends after EXTRA_DRIVE_SECONDS have elapsed since getting on charge
     // station
-    return onChargeStation && onStationTimestamp != -1 && (Timer.getFPGATimestamp() -
-        onStationTimestamp) > EXTRA_DRIVE_SECONDS;
+    // return onChargeStation && onStationTimestamp != -1 &&
+    // (Timer.getFPGATimestamp() -
+    // onStationTimestamp) > EXTRA_DRIVE_SECONDS;
+    SmartDashboard.putNumber("Current Position", drivetrain.getAverageDistance());
+    return onChargeStation && initialPosition != -1
+        && Math.abs(drivetrain.getAverageDistance() - initialPosition) >= 0.7;
     // return onStationTimestamp != -1 && timer.hasElapsed(EXTRA_DRIVE_SECONDS);
   }
 }

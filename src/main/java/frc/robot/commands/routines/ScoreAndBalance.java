@@ -24,8 +24,7 @@ public class ScoreAndBalance extends SequentialCommandGroup {
   public ScoreAndBalance(Drivetrain drivetrain, RotatingArm arm, Claw claw, boolean turnAround) {
     addCommands(new ScoreObject(drivetrain, arm, claw, ArmHeight.High, false),
         claw.closeClawCommand(true),
-        Commands.parallel(Commands.sequence(new WaitCommand(1), arm.setSetpointCommand(ArmHeight.Floor)),
-            new DriveDistancePID(drivetrain, -1)));
+        Commands.parallel(Commands.sequence(new WaitCommand(1), arm.setSetpointCommand(ArmHeight.Floor))));
 
     if (turnAround)
       addCommands(new DriveDistancePID(drivetrain, -1).withTimeout(2),
