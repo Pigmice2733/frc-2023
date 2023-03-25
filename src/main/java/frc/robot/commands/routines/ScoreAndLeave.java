@@ -4,7 +4,9 @@
 
 package frc.robot.commands.routines;
 
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.drivetrain.autoDrive.DriveDistancePID;
 import frc.robot.commands.objectManipulation.ScoreObject;
 import frc.robot.commands.rotatingArm.RotateArmToAngle.ArmHeight;
@@ -13,11 +15,15 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.RotatingArm;
 
 public class ScoreAndLeave extends SequentialCommandGroup {
-  /** Score and leave from Left or Right. Start facing the grid, command does not turn robot around */
+  /**
+   * Score and leave from Left or Right. Start facing the grid, command does not
+   * turn robot around
+   */
   public ScoreAndLeave(Drivetrain drivetrain, RotatingArm arm, Claw claw) {
     addCommands(
-      new ScoreObject(drivetrain, arm, claw, ArmHeight.High, false),
-      arm.setSetpointCommand(ArmHeight.Floor),
-      new DriveDistancePID(drivetrain, -4));
+        new ScoreObject(drivetrain, arm, claw, ArmHeight.High, false),
+        claw.closeClawCommand(true),
+        Commands.parallel(Commands.sequence(new WaitCommand(1),
+            arm.setSetpointCommand(ArmHeight.Floor)), new DriveDistancePID(drivetrain, -4)));
   }
 }

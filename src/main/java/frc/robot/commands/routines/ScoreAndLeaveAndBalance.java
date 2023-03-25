@@ -4,6 +4,8 @@
 
 package frc.robot.commands.routines;
 
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RuntimeTrajectoryGenerator.TargetLocation;
 import frc.robot.commands.drivetrain.autoDrive.FollowPath;
@@ -26,20 +28,21 @@ public class ScoreAndLeaveAndBalance extends SequentialCommandGroup {
     // (1) Score
     addCommands(new ScoreObject(drivetrain, arm, claw, ArmHeight.High, false), arm.setSetpointCommand(ArmHeight.Floor));
 
+    SequentialCommandGroup group = new SequentialCommandGroup();
     // (2) Drive out of community and line up to balance
     if (startLocation == TargetLocation.Center) {
-      addCommands(
+      group.addCommands(
           new DriveOntoChargeStation(drivetrain, true),
           new DriveOverChargeStation(drivetrain, true));
-    }
-    else if (startLocation == TargetLocation.Left) {
-      addCommands(
+    } else if (startLocation == TargetLocation.Left) {
+      group.addCommands(
           new FollowPath(drivetrain, "ScoreLeaveBalanceDriverLeft", true));
-    }
-    else if (startLocation == TargetLocation.Right) {
-      addCommands(
+    } else if (startLocation == TargetLocation.Right) {
+      group.addCommands(
           new FollowPath(drivetrain, "ScoreLeaveBalanceDriverRight", true));
     }
+
+    addCommands(Commands.parallel(arm.setSetpointCommand(ArmHeight.Floor), group));
 
     // (3) Balance
     addCommands(new BalanceRoutine(drivetrain, true));
