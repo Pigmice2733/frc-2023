@@ -4,27 +4,22 @@
 
 package frc.robot.subsystems;
 
-import frc.robot.RobotContainer;
-import frc.robot.Constants.ClawConfig;
-
-import javax.management.InstanceAlreadyExistsException;
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants.ClawConfig;
 
 public class Claw extends SubsystemBase {
   private final Compressor compressor = new Compressor(20, PneumaticsModuleType.REVPH);
@@ -121,8 +116,8 @@ public class Claw extends SubsystemBase {
   public Command openClawCommand(boolean startMotors) {
     return Commands.sequence(
         new InstantCommand(() -> openClaw(false)),
-        new InstantCommand(() -> outputToMotors(-0.1)),
-        new WaitCommand(0.2),
+        new InstantCommand(() -> outputToMotors(-ClawConfig.outtakeMotorSpeed)),
+        new WaitCommand(1.0),
         new InstantCommand(() -> openClaw(startMotors)));
   }
 
@@ -135,7 +130,7 @@ public class Claw extends SubsystemBase {
 
   public void startMotors(boolean intakeDirection) {
     SmartDashboard.putBoolean("Claw Motors", true);
-    outputToMotors(ClawConfig.motorSpeed * (intakeDirection ? -1.0 : 1.0));
+    outputToMotors(intakeDirection ? -ClawConfig.outtakeMotorSpeed : ClawConfig.intakeMotorSpeed);
   }
 
   public void stopMotors() {

@@ -13,6 +13,7 @@ import java.util.TreeMap;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lights.Animation;
 import frc.robot.lights.Colors;
@@ -28,6 +29,7 @@ public class LightsPanel extends SubsystemBase {
     private final int LED_PORT = 1;
     public static final int LED_GRID_W = 16;
     public static final int LED_GRID_LEN = LED_GRID_W * LED_GRID_W;
+    private static double brightnessFactor = 0.5;
 
     private final Queue<Animation> animationQueue = new LinkedList<>();
     private boolean animationIsFinished = true;
@@ -73,7 +75,7 @@ public class LightsPanel extends SubsystemBase {
         int r = (hex >> 16) & 0xFF;
         int g = (hex >> 8) & 0xFF;
         int b = (hex >> 0) & 0xFF;
-        RGB rgb = new RGB(r, g, b);
+        RGB rgb = new RGB((int) (r * brightnessFactor), (int) (g * brightnessFactor), (int) (b * brightnessFactor));
 
         RGB_CACHE.put(hex, rgb);
 

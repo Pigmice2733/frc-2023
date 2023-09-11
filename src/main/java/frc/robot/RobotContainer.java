@@ -14,14 +14,20 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.RuntimeTrajectoryGenerator.TargetLocation;
 import frc.robot.commands.RumbleController;
 import frc.robot.commands.drivetrain.autoDrive.DriveDistancePID;
+import frc.robot.commands.drivetrain.autoDrive.FollowPath;
+import frc.robot.commands.drivetrain.balance.AutoBalance;
+import frc.robot.commands.drivetrain.balance.AutoBalanceNew;
 import frc.robot.commands.drivetrain.defaultCommands.ArcadeDrive;
+import frc.robot.commands.drivetrain.defaultCommands.HoldMotors;
 import frc.robot.commands.lights.panel.RotatingPanelSequence;
+import frc.robot.commands.lights.panel.ShowImage;
 import frc.robot.commands.lights.strip.RunningColor;
 import frc.robot.commands.objectManipulation.ScoreObject;
 import frc.robot.commands.rotatingArm.RotateArmManual;
@@ -32,6 +38,7 @@ import frc.robot.commands.routines.RunAutoRoutineWithNavxCheck;
 import frc.robot.commands.routines.ScoreAndBalance;
 import frc.robot.commands.routines.ScoreAndLeave;
 import frc.robot.commands.routines.ScoreAndLeaveAndBalance;
+import frc.robot.lights.Images;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.LightStrip;
@@ -123,17 +130,17 @@ public class RobotContainer {
                                                 .withName("Score and Balance [Center]"),
                                 new RunAutoRoutineWithNavxCheck(
                                                 new LeaveAndBalance(drivetrain, TargetLocation.Left, arm),
-                                                drivetrain).withName("Leave and Balance [Field Outside]"),
+                                                drivetrain).withName("Leave and Balance [Driver Left]"),
                                 new RunAutoRoutineWithNavxCheck(
                                                 new LeaveAndBalance(drivetrain, TargetLocation.Right, arm),
-                                                drivetrain).withName("Leave and Balance [Field Inside]"),
+                                                drivetrain).withName("Leave and Balance [Driver Right]"),
                                 new RunAutoRoutineWithNavxCheck(
                                                 new ScoreAndLeaveAndBalance(drivetrain, arm, claw, TargetLocation.Left),
-                                                drivetrain).withName("Score, Leave, and Balance [Field Outside]"),
+                                                drivetrain).withName("Score, Leave, and Balance [Driver Left]"),
                                 new RunAutoRoutineWithNavxCheck(
                                                 new ScoreAndLeaveAndBalance(drivetrain, arm, claw,
                                                                 TargetLocation.Right),
-                                                drivetrain).withName("Score, Leave, and Balance [Field Inside]"),
+                                                drivetrain).withName("Score, Leave, and Balance [Driver Right]"),
                                 new ScoreObject(drivetrain, arm, claw, ArmHeight.High, false)
                                                 .withName("Score Cube"));
 
@@ -144,7 +151,8 @@ public class RobotContainer {
                         autoChooser.addOption(command.getName(), command);
                 });
 
-                autoChooser.setDefaultOption("None", new WaitCommand(1));
+                // autoChooser.setDefaultOption("None", new WaitCommand(1));
+                autoChooser.setDefaultOption("None", new HoldMotors(drivetrain));
         }
 
         /**
@@ -184,8 +192,8 @@ public class RobotContainer {
                 // .whileTrue(new HoldPosition(drivetrain));
 
                 /** [driver] Schedule BalanceRoutine when B is pressed, cancel when released */
-                // new JoystickButton(driver, Button.kB.value)
-                // .whileTrue(new BalanceRoutine(drivetrain, true));
+                new JoystickButton(driver, Button.kB.value)
+                                .whileTrue(new AutoBalance(drivetrain));
 
                 /** [driver] Set the TargetType in RuntimeTrajectoryGenerator with D-pad */
                 // new POVButton(driver, 0) // up
@@ -257,8 +265,8 @@ public class RobotContainer {
                                 .onTrue(new InstantCommand(() -> lightStrip.signalForCone()));
 
                 /** [operator] Toggle Brake */
-                new JoystickButton(operator, Button.kY.value)
-                                .onTrue(new InstantCommand(() -> arm.toggleBrake()));
+                // new JoystickButton(operator, Button.kY.value)
+                // .onTrue(new InstantCommand(() -> arm.toggleBrake()));
         }
 
         /**
@@ -267,6 +275,6 @@ public class RobotContainer {
          * @return the command to run in autonomous
          */
         public Command getAutonomousCommand() {
-                return autoChooser.getSelected();
+                return new SequentialCommandGroup(autoChooser.getSelected(), new HoldMotors(drivetrain));
         }
 }

@@ -9,6 +9,10 @@ public class RGB {
         rgb = new int[] { r, g, b };
     }
 
+    public RGB(double r, double g, double b) {
+        this((int) r, (int) g, (int) b);
+    }
+
     public RGB(int[] rgb) {
         this.rgb = rgb;
     }

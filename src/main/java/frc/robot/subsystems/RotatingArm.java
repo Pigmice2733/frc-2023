@@ -6,8 +6,6 @@ package frc.robot.subsystems;
 
 import java.util.Map;
 
-import javax.tools.Diagnostic;
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -16,23 +14,17 @@ import com.revrobotics.SparkMaxRelativeEncoder.Type;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardComponent;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotContainer;
 import frc.robot.Constants.RotatingArmConfig;
 import frc.robot.Constants.ShuffleboardConfig;
+import frc.robot.RobotContainer;
 import frc.robot.commands.rotatingArm.RotateArmToAngle;
 import frc.robot.commands.rotatingArm.RotateArmToAngle.ArmHeight;
 
@@ -47,9 +39,9 @@ public class RotatingArm extends SubsystemBase {
   private final GenericEntry angleEntry, targetOutputEntry, motorOutputEntry,
       brakeEntry, setpointEntry, goalEntry, motorAmpEntry, motorTempEntry;
 
-  private final DoubleSolenoid brake = new DoubleSolenoid(20,
-      PneumaticsModuleType.REVPH,
-      RotatingArmConfig.brakePort[0], RotatingArmConfig.brakePort[1]);
+  // private final DoubleSolenoid brake = new DoubleSolenoid(20,
+  // PneumaticsModuleType.REVPH,
+  // RotatingArmConfig.brakePort[0], RotatingArmConfig.brakePort[1]);
   private final RelativeEncoder encoder;
 
   private boolean brakeEnabled = false;
@@ -155,9 +147,6 @@ public class RotatingArm extends SubsystemBase {
     // if (getAngle() < RotatingArmConfig.minArmAngleDegrees) // Lower software stop
     // motorOutput = Math.max(0, motorOutput);
 
-    if (brakeEnabled)
-      controllerOutput = 0;
-
     double gravityCompensation = (Math.sin((getAngle() + 15) * (Math.PI / 180)) / 2)
         * RotatingArmConfig.armGravCompensation;
     // double gravityCompensation = (Math.sin(getAngle() * (Math.PI / 180)) / 2) *
@@ -218,14 +207,14 @@ public class RotatingArm extends SubsystemBase {
   }
 
   public void enableBrake() {
-    brake.set(Value.kForward);
+    // brake.set(Value.kReverse);
     outputToMotor(0);
     brakeEnabled = true;
     brakeEntry.setBoolean(true);
   }
 
   public void disableBrake() {
-    brake.set(Value.kReverse);
+    // brake.set(Value.kForward);
     brakeEntry.setBoolean(false);
     brakeEnabled = false;
   }

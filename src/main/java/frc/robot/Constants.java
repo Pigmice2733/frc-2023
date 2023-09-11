@@ -159,7 +159,8 @@ public final class Constants {
         public static final int leftMotorPort = 10;
         public static final int rightMotorPort = 11;
 
-        public static final double motorSpeed = 0.25;
+        public static final double intakeMotorSpeed = 0.25;
+        public static final double outtakeMotorSpeed = 0.10;
 
     }
 }

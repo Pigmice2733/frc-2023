@@ -20,11 +20,9 @@ public class BalanceRoutine extends SequentialCommandGroup {
   }
 
   public BalanceRoutine(Drivetrain drivetrain, boolean backwards) {
-    double driveSpeed = 2.5 * (backwards ? -1 : 1);
     addCommands(
+        drivetrain.resetOdometryCommand(),
         new DriveOntoChargeStation(drivetrain, backwards),
-        new InstantCommand(() -> drivetrain.driveVoltages(driveSpeed, driveSpeed)),
-        new WaitCommand(0.5),
         new AutoBalance(drivetrain));
   }
 }
