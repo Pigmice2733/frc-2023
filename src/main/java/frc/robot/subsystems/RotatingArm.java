@@ -44,7 +44,7 @@ public class RotatingArm extends SubsystemBase {
   // RotatingArmConfig.brakePort[0], RotatingArmConfig.brakePort[1]);
   private final RelativeEncoder encoder;
 
-  private boolean brakeEnabled = false;
+  // private boolean brakeEnabled = false;
 
   ProfiledPIDController armController = new ProfiledPIDController(RotatingArmConfig.kP, RotatingArmConfig.kI,
       RotatingArmConfig.kD,
@@ -209,25 +209,27 @@ public class RotatingArm extends SubsystemBase {
   public void enableBrake() {
     // brake.set(Value.kReverse);
     outputToMotor(0);
-    brakeEnabled = true;
+    // brakeEnabled = true;
     brakeEntry.setBoolean(true);
   }
 
   public void disableBrake() {
     // brake.set(Value.kForward);
     brakeEntry.setBoolean(false);
-    brakeEnabled = false;
+    // brakeEnabled = false;
   }
 
   public void toggleBrake() {
-    if (brakeEnabled)
-      disableBrake();
-    else
-      enableBrake();
+    /*
+     * if (brakeEnabled)
+     * disableBrake();
+     * else
+     * enableBrake();
+     */
   }
 
   public boolean getBrakeEnabled() {
-    return brakeEnabled;
+    return false;
   }
 
   public void setMotorIdleMode(IdleMode mode) {
